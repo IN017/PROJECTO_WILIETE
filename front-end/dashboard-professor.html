@@ -1,0 +1,1443 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel do Professor</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="../img/logo.png" type="image/png" />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#15803D",
+              secondary: "#16A34A",
+              accent: "#FACC15",
+            },
+          },
+        },
+      };
+    </script>
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+
+  <body class="bg-gray-100">
+    <div class="flex min-h-screen">
+      <!-- MENU LATERAL -->
+      <aside
+        class="w-64 bg-primary text-white p-6 hidden md:block sticky top-0 h-screen overflow-y-auto"
+      >
+        <img src="../img/logo.png" class="h-14 mb-6 mx-auto" alt="Logo" />
+        <nav class="space-y-4">
+          <a
+            href="#"
+            onclick="showSection('minhas-turmas')"
+            class="block hover:bg-secondary p-2 rounded"
+            >Inicío</a
+          >
+          <a
+            href="#"
+            onclick="showSection('lancar-notas')"
+            class="block hover:bg-secondary p-2 rounded"
+            >Lançar Notas</a
+          >
+          <a
+            href="#"
+            onclick="showSection('mensagens')"
+            class="block hover:bg-secondary p-2 rounded"
+            >Mensagens</a
+          >
+          <a
+            href="#"
+            onclick="showSection('reuniao')"
+            class="block hover:bg-secondary p-2 rounded"
+            >Reuniões</a
+          >
+
+          <a href="index.html" class="block hover:bg-secondary p-2 rounded">Notícias</a>
+
+          <button class="bg-accent px-4 py-2 rounded font-semibold text-black">
+            Terminar Sessão
+          </button>
+        </nav>
+      </aside>
+
+      <!-- CONTEÚDO -->
+      <main class="flex-1 p-6">
+        <!-- TOPO -->
+        <header class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-gray-700">Painel do Professor</h1>
+
+          <div class="relative" id="accountWrapper">
+            <button id="accountButton" aria-haspopup="true" aria-expanded="false" class="bg-white text-primary hover:bg-gray-100 px-3 py-1 rounded-lg font-semibold flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-accent transition">
+              <span class="h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center font-semibold">IM</span>
+              <span class="hidden md:inline">Inocencio Mateus</span>
+              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+
+            <div id="accountMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Perfil</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Configurações</a>
+              <button data-action="logout" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Terminar Sessão</button>
+            </div>
+          </div>
+        </header>
+
+        <!-- ESTATÍSTICAS -->
+        <section id="minhas-turmasSection">
+          <section class="grid md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-gray-500">Turmas</h3>
+              <p class="text-3xl font-bold text-primary">3</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-gray-500">Alunos</h3>
+              <p class="text-3xl font-bold text-primary">95</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-gray-500">Reuniões Marcadas</h3>
+              <p class="text-3xl font-bold text-primary">4</p>
+            </div>
+          </section>
+        </section>
+
+        <!-- LANÇAR NOTAS -->
+        <section id="lancar-notasSection" class="hidden">
+          <div class="space-y-6">
+            <!-- HEADER -->
+            <div>
+              <h2 class="text-2xl font-bold text-gray-800">Registar Notas</h2>
+              <p class="text-gray-600 text-sm mt-1">
+                Envie as notas dos alunos aos encarregados de educação
+              </p>
+            </div>
+
+            <!-- FORMULÁRIO REGISTAR NOTA -->
+            <div class="bg-white rounded-xl shadow p-6">
+              <h3 class="text-lg font-bold mb-4">Adicionar Nota</h3>
+              
+              <form id="registarNotaForm" class="space-y-4">
+                <!-- Número de Matrícula -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-800 mb-2">Número de Matrícula *</label>
+                  <input type="text" id="matriculaAlunoInput" placeholder="Ex: 2024001" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" required />
+                </div>
+
+                <!-- Aluno (Seleção) -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-800 mb-2">Selecione o Aluno *</label>
+                  <select id="selectAluno" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" required>
+                    <option value="">Escolher...</option>
+                    <option value="aluno-1|joao-silva|3.1|A|Turma A">João Silva</option>
+                    <option value="aluno-2|maria-santos|3.1|B|Turma B">Maria Santos</option>
+                    <option value="aluno-3|pedro-oliveira|3.2|A|Turma C">Pedro Oliveira</option>
+                    <option value="aluno-4|ana-costa|3.2|B|Turma D">Ana Costa</option>
+                    <option value="aluno-5|carlos-gomes|3.1|A|Turma A">Carlos Gomes</option>
+                  </select>
+                </div>
+
+                <!-- Informações do Aluno (preenchidas automaticamente) -->
+                <div class="grid md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg">
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Curso</label>
+                    <input type="text" id="cursoAluno" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white" readonly />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Classe</label>
+                    <input type="text" id="classeAluno" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white" readonly />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Turma</label>
+                    <input type="text" id="turmaAluno" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white" readonly />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Encarregado</label>
+                    <input type="text" id="encarregadoAluno" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white" readonly />
+                  </div>
+                </div>
+
+                <!-- Disciplina -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-800 mb-2">Disciplina *</label>
+                  <select id="disciplinaAluno" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" required>
+                    <option value="">Escolher...</option>
+                    <option value="Matemática">Matemática</option>
+                    <option value="Português">Português</option>
+                    <option value="Ciências">Ciências</option>
+                    <option value="Inglês">Inglês</option>
+                    <option value="História">História</option>
+                    <option value="Geografia">Geografia</option>
+                  </select>
+                </div>
+
+                <!-- Nota -->
+                <div class="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">Nota (0-20) *</label>
+                    <input type="number" id="notaAluno" min="0" max="20" step="0.5" placeholder="Ex: 15.5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" required />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">Tipo de Avaliação *</label>
+                    <select id="tipoAvaliacao" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" required>
+                      <option value="">Escolher...</option>
+                      <option value="Teste">Teste</option>
+                      <option value="Trabalho">Trabalho</option>
+                      <option value="Participação">Participação</option>
+                      <option value="Exame">Exame</option>
+                      <option value="Projeto">Projeto</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Observações -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-800 mb-2">Observações</label>
+                  <textarea id="observacoesNota" rows="2" placeholder="Notas adicionais sobre o desempenho..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"></textarea>
+                </div>
+
+                <!-- Botão Guardar -->
+                <button type="submit" class="w-full bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition font-semibold">
+                  <i class="fas fa-save mr-2"></i>Guardar e Enviar
+                </button>
+              </form>
+            </div>
+
+            <!-- TABELA DE NOTAS ENVIADAS -->
+            <div class="bg-white rounded-xl shadow p-6">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold">Notas Registadas</h3>
+                <div class="flex gap-2">
+                  <input type="text" id="searchNotas" placeholder="Pesquisar..." class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
+                  <button onclick="exportarNotas()" class="bg-accent text-gray-900 px-4 py-2 rounded-lg hover:bg-yellow-400 transition font-semibold">
+                    <i class="fas fa-download mr-2"></i>Exportar
+                  </button>
+                </div>
+              </div>
+
+              <!-- Filtros -->
+              <div class="flex gap-2 mb-4 flex-wrap">
+                <button onclick="filtrarNotas('todas')" class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-secondary transition">
+                  Todas
+                </button>
+                <button onclick="filtrarNotas('Matemática')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition">
+                  Matemática
+                </button>
+                <button onclick="filtrarNotas('Português')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition">
+                  Português
+                </button>
+                <button onclick="filtrarNotas('Ciências')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition">
+                  Ciências
+                </button>
+              </div>
+
+              <!-- Tabela -->
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b-2 border-gray-300 bg-gray-50">
+                      <th class="p-3 text-left font-semibold text-gray-700">Data</th>
+                      <th class="p-3 text-left font-semibold text-gray-700">Aluno</th>
+                      <th class="p-3 text-left font-semibold text-gray-700">Matrícula</th>
+                      <th class="p-3 text-left font-semibold text-gray-700">Encarregado</th>
+                      <th class="p-3 text-left font-semibold text-gray-700">Curso</th>
+                      <th class="p-3 text-left font-semibold text-gray-700">Classe</th>
+                      <th class="p-3 text-left font-semibold text-gray-700">Turma</th>
+                      <th class="p-3 text-left font-semibold text-gray-700">Disciplina</th>
+                      <th class="p-3 text-left font-semibold text-gray-700">Tipo</th>
+                      <th class="p-3 text-center font-semibold text-gray-700">Nota</th>
+                      <th class="p-3 text-center font-semibold text-gray-700">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabelaNotas">
+                    <tr>
+                      <td colspan="10" class="p-8 text-center text-gray-500">
+                        Nenhuma nota registada ainda
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- MODAL EDITAR NOTA -->
+            <div id="editarNotaModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+              <div class="bg-white rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                  <h3 class="text-2xl font-bold text-gray-900">Editar Nota</h3>
+                  <button onclick="fecharEditarNotaModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-2xl"></i>
+                  </button>
+                </div>
+
+                <form id="editarNotaForm" class="space-y-4">
+                  <!-- Aluno (somente leitura) -->
+                  <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">Aluno</label>
+                    <input type="text" id="editAlunoNome" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50" readonly />
+                  </div>
+
+                  <!-- Informações do Aluno -->
+                  <div class="grid md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg">
+                    <div>
+                      <label class="block text-xs font-semibold text-gray-600 mb-1">Curso</label>
+                      <input type="text" id="editCursoAluno" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white" readonly />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold text-gray-600 mb-1">Classe</label>
+                      <input type="text" id="editClasseAluno" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white" readonly />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold text-gray-600 mb-1">Turma</label>
+                      <input type="text" id="editTurmaAluno" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white" readonly />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold text-gray-600 mb-1">Encarregado</label>
+                      <input type="text" id="editEncarregadoAluno" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white" readonly />
+                    </div>
+                  </div>
+
+                  <!-- Disciplina -->
+                  <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">Disciplina *</label>
+                    <select id="editDisciplinaAluno" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" required>
+                      <option value="">Escolher...</option>
+                      <option value="Matemática">Matemática</option>
+                      <option value="Português">Português</option>
+                      <option value="Ciências">Ciências</option>
+                      <option value="Inglês">Inglês</option>
+                      <option value="História">História</option>
+                      <option value="Geografia">Geografia</option>
+                    </select>
+                  </div>
+
+                  <!-- Nota -->
+                  <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-semibold text-gray-800 mb-2">Nota (0-20) *</label>
+                      <input type="number" id="editNotaAluno" min="0" max="20" step="0.5" placeholder="Ex: 15.5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" required />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-semibold text-gray-800 mb-2">Tipo de Avaliação *</label>
+                      <select id="editTipoAvaliacao" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" required>
+                        <option value="">Escolher...</option>
+                        <option value="Teste">Teste</option>
+                        <option value="Trabalho">Trabalho</option>
+                        <option value="Participação">Participação</option>
+                        <option value="Exame">Exame</option>
+                        <option value="Projeto">Projeto</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Observações -->
+                  <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">Observações</label>
+                    <textarea id="editObservacoesNota" rows="2" placeholder="Notas adicionais sobre o desempenho..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"></textarea>
+                  </div>
+
+                  <!-- Botões -->
+                  <div class="flex gap-3 pt-4 border-t">
+                    <button type="button" onclick="fecharEditarNotaModal()" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-semibold">
+                      Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition font-semibold">
+                      <i class="fas fa-save mr-2"></i>Guardar Alterações
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- MENSAGENS -->
+        <section id="mensagensSection" class="hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- SIDEBAR CONVERSAS -->
+            <div class="lg:col-span-1 bg-white rounded-xl shadow">
+              <div class="p-4 border-b border-gray-200">
+                <input
+                  type="text"
+                  id="searchChat"
+                  placeholder="Pesquisar..."
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+
+              <div class="p-4 border-b border-gray-200">
+                <button
+                  onclick="openNewChatModal()"
+                  class="w-full bg-primary text-white py-2 rounded-lg hover:bg-secondary transition"
+                >
+                  <i class="fas fa-plus mr-2"></i>Nova Conversa
+                </button>
+              </div>
+
+              <div id="conversasList" class="overflow-y-auto max-h-96">
+                <!-- Conversas dinâmicas aqui -->
+              </div>
+            </div>
+
+            <!-- ÁREA DO CHAT -->
+            <div
+              class="lg:col-span-3 bg-white rounded-xl shadow flex flex-col h-96 lg:h-auto"
+            >
+              <!-- CABEÇALHO -->
+              <div
+                id="chatHeader"
+                class="bg-gradient-to-r from-primary to-secondary text-white p-4 rounded-t-xl hidden"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-3">
+                    <img
+                      id="chatAvatar"
+                      src=""
+                      alt="Avatar"
+                      class="h-10 w-10 rounded-full border-2 border-white"
+                    />
+                    <div>
+                      <h3 id="chatNome" class="font-semibold"></h3>
+                      <p id="chatStatus" class="text-sm opacity-80"></p>
+                    </div>
+                  </div>
+                  <div class="flex space-x-2">
+                    <button
+                      class="p-2 hover:bg-opacity-20 hover:bg-white rounded-lg transition"
+                    >
+                      <i class="fas fa-phone"></i>
+                    </button>
+                    <button
+                      class="p-2 hover:bg-opacity-20 hover:bg-white rounded-lg transition"
+                    >
+                      <i class="fas fa-video"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- MENSAGENS -->
+              <div
+                id="messagesArea"
+                class="flex-1 overflow-y-auto p-4 bg-gray-50"
+              >
+                <div
+                  id="emptyChat"
+                  class="h-full flex flex-col items-center justify-center text-center"
+                >
+                  <i class="fas fa-comments text-5xl text-gray-300 mb-3"></i>
+                  <h3 class="text-gray-600 font-semibold">
+                    Selecione uma conversa
+                  </h3>
+                  <p class="text-gray-400 text-sm">ou inicie uma nova</p>
+                </div>
+                <div id="messagesContainer" class="hidden space-y-3"></div>
+              </div>
+
+              <!-- INPUT -->
+              <div id="inputArea" class="border-t border-gray-200 p-4 hidden">
+                <div class="flex items-end space-x-2">
+                  <button
+                    class="p-2 text-gray-600 hover:text-primary hover:bg-gray-100 rounded-lg transition"
+                  >
+                    <i class="fas fa-paperclip text-lg"></i>
+                  </button>
+                  <textarea
+                    id="messageInput"
+                    rows="1"
+                    placeholder="Escrever mensagem..."
+                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none max-h-24"
+                  ></textarea>
+                  <button
+                    onclick="enviarMensagem()"
+                    class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition"
+                  >
+                    <i class="fas fa-paper-plane"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MODAL NOVA CONVERSA -->
+          <div
+            id="newChatModal"
+            class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+          >
+            <div class="bg-white rounded-xl max-w-md w-full p-6">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-900">Nova Conversa</h3>
+                <button
+                  onclick="fecharNewChatModal()"
+                  class="text-gray-400 hover:text-gray-600"
+                >
+                  <i class="fas fa-times text-xl"></i>
+                </button>
+              </div>
+
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >Destinatário</label
+                  >
+                  <select
+                    id="destinatarioSelect"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="">Selecionar...</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >Assunto</label
+                  >
+                  <input
+                    type="text"
+                    id="assuntoInput"
+                    placeholder="Assunto da conversa..."
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >Mensagem</label
+                  >
+                  <textarea
+                    id="firstMessageInput"
+                    rows="4"
+                    placeholder="Escrever primeira mensagem..."
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                  ></textarea>
+                </div>
+
+                <div class="flex space-x-3">
+                  <button
+                    onclick="fecharNewChatModal()"
+                    class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onclick="criarNovaConversa()"
+                    class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition"
+                  >
+                    Iniciar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- REUNIÃO -->
+        <section id="reuniaoSection" class="hidden">
+          <div class="space-y-6">
+            <!-- HEADER -->
+            <div class="flex justify-between items-center">
+              <div>
+                <h2 class="text-2xl font-bold text-gray-800">Reuniões Agendadas</h2>
+                <p class="text-gray-600 text-sm mt-1">
+                  Gerencie e acompanhe suas reuniões
+                </p>
+              </div>
+              <button
+                onclick="openAgendarReuniaoModal()"
+                class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-secondary transition font-semibold"
+              >
+                + Nova Reunião
+              </button>
+            </div>
+
+            <!-- STATS -->
+            <div class="grid grid-cols-3 gap-4">
+              <div class="bg-white p-4 rounded-xl shadow">
+                <p class="text-gray-600 text-sm">Total Agendadas</p>
+                <p class="text-3xl font-bold text-primary mt-2">3</p>
+              </div>
+              <div class="bg-white p-4 rounded-xl shadow">
+                <p class="text-gray-600 text-sm">Próximas</p>
+                <p class="text-3xl font-bold text-accent mt-2">1</p>
+              </div>
+              <div class="bg-white p-4 rounded-xl shadow">
+                <p class="text-gray-600 text-sm">Concluídas</p>
+                <p class="text-3xl font-bold text-green-600 mt-2">2</p>
+              </div>
+            </div>
+
+            <!-- FILTROS -->
+            <div class="flex gap-2 flex-wrap">
+              <button
+                class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium"
+              >
+                Todas
+              </button>
+              <button
+                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition"
+              >
+                Online
+              </button>
+              <button
+                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition"
+              >
+                Presencial
+              </button>
+              <button
+                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition"
+              >
+                Próximas
+              </button>
+            </div>
+
+            <!-- LISTA DE REUNIÕES -->
+            <div class="space-y-4">
+              <!-- REUNIÃO 1 - PRÓXIMA -->
+              <div
+                class="bg-white rounded-xl shadow-md p-6 border-l-4 border-accent hover:shadow-lg transition"
+              >
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-12 h-12 bg-accent rounded-lg flex items-center justify-center"
+                    >
+                      <i class="fas fa-video text-white text-lg"></i>
+                    </div>
+                    <div>
+                      <h3 class="text-lg font-bold text-gray-800">
+                        Enc. Ed. João Oliveira
+                      </h3>
+                      <p class="text-sm text-gray-600">Encarregado de Educação</p>
+                    </div>
+                  </div>
+                  <span
+                    class="bg-accent text-gray-900 px-3 py-1 rounded-full text-xs font-semibold"
+                    >Online</span
+                  >
+                </div>
+
+                <div class="space-y-2 mb-4">
+                  <div class="flex items-center text-gray-700">
+                    <i class="fas fa-calendar-alt text-primary mr-3 w-5"></i>
+                    <span class="text-sm"
+                      >18 de Fevereiro de 2026 • 10:00 - 10:30</span
+                    >
+                  </div>
+                  <div class="flex items-center text-gray-700">
+                    <i class="fas fa-clock text-primary mr-3 w-5"></i>
+                    <span class="text-sm">Duração: 30 minutos</span>
+                  </div>
+                  <div class="flex items-center text-gray-700">
+                    <i class="fas fa-lightbulb text-primary mr-3 w-5"></i>
+                    <span class="text-sm"
+                      >Assunto: Discussão sobre desempenho académico</span
+                    >
+                  </div>
+                </div>
+
+                <div class="bg-gray-50 p-3 rounded-lg mb-4">
+                  <p class="text-xs text-gray-600 font-semibold mb-2">
+                    Áreas a discutir:
+                  </p>
+                  <p class="text-sm text-gray-700">
+                    Melhorar notas em geometria, revisar conceitos de álgebra
+                  </p>
+                </div>
+
+                <div class="flex gap-2">
+                  <button
+                    class="flex-1 bg-primary text-white py-2 rounded-lg hover:bg-secondary transition font-semibold text-sm"
+                  >
+                    <i class="fas fa-video mr-2"></i>Entrar na Reunião
+                  </button>
+                  <button
+                    class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium"
+                  >
+                    <i class="fas fa-edit mr-2"></i>Editar
+                  </button>
+                  <button
+                    class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition text-sm font-medium"
+                  >
+                    <i class="fas fa-trash mr-2"></i>Cancelar
+                  </button>
+                </div>
+              </div>
+
+              <!-- REUNIÃO 2 -->
+              <div
+                class="bg-white rounded-xl shadow-md p-6 border-l-4 border-orange-400 hover:shadow-lg transition"
+              >
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-12 h-12 bg-orange-400 rounded-lg flex items-center justify-center"
+                    >
+                      <i class="fas fa-building text-white text-lg"></i>
+                    </div>
+                    <div>
+                      <h3 class="text-lg font-bold text-gray-800">
+                        Enc. Ed. Maria Santos
+                      </h3>
+                      <p class="text-sm text-gray-600">Encarregado de Educação</p>
+                    </div>
+                  </div>
+                  <span
+                    class="bg-orange-400 text-white px-3 py-1 rounded-full text-xs font-semibold"
+                    >Presencial</span
+                  >
+                </div>
+
+                <div class="space-y-2 mb-4">
+                  <div class="flex items-center text-gray-700">
+                    <i class="fas fa-calendar-alt text-primary mr-3 w-5"></i>
+                    <span class="text-sm"
+                      >20 de Fevereiro de 2026 • 14:00 - 14:45</span
+                    >
+                  </div>
+                  <div class="flex items-center text-gray-700">
+                    <i class="fas fa-clock text-primary mr-3 w-5"></i>
+                    <span class="text-sm">Duração: 45 minutos</span>
+                  </div>
+                  <div class="flex items-center text-gray-700">
+                    <i class="fas fa-map-marker-alt text-primary mr-3 w-5"></i>
+                    <span class="text-sm">Sala: 12-A (Bloco B)</span>
+                  </div>
+                  <div class="flex items-center text-gray-700">
+                    <i class="fas fa-lightbulb text-primary mr-3 w-5"></i>
+                    <span class="text-sm">Assunto: Avaliação de desempenho</span>
+                  </div>
+                </div>
+
+                <div class="bg-gray-50 p-3 rounded-lg mb-4">
+                  <p class="text-xs text-gray-600 font-semibold mb-2">
+                    Áreas a discutir:
+                  </p>
+                  <p class="text-sm text-gray-700">
+                    Qualidade das redações, técnicas de escrita, leitura crítica
+                  </p>
+                </div>
+
+                <div class="flex gap-2">
+                  <button
+                    class="flex-1 bg-primary text-white py-2 rounded-lg hover:bg-secondary transition font-semibold text-sm"
+                  >
+                    <i class="fas fa-directions mr-2"></i>Ver Localização
+                  </button>
+                  <button
+                    class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium"
+                  >
+                    <i class="fas fa-edit mr-2"></i>Editar
+                  </button>
+                  <button
+                    class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition text-sm font-medium"
+                  >
+                    <i class="fas fa-trash mr-2"></i>Cancelar
+                  </button>
+                </div>
+              </div>
+
+              <!-- REUNIÃO 3 -->
+              <div
+                class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500 opacity-75 hover:shadow-lg transition"
+              >
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center"
+                    >
+                      <i class="fas fa-check text-white text-lg"></i>
+                    </div>
+                    <div>
+                      <h3 class="text-lg font-bold text-gray-800">
+                        Enc. Ed. Pedro Gomes
+                      </h3>
+                      <p class="text-sm text-gray-600">Encarregado de Educação</p>
+                    </div>
+                  </div>
+                  <span
+                    class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold"
+                    >Concluída</span
+                  >
+                </div>
+
+                <div class="space-y-2 mb-4">
+                  <div class="flex items-center text-gray-700">
+                    <i class="fas fa-calendar-alt text-primary mr-3 w-5"></i>
+                    <span class="text-sm"
+                      >15 de Fevereiro de 2026 • 11:00 - 11:30</span
+                    >
+                  </div>
+                  <div class="flex items-center text-gray-700">
+                    <i class="fas fa-lightbulb text-primary mr-3 w-5"></i>
+                    <span class="text-sm"
+                      >Assunto: Progresso académico geral</span
+                    >
+                  </div>
+                </div>
+
+                <div
+                  class="bg-green-50 p-3 rounded-lg mb-4 border border-green-200"
+                >
+                  <p class="text-xs text-green-700 font-semibold mb-2">
+                    <i class="fas fa-star mr-2"></i>Feedback:
+                  </p>
+                  <p class="text-sm text-green-800">
+                    Excelente desempenho! Aluno muito dedicado.
+                  </p>
+                </div>
+
+                <div class="flex gap-2">
+                  <button
+                    class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition font-semibold text-sm"
+                    disabled
+                  >
+                    <i class="fas fa-history mr-2"></i>Reunião Concluída
+                  </button>
+                  <button
+                    class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium"
+                  >
+                    <i class="fas fa-eye mr-2"></i>Ver Detalhes
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MODAL AGENDAR REUNIÃO -->
+          <div
+            id="agendarReuniaoModal"
+            class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+          >
+            <div
+              class="bg-white rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto"
+            >
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-900">
+                  Agendar Nova Reunião
+                </h3>
+                <button
+                  onclick="fecharAgendarReuniaoModal()"
+                  class="text-gray-400 hover:text-gray-600"
+                >
+                  <i class="fas fa-times text-2xl"></i>
+                </button>
+              </div>
+
+              <form id="agendarReuniaoForm" class="space-y-5">
+                <!-- Tipo de Contacto -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-800 mb-2"
+                    >Com Quem? *</label
+                  >
+                  <div class="grid grid-cols-2 gap-3">
+                    <label
+                      class="flex items-center p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-primary transition"
+                    >
+                      <input
+                        type="radio"
+                        name="tipoContacto"
+                        value="encarregado"
+                        class="mr-3"
+                        checked
+                      />
+                      <div>
+                        <p class="font-semibold text-gray-800">Encarregado de Educação</p>
+                        <p class="text-xs text-gray-600">Responsável do aluno</p>
+                      </div>
+                    </label>
+                    <label
+                      class="flex items-center p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-primary transition"
+                    >
+                      <input
+                        type="radio"
+                        name="tipoContacto"
+                        value="professor"
+                        class="mr-3"
+                      />
+                      <div>
+                        <p class="font-semibold text-gray-800">Outro Professor</p>
+                        <p class="text-xs text-gray-600">Coordenação</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Seleção Encarregado/Professor -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-800 mb-2"
+                    >Selecione o Encarregado de Educação *</label
+                  >
+                  <select
+                    id="selectContacto"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    required
+                  >
+                    <option value="">Escolher...</option>
+                    <option value="joao-oliveira">
+                      Enc. Ed. João Oliveira
+                    </option>
+                    <option value="maria-santos">
+                      Enc. Ed. Maria Santos
+                    </option>
+                    <option value="pedro-gomes">
+                      Enc. Ed. Pedro Gomes
+                    </option>
+                    <option value="ana-costa">
+                      Enc. Ed. Ana Costa
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Tipo -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-800 mb-2"
+                    >Tipo de Reunião *</label
+                  >
+                  <div class="grid grid-cols-2 gap-3">
+                    <label
+                      class="flex items-center p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-primary transition"
+                    >
+                      <input
+                        type="radio"
+                        name="tipo"
+                        value="online"
+                        class="mr-3"
+                        checked
+                      />
+                      <div>
+                        <p class="font-semibold text-gray-800">Online</p>
+                        <p class="text-xs text-gray-600">Videoconferência</p>
+                      </div>
+                    </label>
+                    <label
+                      class="flex items-center p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-primary transition"
+                    >
+                      <input
+                        type="radio"
+                        name="tipo"
+                        value="presencial"
+                        class="mr-3"
+                      />
+                      <div>
+                        <p class="font-semibold text-gray-800">Presencial</p>
+                        <p class="text-xs text-gray-600">Na escola</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Data e Hora -->
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2"
+                      >Data *</label
+                    >
+                    <input
+                      type="date"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2"
+                      >Hora *</label
+                    >
+                    <input
+                      type="time"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <!-- Duração -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-800 mb-2"
+                    >Duração *</label
+                  >
+                  <select
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    required
+                  >
+                    <option value="15">15 minutos</option>
+                    <option value="30" selected>30 minutos</option>
+                    <option value="45">45 minutos</option>
+                    <option value="60">1 hora</option>
+                  </select>
+                </div>
+
+                <!-- Assunto -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-800 mb-2"
+                    >Assunto *</label
+                  >
+                  <input
+                    type="text"
+                    placeholder="Ex: Discussão sobre desempenho académico"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    required
+                  />
+                </div>
+
+                <!-- Áreas a discutir -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-800 mb-2"
+                    >Áreas a Discutir</label
+                  >
+                  <textarea
+                    rows="3"
+                    placeholder="Escreva os tópicos específicos..."
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                  ></textarea>
+                </div>
+
+                <!-- Checkbox Lembrete -->
+                <label class="flex items-center cursor-pointer">
+                  <input type="checkbox" class="w-4 h-4 text-primary" checked />
+                  <span class="ml-2 text-sm text-gray-700"
+                    >Enviar lembrete por e-mail 24h antes</span
+                  >
+                </label>
+
+                <!-- Botões -->
+                <div class="flex gap-3 pt-4 border-t">
+                  <button
+                    type="button"
+                    onclick="fecharAgendarReuniaoModal()"
+                    class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-semibold"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition font-semibold"
+                  >
+                    Agendar Reunião
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // ===== GESTÃO DE NOTAS =====
+      let notasArray = [];
+      let filtroAtualNotas = "todas";
+      let notaEmEdicao = null;
+
+      // Dados dos alunos
+      const alunosData = {
+        "aluno-1|joao-silva|3.1|A|Turma A": {
+          nome: "João Silva",
+          curso: "3.1",
+          classe: "A",
+          turma: "Turma A",
+          encarregado: "Enc. Ed. João Oliveira"
+        },
+        "aluno-2|maria-santos|3.1|B|Turma B": {
+          nome: "Maria Santos",
+          curso: "3.1",
+          classe: "B",
+          turma: "Turma B",
+          encarregado: "Enc. Ed. Maria Santos"
+        },
+        "aluno-3|pedro-oliveira|3.2|A|Turma C": {
+          nome: "Pedro Oliveira",
+          curso: "3.2",
+          classe: "A",
+          turma: "Turma C",
+          encarregado: "Enc. Ed. Pedro Gomes"
+        },
+        "aluno-4|ana-costa|3.2|B|Turma D": {
+          nome: "Ana Costa",
+          curso: "3.2",
+          classe: "B",
+          turma: "Turma D",
+          encarregado: "Enc. Ed. Ana Costa"
+        },
+        "aluno-5|carlos-gomes|3.1|A|Turma A": {
+          nome: "Carlos Gomes",
+          curso: "3.1",
+          classe: "A",
+          turma: "Turma A",
+          encarregado: "Enc. Ed. João Oliveira"
+        }
+      };
+
+      // Atualizar informações do aluno quando selecionado
+      document.getElementById("selectAluno").addEventListener("change", function() {
+        const selectValue = this.value;
+        if (selectValue && alunosData[selectValue]) {
+          const aluno = alunosData[selectValue];
+          document.getElementById("cursoAluno").value = aluno.curso;
+          document.getElementById("classeAluno").value = aluno.classe;
+          document.getElementById("turmaAluno").value = aluno.turma;
+          document.getElementById("encarregadoAluno").value = aluno.encarregado;
+        } else {
+          document.getElementById("cursoAluno").value = "";
+          document.getElementById("classeAluno").value = "";
+          document.getElementById("turmaAluno").value = "";
+          document.getElementById("encarregadoAluno").value = "";
+        }
+      });
+
+      // Submeter formulário de nota
+      document.getElementById("registarNotaForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const matriculaAlunoInput = document.getElementById("matriculaAlunoInput").value.trim();
+        const selectValue = document.getElementById("selectAluno").value;
+        const aluno = alunosData[selectValue];
+        const disciplina = document.getElementById("disciplinaAluno").value;
+        const nota = document.getElementById("notaAluno").value;
+        const tipoAvaliacao = document.getElementById("tipoAvaliacao").value;
+        const observacoes = document.getElementById("observacoesNota").value;
+
+        if (!matriculaAlunoInput) {
+          alert("Por favor, preencha o número de matrícula!");
+          return;
+        }
+
+        if (!selectValue || !disciplina || !nota || !tipoAvaliacao) {
+          alert("Por favor, preencha todos os campos obrigatórios!");
+          return;
+        }
+
+        const novaNotaObj = {
+          id: Date.now(),
+          data: new Date().toLocaleDateString("pt-PT"),
+          matricula: matriculaAlunoInput,
+          aluno: aluno.nome,
+          encarregado: aluno.encarregado,
+          curso: aluno.curso,
+          classe: aluno.classe,
+          turma: aluno.turma,
+          disciplina: disciplina,
+          tipo: tipoAvaliacao,
+          nota: nota,
+          observacoes: observacoes,
+          status: "Enviada"
+        };
+
+        notasArray.push(novaNotaObj);
+        atualizarTabelaNotas();
+        this.reset();
+        document.getElementById("cursoAluno").value = "";
+        document.getElementById("classeAluno").value = "";
+        document.getElementById("turmaAluno").value = "";
+        document.getElementById("encarregadoAluno").value = "";
+
+        // Mostrar mensagem de sucesso
+        alert("Nota registada e enviada ao encarregado com sucesso!");
+      });
+
+      function atualizarTabelaNotas() {
+        const tabelaNotas = document.getElementById("tabelaNotas");
+        let notasFiltradas = notasArray;
+
+        if (filtroAtualNotas !== "todas") {
+          notasFiltradas = notasArray.filter(n => n.disciplina === filtroAtualNotas);
+        }
+
+        // Pesquisa
+        const searchValue = document.getElementById("searchNotas").value.toLowerCase();
+        if (searchValue) {
+          notasFiltradas = notasFiltradas.filter(n => 
+            n.aluno.toLowerCase().includes(searchValue) ||
+            n.disciplina.toLowerCase().includes(searchValue) ||
+            n.turma.toLowerCase().includes(searchValue)
+          );
+        }
+
+        if (notasFiltradas.length === 0) {
+          tabelaNotas.innerHTML = '<tr><td colspan="11" class="p-8 text-center text-gray-500">Nenhuma nota encontrada</td></tr>';
+          return;
+        }
+
+        tabelaNotas.innerHTML = notasFiltradas.map(nota => {
+          const notaNumero = parseFloat(nota.nota);
+          let corNota = "text-gray-700";
+          if (notaNumero >= 15) corNota = "text-green-600 font-semibold";
+          else if (notaNumero >= 10) corNota = "text-blue-600 font-semibold";
+          else corNota = "text-red-600 font-semibold";
+
+          return `
+            <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
+              <td class="p-3 text-gray-700">${nota.data}</td>
+              <td class="p-3 font-semibold text-gray-800">${nota.aluno}</td>
+              <td class="p-3 text-gray-700">${nota.matricula}</td>
+              <td class="p-3 text-gray-700">${nota.encarregado}</td>
+              <td class="p-3 text-gray-700">${nota.curso}</td>
+              <td class="p-3 text-gray-700">${nota.classe}</td>
+              <td class="p-3 text-gray-700">${nota.turma}</td>
+              <td class="p-3 font-semibold text-primary">${nota.disciplina}</td>
+              <td class="p-3 text-gray-700">
+                <span class="px-2 py-1 bg-gray-200 text-gray-800 rounded text-xs font-semibold">${nota.tipo}</span>
+              </td>
+              <td class="p-3 text-center ${corNota}">${nota.nota}</td>
+              <td class="p-3 text-center">
+                <div class="flex items-center justify-center gap-2">
+                  <button onclick="editarNota(${nota.id})" title="Editar" class="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-sm transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button onclick="removerNota(${nota.id})" title="Eliminar" class="flex items-center justify-center bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-sm transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      function editarNota(id) {
+        const nota = notasArray.find(n => n.id === id);
+        if (!nota) return;
+
+        notaEmEdicao = id;
+
+        // Preencher o formulário de edição
+        document.getElementById("editAlunoNome").value = nota.aluno;
+        document.getElementById("editCursoAluno").value = nota.curso;
+        document.getElementById("editClasseAluno").value = nota.classe;
+        document.getElementById("editTurmaAluno").value = nota.turma;
+        document.getElementById("editEncarregadoAluno").value = nota.encarregado;
+        document.getElementById("editDisciplinaAluno").value = nota.disciplina;
+        document.getElementById("editNotaAluno").value = nota.nota;
+        document.getElementById("editTipoAvaliacao").value = nota.tipo;
+        document.getElementById("editObservacoesNota").value = nota.observacoes;
+
+        // Mostrar modal
+        document.getElementById("editarNotaModal").classList.remove("hidden");
+      }
+
+      function fecharEditarNotaModal() {
+        document.getElementById("editarNotaModal").classList.add("hidden");
+        notaEmEdicao = null;
+      }
+
+      // Submeter formulário de edição
+      document.getElementById("editarNotaForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        if (!notaEmEdicao) return;
+
+        const notaIndex = notasArray.findIndex(n => n.id === notaEmEdicao);
+        if (notaIndex === -1) return;
+
+        const disciplina = document.getElementById("editDisciplinaAluno").value;
+        const nota = document.getElementById("editNotaAluno").value;
+        const tipoAvaliacao = document.getElementById("editTipoAvaliacao").value;
+        const observacoes = document.getElementById("editObservacoesNota").value;
+
+        if (!disciplina || !nota || !tipoAvaliacao) {
+          alert("Por favor, preencha todos os campos obrigatórios!");
+          return;
+        }
+
+        // Atualizar a nota
+        notasArray[notaIndex].disciplina = disciplina;
+        notasArray[notaIndex].nota = nota;
+        notasArray[notaIndex].tipo = tipoAvaliacao;
+        notasArray[notaIndex].observacoes = observacoes;
+
+        atualizarTabelaNotas();
+        fecharEditarNotaModal();
+
+        alert("Nota atualizada e enviada ao encarregado com sucesso!");
+      });
+
+      function removerNota(id) {
+        if (confirm("Tem a certeza que deseja remover esta nota?\nEsta ação é irreversível.")) {
+          notasArray = notasArray.filter(n => n.id !== id);
+          atualizarTabelaNotas();
+          alert("Nota removida com sucesso!");
+        }
+      }
+
+      function filtrarNotas(filtro) {
+        filtroAtualNotas = filtro;
+        atualizarTabelaNotas();
+      }
+
+      function exportarNotas() {
+        if (notasArray.length === 0) {
+          alert("Não há notas para exportar!");
+          return;
+        }
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Data,Aluno,Encarregado,Curso,Classe,Turma,Disciplina,Tipo,Nota,Observações\n";
+
+        notasArray.forEach(nota => {
+          const row = [
+            nota.data,
+            nota.aluno,
+            nota.encarregado,
+            nota.curso,
+            nota.classe,
+            nota.turma,
+            nota.disciplina,
+            nota.tipo,
+            nota.nota,
+            nota.observacoes.replace(/,/g, ";")
+          ].join(",");
+          csvContent += row + "\n";
+        });
+
+        const link = document.createElement("a");
+        link.setAttribute("href", encodeURI(csvContent));
+        link.setAttribute("download", `notas_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      // Pesquisa de notas em tempo real
+      document.getElementById("searchNotas").addEventListener("keyup", function() {
+        atualizarTabelaNotas();
+      });
+
+      // ===== RESTO DO CÓDIGO =====
+      function showSection(sectionId) {
+        // Função para alternar seções
+        console.log("Mostrar seção:", sectionId);
+        const sections = document.querySelectorAll("main > section");
+        sections.forEach((section) => {
+          section.classList.add("hidden"); // Hide all sections
+        });
+        const selectedSection = document.getElementById(sectionId + "Section");
+        if (selectedSection) {
+          selectedSection.classList.remove("hidden"); // Show the selected section
+        } else {
+          console.error("Section not found:", sectionId);
+        }
+      }
+
+      function openNewChatModal() {
+        document.getElementById("newChatModal").classList.remove("hidden");
+      }
+
+      function fecharNewChatModal() {
+        document.getElementById("newChatModal").classList.add("hidden");
+      }
+
+      function criarNovaConversa() {
+        console.log("Nova conversa criada");
+        fecharNewChatModal();
+      }
+
+      function enviarMensagem() {
+        console.log("Mensagem enviada");
+      }
+
+      function openAgendarReuniaoModal() {
+        document.getElementById("agendarReuniaoModal").classList.remove("hidden");
+      }
+
+      function fecharAgendarReuniaoModal() {
+        document.getElementById("agendarReuniaoModal").classList.add("hidden");
+      }
+
+      // Alterar etiqueta ao selecionar tipo de contacto
+      document.addEventListener("DOMContentLoaded", function() {
+        const radioButtons = document.querySelectorAll("input[name='tipoContacto']");
+        const selectLabel = document.querySelector("label");
+
+        radioButtons.forEach(radio => {
+          radio.addEventListener("change", function() {
+            const selectLabelElement = document.getElementById("selectContacto").previousElementSibling;
+            if (this.value === "encarregado") {
+              selectLabelElement.textContent = "Selecione o Encarregado de Educação *";
+              // Atualizar opções para encarregados
+              const options = [
+                { value: "joao-oliveira", text: "Enc. Ed. João Oliveira" },
+                { value: "maria-santos", text: "Enc. Ed. Maria Santos" },
+                { value: "pedro-gomes", text: "Enc. Ed. Pedro Gomes" },
+                { value: "ana-costa", text: "Enc. Ed. Ana Costa" }
+              ];
+              updateSelectOptions(options);
+            } else if (this.value === "professor") {
+              selectLabelElement.textContent = "Selecione o Professor *";
+              // Atualizar opções para professores
+              const options = [
+                { value: "maria-silva", text: "Prof. Maria Silva - Matemática" },
+                { value: "joao-santos", text: "Prof. João Santos - Português" },
+                { value: "maria-costa", text: "Prof. Maria Costa - Ciências" },
+                { value: "luis-ferreira", text: "Prof. Luís Ferreira - Inglês" }
+              ];
+              updateSelectOptions(options);
+            }
+          });
+        });
+      });
+
+      function updateSelectOptions(options) {
+        const select = document.getElementById("selectContacto");
+        select.innerHTML = '<option value="">Escolher...</option>';
+        options.forEach(option => {
+          const opt = document.createElement("option");
+          opt.value = option.value;
+          opt.textContent = option.text;
+          select.appendChild(opt);
+        });
+      }
+
+      // Manipular submissão do formulário de reunião
+      document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById("agendarReuniaoForm");
+        if (form) {
+          form.addEventListener("submit", function(e) {
+            e.preventDefault();
+            console.log("Reunião agendada com sucesso!");
+            fecharAgendarReuniaoModal();
+            // Aqui você pode enviar os dados para um servidor
+          });
+        }
+      });
+
+      // Dropdown da conta (avatar + menu)
+      (function() {
+        const accountBtn = document.getElementById('accountButton');
+        const accountMenu = document.getElementById('accountMenu');
+        if (!accountBtn || !accountMenu) return;
+
+        accountBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const expanded = this.getAttribute('aria-expanded') === 'true';
+          this.setAttribute('aria-expanded', String(!expanded));
+          accountMenu.classList.toggle('hidden');
+        });
+
+        // Fechar ao clicar fora
+        document.addEventListener('click', function() {
+          if (!accountMenu.classList.contains('hidden')) {
+            accountMenu.classList.add('hidden');
+            accountBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        // Ação de terminar sessão (exemplo)
+        const logoutBtn = accountMenu.querySelector('button[data-action="logout"]');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'login.html';
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

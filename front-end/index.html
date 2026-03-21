@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title> SchoolConnect</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Icone da Aba do Navegador-->
+    <link rel="icon" href="../img/logo.png" type="image/png" />
+
+    <!-- Configuração das cores personalizadas -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#15803D", // verde principal
+              secondary: "#16A34A", // verde secundário
+              accent: "#FACC15", // amarelo destaque
+              light: "#F3F4F6",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-light text-gray-800">
+
+    <!-- NAVBAR -->
+    <nav class="bg-white shadow-md">
+      <div
+        class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center"
+      >
+        <div class="flex items-center gap-3">
+          <img src="../img/logo.png" alt="Logo" class="h-12" />
+          <h1 class="text-xl font-bold text-primary">
+            SchoolConnect
+          </h1>
+        </div>
+
+        <a
+          href="login.html"
+          class="bg-primary text-white px-5 py-2 rounded-lg hover:bg-secondary hover:-translate-y-1 transition-all duration-200"
+        >
+          Entrar
+        </a>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+
+    <section
+      class="relative bg-cover bg-center text-white"
+      style="background-image: url(&quot;../img/background.png&quot;)"
+    >
+      <!-- Overlay -->
+      <div class="absolute inset-0"></div>
+
+      <!-- Conteúdo -->
+      <div class="relative max-w-4xl mx-auto px-6 py-32 text-center">
+        <h2 class="text-4xl md:text-5xl font-bold mb-6">
+          Aproximando a Escola da Família
+        </h2>
+
+        <p class="text-lg mb-8">
+          Uma plataforma digital que permite acompanhar o desempenho dos alunos,
+          receber avisos importantes e comunicar diretamente com os professores.
+        </p>
+
+        <a
+          href="registro.html"
+          class="bg-accent text-black font-semibold px-8 py-3 rounded-lg hover:scale-105 transition"
+        >
+          Criar Conta
+        </a>
+      </div>
+    </section>
+
+    <!-- NOTÍCIAS / INFORMAÇÕES -->
+    <section class="py-20 bg-light">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+        <h3 class="text-3xl font-bold text-primary mb-12">
+          Notícias 
+        </h3>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- NOTÍCIA 1 -->
+          <div
+            class="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden"
+          >
+            <img
+              src="assets/noticia1.jpg"
+              alt="Notícia"
+              class="w-full h-48 object-cover"
+            />
+
+            <div class="p-6">
+              <h4 class="text-xl font-bold text-secondary mb-3">
+                Início do Ano Lectivo
+              </h4>
+
+              <p class="text-gray-600 mb-4">
+                Informamos aos encarregados de educação que o novo ano lectivo
+                terá início no dia 10 de Março.
+              </p>
+            </div>
+          </div>
+
+          <!-- NOTÍCIA 2 -->
+          <div
+            class="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden"
+          >
+            <img
+              src="assets/noticia2.jpg"
+              alt="Notícia"
+              class="w-full h-48 object-cover"
+            />
+
+            <div class="p-6">
+              <h4 class="text-xl font-bold text-secondary mb-3">
+                Reunião com Encarregados
+              </h4>
+
+              <p class="text-gray-600 mb-4">
+                Será realizada uma reunião geral para apresentação da nova
+                plataforma digital de acompanhamento escolar.
+              </p>
+            </div>
+          </div>
+
+          <!-- NOTÍCIA 3 -->
+          <div
+            class="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden"
+          >
+            <img
+              src="assets/noticia3.jpg"
+              alt="Notícia"
+              class="w-full h-48 object-cover"
+            />
+
+            <div class="p-6">
+              <h4 class="text-xl font-bold text-secondary mb-3">
+                Actividades Pedagógicas
+              </h4>
+
+              <p class="text-gray-600 mb-4">
+                A escola promoverá actividades educativas para reforçar a
+                aprendizagem prática dos alunos.
+              </p>
+            </div>
+          </div>
+
+          
+            <!-- OCULTAS -->
+            <div class="news-card extra hidden bg-white  rounded-2xl hover:shadow-xl shadow overflow-hidden">
+                <img src="assets/noticia4.jpg" alt="Notícia" class="w-full h-48 object-cover">
+                
+                <div class="p-6">
+                    <h4 class="text-xl font-bold text-secondary mb-3">Feira Educativa</h4>
+                    <p class="text-gray-600">Evento para apresentação de projectos desenvolvidos pelos estudantes.</p>
+                </div>
+            </div>
+
+            <div class="news-card extra hidden bg-white rounded-2xl hover:shadow-xl shadow overflow-hidden">
+                <img src="assets/noticia5.jpg" alt="Notícia" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <h4 class="text-xl font-bold text-secondary mb-3">Avaliações Trimestrais</h4>
+                    <p class="text-gray-600">Calendário de provas já disponível para consulta.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTÃO ÚNICO -->
+        <div class="mt-12">
+          <button
+            id="toggleNews"
+            class="bg-primary text-white px-8 py-3 rounded-lg hover:bg-secondary hover:-translate-y-1 transition-all duration-200"
+          >
+            Mais Notícias
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOBRE | EVENTOS | CONTACTOS -->
+    <section class="bg-white py-20">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid md:grid-cols-2 gap-10 items-start">
+          <!-- Sobre a escola -->
+          <div>
+            <img src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1200&q=60" alt="Escola" class="rounded-2xl shadow-lg w-full h-64 object-cover mb-6" />
+            <h3 class="text-3xl font-bold text-primary mb-3">Conheça a Nossa Escola</h3>
+            <p class="text-gray-600 mb-4">A nossa escola oferece um ambiente seguro e inclusivo, com foco no desenvolvimento académico e socioemocional dos alunos. Espaços bem equipados, corpo docente qualificado e actividades extracurriculares que estimulam criatividade e talento.</p>
+
+            <ul class="text-gray-600 space-y-2">
+              <li class="flex items-start gap-3"><svg class="w-5 h-5 text-secondary mt-1" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"/></svg> Corpo docente qualificado</li>
+              <li class="flex items-start gap-3"><svg class="w-5 h-5 text-secondary mt-1" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"/></svg> Projetos e actividades extracurriculares</li>
+              <li class="flex items-start gap-3"><svg class="w-5 h-5 text-secondary mt-1" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"/></svg> Espaços modernos e seguros</li>
+            </ul>
+          </div>
+
+          <!-- Eventos -->
+          <div>
+            <h4 class="text-2xl font-bold text-primary mb-4">Próximos Eventos</h4>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div class="bg-light rounded-lg p-4 shadow hover:shadow-lg transition">
+                <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=60" alt="Feira Educativa" class="w-full h-40 object-cover rounded-md mb-3" />
+                <h5 class="font-semibold text-secondary">Feira Educativa</h5>
+                <p class="text-sm text-gray-600">Apresentação de projectos dos estudantes — 12 Mar • 09:00</p>
+              </div>
+
+              <div class="bg-light rounded-lg p-4 shadow hover:shadow-lg transition">
+                <img src="https://images.unsplash.com/photo-1554774853-b9b2f6b0f1f8?auto=format&fit=crop&w=800&q=60" alt="Reunião de Pais" class="w-full h-40 object-cover rounded-md mb-3" />
+                <h5 class="font-semibold text-secondary">Reunião com Encarregados</h5>
+                <p class="text-sm text-gray-600">Discussão de metas educativas — 18 Mar • 17:00</p>
+              </div>
+
+              <div class="bg-light rounded-lg p-4 shadow hover:shadow-lg transition">
+                <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=60" alt="Actividade Pedagógica" class="w-full h-40 object-cover rounded-md mb-3" />
+                <h5 class="font-semibold text-secondary">Actividades Pedagógicas</h5>
+                <p class="text-sm text-gray-600">Oficinas práticas e aprendizagem activa — 22 Mar • 10:00</p>
+              </div>
+
+              <div class="bg-light rounded-lg p-4 shadow hover:shadow-lg transition">
+                <img src="https://images.unsplash.com/photo-1532619187603-2b3b60f54b6d?auto=format&fit=crop&w=800&q=60" alt="Avaliações" class="w-full h-40 object-cover rounded-md mb-3" />
+                <h5 class="font-semibold text-secondary">Avaliações Trimestrais</h5>
+                <p class="text-sm text-gray-600">Calendário de provas disponível — consulte a secretaria</p>
+              </div>
+            </div>
+
+            <div class="mt-6">
+              <a href="dashboard-encarredo.html" class="inline-block bg-primary text-white px-5 py-2 rounded-lg hover:bg-secondary hover:-translate-y-1 transition-all duration-200">Ver todos os eventos</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contactos -->
+        <div class="mt-12 bg-light rounded-lg p-6">
+          <h4 class="text-xl font-bold text-primary mb-4">Contacto</h4>
+          <div class="flex flex-col sm:flex-row gap-6">
+            <div class="flex-1">
+              <p class="text-gray-700">Telefone: <strong>+244 123 456 789</strong></p>
+              <p class="text-gray-700">Email: <strong>contato@schoolconnect.com</strong></p>
+              <p class="text-gray-700">Morada: <strong>Av. Exemplo, Nº 123, Benguela</strong></p>
+              <div class="mt-4 flex gap-3">
+                <a href="#" class="text-primary hover:text-secondary hover:-translate-y-1 transition-all duration-200">Facebook</a>
+                <a href="#" class="text-primary hover:text-secondary hover:-translate-y-1 transition-all duration-200">Instagram</a>
+                <a href="#" class="text-primary hover:text-secondary hover:-translate-y-1 transition-all duration-200">YouTube</a>
+              </div>
+            </div>
+
+            <form class="flex-1 space-y-3" onsubmit="event.preventDefault(); alert('Mensagem enviada (exemplo)');">
+              <input aria-label="nome" class="w-full border rounded px-3 py-2" placeholder="Nome" />
+              <input aria-label="email" class="w-full border rounded px-3 py-2" placeholder="Email" />
+              <textarea aria-label="mensagem" class="w-full border rounded px-3 py-2" placeholder="Mensagem"></textarea>
+              <button class="bg-primary text-white px-4 py-2 rounded">Enviar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RODAPÉ -->
+    <footer class="bg-primary text-white py-6 text-center">
+      <p>© 2026 SchoolConnect• Todos os direitos reservados</p>
+    </footer>
+
+   <!-- SCRIPT MOSTRAR/OCULTAR -->
+<script>
+    const button = document.getElementById('toggleNews');
+    const extraNews = document.querySelectorAll('.extra');
+    let visible = false;
+
+    button.addEventListener('click', () => {
+        extraNews.forEach(card => {
+            card.classList.toggle('hidden');
+        });
+
+        visible = !visible;
+        button.textContent = visible ? "Mostrar Menos" : "Mais Notícias";
+    });
+</script>
+  </body>
+
+</html>

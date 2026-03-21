@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SchoolConnect - Registo de nova conta para pais e professores">
+    <title>Registo - SchoolConnect</title>
+    
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="../img/logo.png" type="image/png">
+
+    <!-- Cores institucionais -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        principal: "#15803D",
+                        primary: "#0E2A47",
+                        secondary: "#1F4E79",
+                        accent: "#F2B705",
+                        foco: "#16A34A"
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<!-- FUNDO -->
+<body class="min-h-screen bg-cover bg-center"
+      style="background-image: url('../img/background.png');">
+
+<!-- OVERLAY -->
+<div class="absolute inset-0"></div>
+
+<!-- CONTAINER -->
+<div class="relative min-h-screen flex items-center justify-center px-4 py-12">
+    
+    <div class="relative bg-white/70 border border-white/30 shadow-2xl rounded-2xl w-[95%] max-w-3xl p-8 md:p-10">
+
+        <!-- LOGO E CABEÇALHO -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-accent/20 rounded-full mb-4">
+          <img src="../img/logo.png" class="h-16 mx-auto mb-3">
+            </div>
+            <h1 class="text-2xl font-bold text-principal">Criar Conta</h1>
+            <p class="text-gray-700">Junte-se à comunidade SchoolConnect</p>
+        </div>
+
+        <!-- PROGRESSO -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-green-600" id="stepIndicator">Passo 1 de 3</span>
+                <span class="text-xs font-medium text-green-600" id="progressPercentage">33%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+                <div id="progressBar" class="bg-principal h-2 rounded-full transition-all duration-300" style="width: 33%"></div>
+            </div>
+        </div>
+
+        <!-- FORMULÁRIO -->
+        <form id="registrationForm" class="space-y-6" novalidate>
+            
+            <!-- PASSO 1: SELEÇÃO DE PERFIL -->
+            <div id="step1" class="step-content">
+                <h2 class="text-xl font-semibold text-primary mb-4">Selecione o seu perfil</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Encarregado -->
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="userRole" value="parent" class="peer sr-only" required>
+                        <div class="p-6 bg-white rounded-xl shadow text-center peer-checked:border-2 peer-checked:border-foco peer-checked:bg-foco/5 hover:shadow-lg transition-all">
+                            <div class="w-16 h-16 flex items-center justify-center mx-auto mb-4 bg-blue-100 rounded-full">
+                                <svg class="w-8 h-8" style="color: #1F4E79" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-semibold text-primary mb-2">Encarregado de Educação</h3>
+                            <p class="text-sm text-gray-600">Acompanhe o progresso dos seus educandos na escola</p>
+                        </div>
+                    </label>
+
+                    <!-- Professor -->
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="userRole" value="teacher" class="peer sr-only " required>
+                        <div class="p-6 bg-white rounded-xl shadow text-center peer-checked:border-2 peer-checked:border-foco peer-checked:bg-foco/5 hover:shadow-lg transition-all">
+                            <div class="w-16 h-16 flex items-center justify-center mx-auto mb-4 bg-yellow-100 rounded-full">
+                                <svg class="w-8 h-8" style="color: #F2B705" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-semibold text-primary mb-2">Professor</h3>
+                            <p class="text-sm text-gray-600">Comunique com os encarregados de educação</p>
+                        </div>
+                    </label>
+                </div>
+
+                <p id="role-error" class="mt-2 text-sm text-red-600 hidden" role="alert"></p>
+            </div>
+
+            <!-- PASSO 2: INFORMAÇÕES PESSOAIS -->
+            <div id="step2" class="step-content hidden">
+                <h2 class="text-xl font-semibold text-primary mb-4">Informações pessoais</h2>
+                
+                <div class="space-y-4">
+                    <!-- Nome Completo -->
+                    <div>
+                        <label for="fullName" class="block text-sm font-semibold mb-2">
+                            Nome completo <span class="text-red-600">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="fullName" 
+                            name="fullName"
+                            class="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none" 
+                            placeholder="Inocêncio Mateus"
+                            required
+                            autocomplete="name"
+                            aria-describedby="fullName-error"
+                        >
+                        <p id="fullName-error" class="mt-2 text-sm text-red-600 hidden" role="alert"></p>
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block text-sm font-semibold mb-2">
+                            Endereço de e-mail <span class="text-red-600">*</span>
+                        </label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email"
+                            class ="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
+                            placeholder="inocenciomateus@exemplo.com"
+                            required
+                            autocomplete="email"
+                            aria-describedby="email-error"
+                        >
+                        <p id="email-error" class="mt-2 text-sm text-red-600 hidden" role="alert"></p>
+                    </div>
+
+                    <!-- Telefone -->
+                    <div>
+                        <label for="phone" class="block text-sm font-semibold mb-2">
+                            Número de telefone <span class="text-red-600">*</span>
+                        </label>
+                        <input 
+                            type="tel" 
+                            id="phone" 
+                            name="phone"
+                            class ="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
+                            placeholder="+244 948 211 806"
+                            required
+                            autocomplete="tel"
+                            aria-describedby="phone-error"
+                        >
+                        <p id="phone-error" class="mt-2 text-sm text-red-600 hidden" role="alert"></p>
+                    </div>
+
+                    <!-- Palavra-passe -->
+                    <div>
+                        <label for="password" class="block text-sm font-semibold mb-2">
+                            Palavra-passe <span class="text-red-600">*</span>
+                        </label>
+                        <div class="relative">
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password"
+                                class ="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
+                                placeholder="••••••••"
+                                required
+                                autocomplete="new-password"
+                                aria-describedby="password-error"
+                            >
+                            <button 
+                                type="button" 
+                                id="togglePassword"
+                                class="absolute right-3 top-3 text-gray-500 hover:text-gray-700 transition-colors"
+                                aria-label="Mostrar palavra-passe"
+                            >
+                                <svg id="eyeIcon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <p id="password-error" class="mt-2 text-sm text-red-600 hidden" role="alert"></p>
+                        
+                        <!-- Indicador de Força -->
+                        <div id="password-strength" class="mt-2">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs text-gray-600">Força da palavra-passe:</span>
+                                <span id="strengthText" class="text-xs font-medium text-gray-600">-</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div id="strengthBar" class="h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Confirmar Palavra-passe -->
+                    <div>
+                        <label for="confirmPassword" class="block text-sm font-semibold mb-2">
+                            Confirmar palavra-passe <span class="text-red-600">*</span>
+                        </label>
+                        <input 
+                            type="password" 
+                            id="confirmPassword" 
+                            name="confirmPassword"
+                            class ="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
+                            placeholder="••••••••"
+                            required
+                            autocomplete="new-password"
+                            aria-describedby="confirmPassword-error"
+                        >
+                        <p id="confirmPassword-error" class="mt-2 text-sm text-red-600 hidden" role="alert"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASSO 3: INFORMAÇÕES ESPECÍFICAS -->
+            <div id="step3" class="step-content hidden">
+                
+                <!-- Campos para Encarregados -->
+                <div id="parentFields" class="hidden">
+                    <h2 class="text-xl font-semibold text-primary mb-4">Informações do educando</h2>
+                    
+                    <div class="space-y-4">
+                        <!-- Nome do Educando -->
+                        <div>
+                            <label for="studentName" class="block text-sm font-semibold mb-2">
+                                Nome do educando <span class="text-red-600">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="studentName" 
+                                name="studentName"
+                                class ="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
+                                placeholder="Maria Silva"
+                                aria-describedby="studentName-error"
+                            >
+                            <p id="studentName-error" class="mt-2 text-sm text-red-600 hidden" role="alert"></p>
+                        </div>
+
+                        <!-- Curso -->
+                        <div>
+                            <label for="studentCourse" class="block text-sm font-semibold mb-2">
+                                Curso <span class="text-red-600">*</span>
+                            </label>
+                            <select 
+                                id="studentCourse" 
+                                name="studentCourse"
+                                class="w-full p-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/30 cursor-pointer"
+                                aria-describedby="studentCourse-error"
+                            >
+                                <option value="">Selecione o curso</option>
+                                <option value="1º Ano">1º Ano</option>
+                                <option value="2º Ano">2º Ano</option>
+                                <option value="3º Ano">3º Ano</option>
+                                <option value="4º Ano">4º Ano</option>
+                                <option value="5º Ano">5º Ano</option>
+                            </select>
+                            <p id="studentCourse-error" class="mt-2 text-sm text-red-600 hidden" role="alert"></p>
+                        </div>
+
+
+
+                        <!-- Turma -->
+                        <div>
+                            <label for="studentClass" class="block text-sm font-semibold mb-2">
+                                Turma <span class="text-red-600">*</span>
+                            </label>
+                            <select 
+                                id="studentClass" 
+                                name="studentClass"
+                                class="w-full p-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/30 cursor-pointer"
+                                aria-describedby="studentClass-error"
+                            >
+                                <option value="">Selecione a turma</option>
+                                <option value="1A">1º A</option>
+                                <option value="1B">1º B</option>
+                                <option value="2A">2º A</option>
+                                <option value="2B">2º B</option>
+                                <option value="3A">3º A</option>
+                                <option value="3B">3º B</option>
+                                <option value="4A">4º A</option>
+                                <option value="4B">4º B</option>
+                                <option value="5A">5º A</option>
+                                <option value="5B">5º B</option>
+                                <option value="6A">6º A</option>
+                                <option value="6B">6º B</option>
+                            </select>
+                            <p id="studentClass-error" class="mt-2 text-sm text-red-600 hidden" role="alert"></p>
+                        </div>
+
+                        <!-- Número de Estudante -->
+                        <div>
+                            <label for="studentId" class="block text-sm font-semibold mb-2">
+                                Número de estudante <span class="text-red-600">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="studentId" 
+                                name="studentId"
+                                class ="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
+                                placeholder="2024-0001"
+                                aria-describedby="studentId-error"
+                            >
+                            <p id="studentId-error" class="mt-2 text-sm text-red-600 hidden" role="alert"></p>
+                        </div>
+
+                        <!-- Relação -->
+                        <div>
+                            <label for="relationship" class="block text-sm font-semibold mb-2">
+                                Relação com o educando <span class="text-red-600">*</span>
+                            </label>
+                            <select 
+                                id="relationship" 
+                                name="relationship"
+                                class="w-full p-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/30 cursor-pointer"
+                                aria-describedby="relationship-error"
+                            >
+                                <option value="">Selecione a relação</option>
+                                <option value="mother">Mãe</option>
+                                <option value="father">Pai</option>
+                                <option value="guardian">Tutor Legal</option>
+                                <option value="other">Outro</option>
+                            </select>
+                            <p id="relationship-error" class="mt-2 text-sm text-red-600 hidden" role="alert"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos para Professores -->
+                <div id="teacherFields" class="hidden">
+                    <h2 class="text-xl font-semibold text-primary mb-4">Informações profissionais</h2>
+                    
+                    <div class="space-y-4">
+                        <!-- Código de Verificação -->
+                        <div>
+                            <label for="verificationCode" class="block text-sm font-semibold mb-2">
+                                Código de verificação da escola <span class="text-red-600">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="verificationCode" 
+                                name="verificationCode"
+                                class ="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
+                                placeholder="SCH-2026-XXXX"
+                                aria-describedby="verificationCode-error"
+                            >
+                            <p class="mt-1 text-xs text-gray-600">Contacte a administração da escola para obter o código</p>
+                            <p id="verificationCode-error" class="mt-2 text-sm text-red-600 hidden" role="alert"></p>
+                        </div>
+
+                        <!-- Disciplina -->
+                        <div>
+                            <label for="subject" class="block text-sm font-semibold mb-2">
+                                Disciplina(s) que leciona <span class="text-red-600">*</span>
+                            </label>
+                            <select 
+                                id="subject" 
+                                name="subject"
+                                class="w-full p-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/30 cursor-pointer"
+                                aria-describedby="subject-error"
+                            >
+                                <option value="">Selecione a disciplina</option>
+                                <option value="mathematics">Matemática</option>
+                                <option value="portuguese">Português</option>
+                                <option value="english">Inglês</option>
+                                <option value="science">Ciências</option>
+                                <option value="history">História</option>
+                                <option value="geography">Geografia</option>
+                                <option value="physical-education">Educação Física</option>
+                                <option value="arts">Educação Visual</option>
+                                <option value="music">Educação Musical</option>
+                                <option value="other">Outra</option>
+                            </select>
+                            <p id="subject-error" class="mt-2 text-sm text-red-600 hidden" role="alert"></p>
+                        </div>
+
+                        <!-- Turmas que Leciona -->
+                        <div>
+                            <label for="teachingClasses" class="block text-sm font-semibold mb-2">
+                                Turmas que leciona <span class="text-red-600">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="teachingClasses" 
+                                name="teachingClasses"
+                                class ="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
+                                placeholder="10º A, 11º B, 12º A"
+                                aria-describedby="teachingClasses-error"
+                            >
+                            <p class="mt-1 text-xs text-gray-600">Separe as turmas por vírgulas</p>
+                            <p id="teachingClasses-error" class="mt-2 text-sm text-red-600 hidden" role="alert"></p>
+                        </div>
+
+                        <!-- Upload de Documento 
+                        <div>
+                            <label for="teacherDocument" class="block text-sm font-semibold mb-2">
+                                Documento de identificação profissional <span class="text-red-600">*</span>
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    type="file" 
+                                    id="teacherDocument" 
+                                    name="teacherDocument"
+                                    class="hidden"
+                                    accept=".pdf,.jpg,.jpeg,.png"
+                                    aria-describedby="teacherDocument-error"
+                                >
+                                <label 
+                                    for="teacherDocument" 
+                                    class="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-accent hover:bg-accent/5 transition-colors"
+                                >
+                                    <svg class="w-6 h-6 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                    <span class="text-sm text-gray-600" id="fileLabel">Carregar documento (PDF, JPG, PNG)</span>
+                                </label>
+                            </div>
+                            <p class="mt-1 text-xs text-gray-600">Tamanho máximo: 5MB</p>
+                            <p id="teacherDocument-error" class="mt-2 text-sm text-red-600 hidden" role="alert"></p>
+                        </div>-->
+                    </div>
+                </div>
+
+                <!-- Termos e Condições
+                <div class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div class="flex items-start">
+                        <input 
+                            id="terms" 
+                            name="terms" 
+                            type="checkbox" 
+                            class="h-4 w-4 cursor-pointer mt-1"
+                            style="accent-color: #F2B705"
+                            required
+                        >
+                        <label for="terms" class="ml-3 text-sm text-gray-700 cursor-pointer">
+                            Aceito os <a href="javascript:void(0)" class="text-accent font-medium hover:underline">Termos e Condições</a> e a <a href="javascript:void(0)" class="text-accent font-medium hover:underline">Política de Privacidade</a>. Compreendo que os meus dados serão processados de acordo com o RGPD.
+                        </label>
+                    </div>
+                    <p id="terms-error" class="mt-2 text-sm text-red-600 hidden" role="alert"></p>
+                </div>-->
+            </div>
+
+            <!-- BOTÕES DE NAVEGAÇÃO -->
+            <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                <button 
+                    type="button" 
+                    id="prevButton"
+                    class="px-6 py-2 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition-colors hidden"
+                >
+                    <svg class="w-5 h-5 mr-2 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Anterior
+                </button>
+
+                <button 
+                    type="button" 
+                    id="nextButton"
+                    class="px-6 py-2 rounded-lg font-semibold text-black hover:shadow-lg transition-shadow ml-auto"
+                    style="background-color: #15803D"
+                >
+                    Seguinte
+                    <svg class="w-5 h-5 ml-2 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+
+                <button 
+                    type="submit" 
+                    id="submitButton"
+                    class="px-6 py-2 rounded-lg font-semibold text-black hover:shadow-lg transition-shadow ml-auto hidden"
+                    style="background-color: #15803D"
+                >
+                    <span id="submitText">Criar Conta</span>
+                </button>
+            </div>
+
+            <!-- Mensagem de Erro do Formulário -->
+            <div id="formError" class="hidden p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div class="flex">
+                    <svg class="h-5 w-5 text-red-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                    </svg>
+                    <p class="text-sm text-red-700" id="formErrorMessage"></p>
+                </div>
+            </div>
+        </form>
+
+        <!-- Link de Login -->
+        <div class="mt-6 text-center">
+            <p class="text-sm text-gray-700">
+                Já tem uma conta? 
+                <a href="login.html" class="font-medium text-principal hover:underline transition-colors">
+                    Iniciar sessão
+                </a>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- SCRIPT -->
+<script>
+    let currentStep = 1;
+    const totalSteps = 3;
+    let selectedRole = '';
+
+    // Elementos do formulário
+    const registrationForm = document.getElementById('registrationForm');
+    const prevButton = document.getElementById('prevButton');
+    const nextButton = document.getElementById('nextButton');
+    const submitButton = document.getElementById('submitButton');
+    const progressBar = document.getElementById('progressBar');
+    const stepIndicator = document.getElementById('stepIndicator');
+    const progressPercentage = document.getElementById('progressPercentage');
+    const formError = document.getElementById('formError');
+    const formErrorMessage = document.getElementById('formErrorMessage');
+
+    // Containers dos passos
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+    const parentFields = document.getElementById('parentFields');
+    const teacherFields = document.getElementById('teacherFields');
+
+    // Elementos de palavra-passe
+    const passwordInput = document.getElementById('password');
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    const strengthBar = document.getElementById('strengthBar');
+    const strengthText = document.getElementById('strengthText');
+
+    // Upload de arquivo
+    const teacherDocument = document.getElementById('teacherDocument');
+    const fileLabel = document.getElementById('fileLabel');
+
+    // Seleção de perfil
+    const roleInputs = document.querySelectorAll('input[name="userRole"]');
+    roleInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            selectedRole = this.value;
+            clearFieldError('role');
+            clearFormError();
+        });
+    });
+
+    // Toggle de visibilidade de palavra-passe
+    togglePasswordBtn.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        const eyeIcon = document.getElementById('eyeIcon');
+        if (type === 'text') {
+            eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>';
+            this.setAttribute('aria-label', 'Ocultar palavra-passe');
+        } else {
+            eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>';
+            this.setAttribute('aria-label', 'Mostrar palavra-passe');
+        }
+    });
+
+    // Verificador de força de palavra-passe
+    passwordInput.addEventListener('input', function() {
+        const password = this.value;
+        let strength = 0;
+        
+        if (password.length >= 8) strength += 25;
+        if (password.match(/[a-z]+/)) strength += 25;
+        if (password.match(/[A-Z]+/)) strength += 25;
+        if (password.match(/[0-9]+/)) strength += 15;
+        if (password.match(/[$@#&!]+/)) strength += 10;
+        
+        strengthBar.style.width = strength + '%';
+        
+        if (strength < 40) {
+            strengthBar.className = 'h-1.5 rounded-full transition-all duration-300 bg-red-500';
+            strengthText.textContent = 'Fraca';
+            strengthText.className = 'text-xs font-medium text-red-600';
+        } else if (strength < 70) {
+            strengthBar.className = 'h-1.5 rounded-full transition-all duration-300 bg-yellow-500';
+            strengthText.textContent = 'Média';
+            strengthText.className = 'text-xs font-medium text-yellow-600';
+        } else {
+            strengthBar.className = 'h-1.5 rounded-full transition-all duration-300 bg-green-500';
+            strengthText.textContent = 'Forte';
+            strengthText.className = 'text-xs font-medium text-green-600';
+        }
+        
+        clearFieldError('password');
+    });
+
+    // Handler de upload de arquivo
+    if (teacherDocument) {
+        teacherDocument.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                const fileName = this.files[0].name;
+                const fileSize = (this.files[0].size / 1024 / 1024).toFixed(2);
+                
+                if (fileSize > 5) {
+                    showFieldError('teacherDocument', 'O ficheiro não pode exceder 5MB');
+                    this.value = '';
+                    fileLabel.textContent = 'Carregar documento (PDF, JPG, PNG)';
+                } else {
+                    fileLabel.textContent = fileName + ' (' + fileSize + 'MB)';
+                    clearFieldError('teacherDocument');
+                }
+            }
+        });
+    }
+
+    // Funções de validação
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
+    function validatePhone(phone) {
+        const re = /^[\d\s\+\-\(\)]+$/;
+        return re.test(phone) && phone.replace(/\D/g, '').length >= 9;
+    }
+
+    function showFieldError(field, message) {
+        const errorElement = document.getElementById(field + '-error');
+        const inputElement = document.getElementById(field);
+        
+        if (errorElement && inputElement) {
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+            inputElement.classList.add('border-red-500');
+            inputElement.classList.remove('border-gray-300');
+        }
+    }
+
+    function clearFieldError(field) {
+        const errorElement = document.getElementById(field + '-error');
+        const inputElement = document.getElementById(field);
+        
+        if (errorElement && inputElement) {
+            errorElement.classList.add('hidden');
+            inputElement.classList.remove('border-red-500');
+            inputElement.classList.add('border-gray-300');
+        }
+    }
+
+    function showFormError(message) {
+        formErrorMessage.textContent = message;
+        formError.classList.remove('hidden');
+        formError.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function clearFormError() {
+        formError.classList.add('hidden');
+    }
+
+    // Limpar erros ao digitar
+    const allInputs = registrationForm.querySelectorAll('input, select');
+    allInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            clearFieldError(this.id || this.name);
+            clearFormError();
+        });
+    });
+
+    // Validação de passo
+    function validateStep(step) {
+        clearFormError();
+        let isValid = true;
+
+        if (step === 1) {
+            if (!selectedRole) {
+                showFieldError('role', 'Por favor, selecione o seu perfil');
+                isValid = false;
+            }
+        }
+
+        if (step === 2) {
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!fullName) {
+                showFieldError('fullName', 'Por favor, insira o seu nome completo');
+                isValid = false;
+            } else if (fullName.length < 3) {
+                showFieldError('fullName', 'O nome deve ter pelo menos 3 caracteres');
+                isValid = false;
+            }
+
+            if (!email) {
+                showFieldError('email', 'Por favor, insira o seu endereço de e-mail');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showFieldError('email', 'Por favor, insira um endereço de e-mail válido');
+                isValid = false;
+            }
+
+            if (!phone) {
+                showFieldError('phone', 'Por favor, insira o seu número de telefone');
+                isValid = false;
+            } else if (!validatePhone(phone)) {
+                showFieldError('phone', 'Por favor, insira um número de telefone válido');
+                isValid = false;
+            }
+
+            if (!password) {
+                showFieldError('password', 'Por favor, insira uma palavra-passe');
+                isValid = false;
+            } else if (password.length < 8) {
+                showFieldError('password', 'A palavra-passe deve ter pelo menos 8 caracteres');
+                isValid = false;
+            }
+
+            if (!confirmPassword) {
+                showFieldError('confirmPassword', 'Por favor, confirme a sua palavra-passe');
+                isValid = false;
+            } else if (password !== confirmPassword) {
+                showFieldError('confirmPassword', 'As palavras-passe não coincidem');
+                isValid = false;
+            }
+        }
+
+        if (step === 3) {
+            if (selectedRole === 'parent') {
+                const studentName = document.getElementById('studentName').value.trim();
+                const studentClass = document.getElementById('studentClass').value;
+                const studentId = document.getElementById('studentId').value.trim();
+                const relationship = document.getElementById('relationship').value;
+
+                if (!studentName) {
+                    showFieldError('studentName', 'Por favor, insira o nome do educando');
+                    isValid = false;
+                }
+
+                if (!studentClass) {
+                    showFieldError('studentClass', 'Por favor, selecione a turma');
+                    isValid = false;
+                }
+
+                if (!studentId) {
+                    showFieldError('studentId', 'Por favor, insira o número de estudante');
+                    isValid = false;
+                }
+
+                if (!relationship) {
+                    showFieldError('relationship', 'Por favor, selecione a relação com o educando');
+                    isValid = false;
+                }
+            } else if (selectedRole === 'teacher') {
+                const verificationCode = document.getElementById('verificationCode').value.trim();
+                const subject = document.getElementById('subject').value;
+                const teachingClasses = document.getElementById('teachingClasses').value.trim();
+                const docFile = document.getElementById('teacherDocument').files.length;
+
+                if (!verificationCode) {
+                    showFieldError('verificationCode', 'Por favor, insira o código de verificação');
+                    isValid = false;
+                }
+
+                if (!subject) {
+                    showFieldError('subject', 'Por favor, selecione a disciplina');
+                    isValid = false;
+                }
+
+                if (!teachingClasses) {
+                    showFieldError('teachingClasses', 'Por favor, insira as turmas que leciona');
+                    isValid = false;
+                }
+
+                if (docFile === 0) {
+                    showFieldError('teacherDocument', 'Por favor, carregue o documento de identificação');
+                    isValid = false;
+                }
+            }
+
+            const termsCheckbox = document.getElementById('terms');
+            if (!termsCheckbox.checked) {
+                showFieldError('terms', 'Deve aceitar os termos e condições');
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    }
+
+    // Atualizar progresso
+    function updateProgress() {
+        const progress = (currentStep / totalSteps) * 100;
+        progressBar.style.width = progress + '%';
+        stepIndicator.textContent = 'Passo ' + currentStep + ' de ' + totalSteps;
+        progressPercentage.textContent = Math.round(progress) + '%';
+    }
+
+    // Mostrar passo
+    function showStep(step) {
+        step1.classList.add('hidden');
+        step2.classList.add('hidden');
+        step3.classList.add('hidden');
+
+        if (step === 1) {
+            step1.classList.remove('hidden');
+            prevButton.classList.add('hidden');
+            nextButton.classList.remove('hidden');
+            submitButton.classList.add('hidden');
+        } else if (step === 2) {
+            step2.classList.remove('hidden');
+            prevButton.classList.remove('hidden');
+            nextButton.classList.remove('hidden');
+            submitButton.classList.add('hidden');
+        } else if (step === 3) {
+            step3.classList.remove('hidden');
+            
+            if (selectedRole === 'parent') {
+                parentFields.classList.remove('hidden');
+                teacherFields.classList.add('hidden');
+            } else if (selectedRole === 'teacher') {
+                teacherFields.classList.remove('hidden');
+                parentFields.classList.add('hidden');
+            }
+            
+            prevButton.classList.remove('hidden');
+            nextButton.classList.add('hidden');
+            submitButton.classList.remove('hidden');
+        }
+
+        updateProgress();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Botão Seguinte
+    nextButton.addEventListener('click', function() {
+        if (validateStep(currentStep)) {
+            currentStep++;
+            showStep(currentStep);
+        }
+    });
+
+    // Botão Anterior
+    prevButton.addEventListener('click', function() {
+        currentStep--;
+        showStep(currentStep);
+        clearFormError();
+    });
+
+    // Submissão do formulário
+    registrationForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        if (!validateStep(currentStep)) {
+            return;
+        }
+
+        submitButton.disabled = true;
+        document.getElementById('submitText').textContent = 'A criar conta...';
+
+        const payload = {
+            name: document.getElementById('fullName').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+            role: selectedRole
+        };
+
+        fetch(window.location.origin + '/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(r => r.json().then(body => ({ ok: r.ok, body })))
+        .then(({ ok, body }) => {
+            if (!ok) {
+                showFormError(body.error || 'Erro no registo');
+                submitButton.disabled = false;
+                document.getElementById('submitText').textContent = 'Criar Conta';
+                return;
+            }
+
+            alert('Conta criada com sucesso!');
+            sessionStorage.setItem('token', body.token);
+            window.location.href = 'login.html';
+        })
+        .catch(err => {
+            showFormError('Erro de rede. Tente novamente.');
+            submitButton.disabled = false;
+            document.getElementById('submitText').textContent = 'Criar Conta';
+        });
+    });
+
+    // Inicializar
+    showStep(currentStep);
+</script>
+
+</body>
+</html>

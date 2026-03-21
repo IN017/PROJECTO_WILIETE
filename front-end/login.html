@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login -  SchoolConnect</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="../img/logo.png" type="image/png">
+
+    <!-- Cores personalizadas -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#15803D",
+                        secondary: "#16A34A",
+                        accent: "#FACC15"
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<!-- FUNDO NO BODY -->
+<body class="min-h-screen bg-cover bg-center flex items-center justify-center"
+      style="background-image: url('../img/background.png');">
+
+    <!-- OVERLAY -->
+    <div class="absolute inset-0 "></div>
+
+    <!-- FORMULÁRIO -->
+   <div class="relative bg-white/70  border border-white/30 p-8 rounded-2xl shadow-2xl w-[90%] max-w-md">
+
+        <!-- LOGO -->
+        <div class="text-center mb-6">
+            <img src="../img/logo.png" class="h-16 mx-auto mb-3">
+            <h2 class="text-2xl font-bold text-primary">Login</h2>
+        </div>
+
+        <!-- FORM -->
+        <form class="space-y-4">
+
+            <div>
+                <label class="block text-sm font-semibold">Email</label>
+                <input type="email"
+                       class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-secondary outline-none"
+                       placeholder="Digite o seu email">
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold">Senha</label>
+                <input type="password"
+                       class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-secondary outline-none"
+                       placeholder="Digite a sua senha">
+            </div>
+
+            <button type="submit"
+                class="w-full bg-primary text-white py-2 rounded-lg hover:bg-secondary transition">
+                Entrar
+            </button>
+        </form>
+
+        <!-- LINK REGISTO -->
+        <p class="text-center text-sm mt-6">
+            Não tem conta?
+            <a href="registro.html" class="text-primary font-semibold hover:underline">
+                Criar Conta
+            </a>
+        </p>
+
+    </div>
+
+</body>
+</html>
