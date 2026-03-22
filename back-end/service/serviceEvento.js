@@ -1,7 +1,7 @@
-import {prisma} from '../prisma/prismaClient.js';
+import {prisma} from '../prismaClient/prismaClient.js';
 
-export class ServiceTurma {
-    static async criarTurma(dados) {
+export class ServiceEvento {
+    static async criarEvento(dados) {
         try {
             const {titulo, descricao, imagem} = dados;
             if (!titulo || !descricao || !imagem) {

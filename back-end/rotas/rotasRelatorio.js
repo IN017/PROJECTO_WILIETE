@@ -3,7 +3,8 @@ import {ControllerRelatorio} from "../controller/controllerRelatorio.js";
 
 export const routerRelatorio = Router();
 
-routerRelatorio.get("/relatorios/disciplinas", ControllerRelatorio.gerarRelatorioDisciplinas);
-routerRelatorio.get("/relatorios/mensagens", ControllerRelatorio.gerarRelatorioMensagens);
-routerRelatorio.get("/relatorios/avisos", ControllerRelatorio.gerarRelatorioAvisos);
-routerRelatorio.get("/relatorios/notas", ControllerRelatorio.gerarRelatorioNotas);
+routerRelatorio.post("/relatorios", ControllerRelatorio.criarRelatorio);
+routerRelatorio.get("/relatorios", ControllerRelatorio.listarRelatorios);
+routerRelatorio.get("/relatorios/:id", ControllerRelatorio.obterRelatorioPorId);
+routerRelatorio.put("/relatorios/:id", ControllerRelatorio.atualizarRelatorio);
+routerRelatorio.delete("/relatorios/:id", ControllerRelatorio.deletarRelatorio);

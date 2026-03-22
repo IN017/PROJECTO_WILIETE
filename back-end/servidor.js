@@ -7,7 +7,6 @@ import { routerUsuarios } from "./rotas/rotasUsuario.js";
 import { routerAluno } from "./rotas/rotasAluno.js";
 import { routerDisciplina } from "./rotas/rotasDisciplina.js";
 import { routerEvento } from "./rotas/rotasEvento.js";
-import { routerMensagem } from "./rotas/rotasMensagem.js";
 import { routerNota } from "./rotas/rotasNota.js";
 import { routerReuniao } from "./rotas/rotasReuniao.js";
 import { routerRelatorio } from "./rotas/rotasRelatorio.js";
@@ -31,7 +30,6 @@ app.use("/api",  routerUsuarios);
 app.use("/api", routerAluno)
 app.use("/api", routerDisciplina);
 app.use("/api", routerEvento);
-app.use("/api", routerMensagem);
 app.use("/api", routerNota);
 app.use("/api", routerReuniao);
 app.use("/api", routerRelatorio);

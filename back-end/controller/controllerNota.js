@@ -1,4 +1,4 @@
-import { ServiceNota } from "../service/serviceNota";
+import { ServiceNota } from "../service/serviceNota.js";
 
 export class ControllerNota {
     static async criarNota(req, res) {

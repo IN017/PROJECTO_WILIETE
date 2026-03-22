@@ -1,4 +1,4 @@
-import { ServiceDisciplina } from "../service/serviceDisciplina";
+import { ServiceDisciplina } from "../service/serviceDisciplina.js";
 
 export class ControllerDisciplina {
     static async criarDisciplina(req, res) {
