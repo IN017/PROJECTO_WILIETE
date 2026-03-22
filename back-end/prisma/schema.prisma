@@ -71,6 +71,8 @@ model Relatorio {
   @@map("relatorios")
 }
 
+
+
 model Reuniao {
   id       Int     @id @default(autoincrement())
   linkMeeting String
