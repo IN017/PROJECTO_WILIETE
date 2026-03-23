@@ -1,15 +1,16 @@
-import { ServiceAviso } from "../service/serviceAviso";
+import { ServiceAviso } from "../service/serviceAviso.js";
 
 export class ControllerAviso {
+
     static async criarAviso(req, res) {
-        try {
-            const { titulo, descricao, imagem } = req.body;
-            const avisoCriado = await ServiceAviso.criarAviso(titulo, descricao, imagem);
-            res.status(201).json(avisoCriado);
-        } catch (error) {
-            res.status(400).json({ error: error.message });
-        }
+    try {
+        const avisoCriado = await ServiceAviso.criarAviso(req.body);
+        res.status(201).json(avisoCriado);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
+}
+
 
     static async listarAvisos(req, res) {
         try {

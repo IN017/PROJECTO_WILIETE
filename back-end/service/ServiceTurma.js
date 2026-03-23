@@ -1,82 +1,103 @@
-import {prisma} from '../prisma/prismaClient.js';
+import { prisma } from "../prismaClient/prismaClient.js";
 
 export class ServiceTurma {
-    async criarTurma(nome, professorId) {
+
+    static async criarTurma(dados) {
         try {
-            if (!nome || !professorId) {
-                throw new Error("O nome da turma e o ID do professor são obrigatórios.");
+            const { nome, usuarioId } = dados;
+
+            if (!nome || !usuarioId) {
+                throw new Error("Nome e usuário são obrigatórios.");
             }
+
             const novaTurma = await prisma.turma.create({
                 data: {
-                    nome,       
-                    usuarioId: professorId
+                    nome,
+                    usuarioId: Number(usuarioId)
                 }
             });
+
             return novaTurma;
+
         } catch (error) {
             throw new Error(`Erro ao criar turma: ${error.message}`);
         }
     }
 
-    async listarTurmas() {
+    static async listarTurmas() {
         try {
-            const turmas = await prisma.turma.findMany();
-            return turmas;
+            return await prisma.turma.findMany();
+
         } catch (error) {
             throw new Error(`Erro ao listar turmas: ${error.message}`);
         }
     }
 
-    async obterTurmaPorId(id) {
+    static async obterTurmaPorId(id) {
         try {
             const turma = await prisma.turma.findUnique({
-                where: { id: parseInt(id) }
-            }); 
+                where: { id: Number(id) },
+                include: {
+                    usuario: true
+                }
+            });
+
             if (!turma) {
                 throw new Error("Turma não encontrada.");
-            }   
+            }
+
             return turma;
+
         } catch (error) {
             throw new Error(`Erro ao obter turma: ${error.message}`);
-        }   
+        }
     }
 
-    async atualizarTurma(id, nome) {    
-        try {   
-            if (!nome) {
-                throw new Error("O nome da turma é obrigatório.");
-            }   
+    static async atualizarTurma(id, dados) {
+        try {
+            const { nome, usuarioId } = dados;
+
             const turmaExistente = await prisma.turma.findUnique({
-                where: { id: parseInt(id) }
-            }); 
+                where: { id: Number(id) }
+            });
+
             if (!turmaExistente) {
                 throw new Error("Turma não encontrada.");
             }
+
             const turmaAtualizada = await prisma.turma.update({
-                where: { id: parseInt(id) },
-                data: { nome }
+                where: { id: Number(id) },
+                data: {
+                    nome,
+                    usuarioId: usuarioId ? Number(usuarioId) : turmaExistente.usuarioId
+                }
             });
+
             return turmaAtualizada;
+
         } catch (error) {
             throw new Error(`Erro ao atualizar turma: ${error.message}`);
-        }   
+        }
     }
 
-
-    async deletarTurma(id) {    
-        try {           
+    static async deletarTurma(id) {
+        try {
             const turmaExistente = await prisma.turma.findUnique({
-                where: { id: parseInt(id) }
+                where: { id: Number(id) }
             });
+
             if (!turmaExistente) {
                 throw new Error("Turma não encontrada.");
-            }   
-            const turmaDeletada = await prisma.turma.delete({
-                where: { id: parseInt(id) }
+            }
+
+            await prisma.turma.delete({
+                where: { id: Number(id) }
             });
-            return turmaDeletada;
+
+            return { mensagem: "Turma deletada com sucesso." };
+
         } catch (error) {
             throw new Error(`Erro ao deletar turma: ${error.message}`);
-        }   
+        }
     }
 }

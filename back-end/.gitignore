@@ -1,5 +1,5 @@
 node_modules
-# Keep environment variables out of version control
+# Arquivos que não devem subir para o repositório
 .env
 
 /generated/prisma
