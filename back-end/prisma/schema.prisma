@@ -1,7 +1,6 @@
-
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider     = "prisma-client-js"
+  output       = "../generated/prisma"
   moduleFormat = "cjs"
 }
 
@@ -10,115 +9,158 @@ datasource db {
 }
 
 // Define o enum para os perfis de usuário
+
 enum Perfil {
   ADMIN
   PROFESSOR
   ENCARREGADO
 }
 
-
 model Usuario {
-  id       Int     @id @default(autoincrement())
-  nome     String
-  email    String  @unique
-  senha    String
-  telefone String @unique
-  perfil   Perfil
-  imagem   String
-  criadoEm DateTime @default(now())
+  id               Int      @id @default(autoincrement())
+  nome             String
+  email            String   @unique
+  senha            String
+  telefone         String   @unique
+  perfil           Perfil
+  imagem           String?
+  criadoEm         DateTime @default(now())
   dataactualizacao DateTime @updatedAt
+
+  // RELAÇÕES
+  alunos             Aluno[]      @relation("EncarregadoAlunos")
+  turmas             Turma[]
+  disciplinas        Disciplina[] 
+  mensagensEnviadas  Mensagem[]   @relation("Remetente")
+  mensagensRecebidas Mensagem[]   @relation("Destinatario")
+
   @@map("usuarios")
 }
 
 model Aluno {
-  id       Int     @id @default(autoincrement())
-  nome     String
+  id               Int     @id @default(autoincrement())
+  nome             String
   numero_matricula String  @unique
-  turmaId  Int
+  telefone         String  @unique
+  imagem           String?
+
+  turmaId       Int
   encarregadoId Int
-  telefone String @unique
-  imagem   String
-  criadoEm DateTime @default(now())
+
+  criadoEm         DateTime @default(now())
   dataactualizacao DateTime @updatedAt
+
+  // RELAÇÕES
+  turma       Turma   @relation(fields: [turmaId], references: [id])
+  encarregado Usuario @relation("EncarregadoAlunos", fields: [encarregadoId], references: [id])
+  notas       Nota[]
+
   @@map("alunos")
 }
 
 model Turma {
-  id       Int     @id @default(autoincrement())
-  nome     String
-  usuarioId Int
-  criadoEm DateTime @default(now())
+  id   Int    @id @default(autoincrement())
+  nome String
+
+  usuarioId Int // professor
+
+  criadoEm         DateTime @default(now())
   dataactualizacao DateTime @updatedAt
+
+  // RELAÇÕES
+  professor Usuario @relation(fields: [usuarioId], references: [id])
+  alunos    Aluno[]
+
   @@map("turmas")
 }
 
-model Aviso {
-  id       Int     @id @default(autoincrement())
-  titulo   String
-  conteudo String
-  imagem   String
-  criadoEm DateTime @default(now())
+model Disciplina {
+  id        Int    @id @default(autoincrement())
+  nome      String
+  descricao String
+
+  criadoEm         DateTime @default(now())
   dataactualizacao DateTime @updatedAt
+
+  professores Usuario[]
+  notas Nota[]
+
+  @@map("disciplinas")
+}
+
+model Nota {
+  id    Int   @id @default(autoincrement())
+  valor Float
+
+  alunoId      Int
+  disciplinaId Int
+
+  criadoEm         DateTime @default(now())
+  dataactualizacao DateTime @updatedAt
+
+  // RELAÇÕES
+  aluno      Aluno      @relation(fields: [alunoId], references: [id])
+  disciplina Disciplina @relation(fields: [disciplinaId], references: [id])
+
+  @@map("notas")
+}
+
+model Mensagem {
+  id       Int    @id @default(autoincrement())
+  conteudo String
+
+  remetenteId    Int
+  destinatarioId Int
+
+  criadoEm         DateTime @default(now())
+  dataactualizacao DateTime @updatedAt
+
+  // RELAÇÕES (DUAS com o mesmo model)
+  remetente    Usuario @relation("Remetente", fields: [remetenteId], references: [id])
+  destinatario Usuario @relation("Destinatario", fields: [destinatarioId], references: [id])
+
+  @@map("mensagens")
+}
+
+model Aviso {
+  id               Int      @id @default(autoincrement())
+  titulo           String
+  conteudo         String
+  imagem           String?
+  criadoEm         DateTime @default(now())
+  dataactualizacao DateTime @updatedAt
+
   @@map("avisos")
 }
 
 model Relatorio {
-  id       Int     @id @default(autoincrement())
-  titulo   String
-  conteudo String
-  criadoEm DateTime @default(now())
+  id               Int      @id @default(autoincrement())
+  titulo           String
+  conteudo         String
+  criadoEm         DateTime @default(now())
   dataactualizacao DateTime @updatedAt
+
   @@map("relatorios")
 }
 
-
-
-model Reuniao {
-  id       Int     @id @default(autoincrement())
-  linkMeeting String
-  local String
-  titulo   String
-  criadoEm DateTime @default(now())
-  dataactualizacao DateTime @updatedAt
-  @@map("reunioes")
-}
-
-model Mensagem {
-  id       Int     @id @default(autoincrement())
-  remetenteId Int
-  destinatarioId Int
-  conteudo String
-  criadoEm DateTime @default(now())
-  dataactualizacao DateTime @updatedAt
-  @@map("mensagens")
-}
-
 model Evento {
-  id       Int     @id @default(autoincrement())
-  titulo   String
-  descricao String
-  imagem   String
-  criadoEm DateTime @default(now())
+  id               Int      @id @default(autoincrement())
+  titulo           String
+  descricao        String
+  imagem           String?
+  criadoEm         DateTime @default(now())
   dataactualizacao DateTime @updatedAt
+
   @@map("eventos")
 }
 
-model Nota {
-  id       Int     @id @default(autoincrement())
-  numero_matricula String
-  disciplinaId Int
-  valor    Float
-  criadoEm DateTime @default(now())
+model Reuniao {
+  id               Int      @id @default(autoincrement())
+  linkMeeting      String
+  local            String
+  titulo           String
+  criadoEm         DateTime @default(now())
   dataactualizacao DateTime @updatedAt
-  @@map("notas")
-}
 
-model Disciplina {
-  id       Int     @id @default(autoincrement())
-  nome     String
-  professorId Int
-  descricao String
-  criadoEm DateTime @default(now())
-  dataactualizacao DateTime @updatedAt
-  @@map("disciplinas")
+  @@map("reunioes")
 }
