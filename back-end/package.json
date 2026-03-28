@@ -7,6 +7,7 @@
     "dev": "nodemon servidor.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -19,6 +20,8 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
+
+
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.5.0",
     "@prisma/client": "^7.5.0",
@@ -29,4 +32,5 @@
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1"
   }
+  
 }

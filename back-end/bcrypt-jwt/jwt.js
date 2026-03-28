@@ -14,8 +14,9 @@ if(!SECRET_KEY) {
 export class JWT {
     static gerarToken(payload) {
         try {
-            const token = jwt.sign(payload, SECRET_KEY, { expiresIn: EXPIRATION_TIME },
-                algorithm = "HS256"
+            const token = jwt.sign(payload, SECRET_KEY, { expiresIn: EXPIRATION_TIME,
+             }
+                
             );
             return token;
         } catch (error) {

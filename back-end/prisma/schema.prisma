@@ -16,6 +16,13 @@ enum Perfil {
   ENCARREGADO
 }
 
+// Define o enum para Relação
+enum Relacao {
+  PAI
+  MAE
+  TUTOR
+}
+
 model Usuario {
   id               Int      @id @default(autoincrement())
   nome             String
@@ -27,10 +34,13 @@ model Usuario {
   criadoEm         DateTime @default(now())
   dataactualizacao DateTime @updatedAt
 
+  relacaoEducando Relacao?
+  codigoVerificacao String?
+
   // RELAÇÕES
   alunos             Aluno[]      @relation("EncarregadoAlunos")
   turmas             Turma[]
-  disciplinas        Disciplina[] 
+  disciplinas        Disciplina[] @relation("ProfessorDisciplinas")
   mensagensEnviadas  Mensagem[]   @relation("Remetente")
   mensagensRecebidas Mensagem[]   @relation("Destinatario")
 
@@ -43,9 +53,11 @@ model Aluno {
   numero_matricula String  @unique
   telefone         String  @unique
   imagem           String?
+  classe           String
 
   turmaId       Int
   encarregadoId Int
+   cursoId      Int
 
   criadoEm         DateTime @default(now())
   dataactualizacao DateTime @updatedAt
@@ -53,6 +65,7 @@ model Aluno {
   // RELAÇÕES
   turma       Turma   @relation(fields: [turmaId], references: [id])
   encarregado Usuario @relation("EncarregadoAlunos", fields: [encarregadoId], references: [id])
+  curso        Curso   @relation(fields: [cursoId], references: [id])
   notas       Nota[]
 
   @@map("alunos")
@@ -75,15 +88,17 @@ model Turma {
 }
 
 model Disciplina {
-  id        Int    @id @default(autoincrement())
-  nome      String
-  descricao String
-
+  id               Int      @id @default(autoincrement())
+  nome             String
+  descricao        String
   criadoEm         DateTime @default(now())
   dataactualizacao DateTime @updatedAt
+  cursoId          Int
 
-  professores Usuario[]
-  notas Nota[]
+  curso Curso @relation(fields: [cursoId], references: [id])
+
+  professores Usuario[] @relation("ProfessorDisciplinas")
+  notas       Nota[]
 
   @@map("disciplinas")
 }
@@ -163,4 +178,18 @@ model Reuniao {
   dataactualizacao DateTime @updatedAt
 
   @@map("reunioes")
+}
+
+model Curso {
+  id   Int    @id @default(autoincrement())
+  nome String
+
+  criadoEm         DateTime @default(now())
+  dataactualizacao DateTime @updatedAt
+
+  // RELAÇÃO
+  disciplinas Disciplina[]
+  alunos      Aluno[] 
+
+  @@map("cursos")
 }

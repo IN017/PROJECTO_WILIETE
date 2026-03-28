@@ -12,6 +12,7 @@ import { routerNota } from "./rotas/rotasNota.js";
 import { routerReuniao } from "./rotas/rotasReuniao.js";
 import { routerRelatorio } from "./rotas/rotasRelatorio.js";
 import { routerTurma } from "./rotas/rotasTurma.js";
+import { routerAdmin } from "./rotas/rotasAdmin.js"
 
 
 const PORTA = process.env.PORT || 3000;
@@ -37,7 +38,7 @@ app.use("/api", routerNota);
 app.use("/api", routerReuniao);
 app.use("/api", routerRelatorio);
 app.use("/api", routerTurma);
-
+app.use("/api", routerAdmin)
 
 
 app.listen(PORTA, () => {

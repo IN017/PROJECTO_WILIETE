@@ -1,65 +1,141 @@
 import { prisma } from "../prismaClient/prismaClient.js";
-import { hashSenha } from "../bcrypt-jwt/hashSenha.js";
+import { hashSenha, compareSenha } from "../bcrypt-jwt/hashSenha.js";
+import {JWT} from "../bcrypt-jwt/jwt.js"
 
 export class ServiceUsuario {
 
     // CRIAR USUÁRIO
-    static async criarUsuario(dados) {
-    try {
-        const { nome, email, senha, telefone, perfil, imagem, disciplinas } = dados;
+static async criarUsuario(dados) {
+  try {
+    const {
+      nome, email, senha, telefone, perfil, imagem,
+      // Encarregado
+      relacaoEducando, numeroMatricula,
+      // Professor
+      codigoVerificacao, turmasLeciona, disciplinas
+    } = dados;
 
-        if (!nome?.trim() || !email?.trim() || !senha || !telefone || !perfil) {
-            throw new Error("Campos obrigatórios em falta.");
-        }
-
-        const emailFormatado = email.trim().toLowerCase();
-
-        // Verificar email
-        const usuarioExistente = await prisma.usuario.findUnique({
-            where: { email: emailFormatado }
-        });
-        if (usuarioExistente) {
-            throw new Error("Email já cadastrado.");
-        }
-
-        // Verificar telefone
-        const telefoneExistente = await prisma.usuario.findUnique({
-            where: { telefone }
-        });
-        if (telefoneExistente) {
-            throw new Error("Telefone já cadastrado.");
-        }
-
-        // Hash da senha
-        const senhaHash = await hashSenha(senha);
-
-        const usuarioCriado = await prisma.usuario.create({
-            data: {
-                nome,
-                email: emailFormatado,
-                senha: senhaHash,
-                telefone,
-                perfil,
-                imagem: imagem || null,
-
-                // MANY-TO-MANY
-                disciplinas: disciplinas
-                    ? {
-                        connect: disciplinas.map(id => ({ id }))
-                    }
-                    : undefined
-            },
-            include: {
-                disciplinas: true
-            }
-        });
-
-        const { senha: _, ...usuarioSemSenha } = usuarioCriado;
-        return usuarioSemSenha;
-
-    } catch (error) {
-        throw new Error(`Erro ao criar usuário: ${error.message}`);
+    if (!nome?.trim() || !email?.trim() || !senha || !telefone || !perfil) {
+      throw new Error("Campos obrigatórios em falta.");
     }
+
+    // Validações específicas por perfil
+    if (perfil === "ENCARREGADO") {
+      if (!numeroMatricula?.trim()) throw new Error("Número de matrícula do aluno obrigatório.");
+      if (!relacaoEducando?.trim()) throw new Error("Relação com o educando obrigatória.");
+    }
+
+    if (perfil === "PROFESSOR") {
+      if (!codigoVerificacao?.trim()) throw new Error("Código de verificação obrigatório.");
+      if (!turmasLeciona?.trim()) throw new Error("Turmas que leciona obrigatório.");
+    }
+
+    const emailFormatado = email.trim().toLowerCase();
+
+    const usuarioExistente = await prisma.usuario.findUnique({
+      where: { email: emailFormatado }
+    });
+    if (usuarioExistente) throw new Error("Email já cadastrado.");
+
+    const telefoneExistente = await prisma.usuario.findUnique({
+      where: { telefone }
+    });
+    if (telefoneExistente) throw new Error("Telefone já cadastrado.");
+
+    // Se for encarregado, verificar se o número de matrícula existe
+    if (perfil === "ENCARREGADO") {
+      const alunoExiste = await prisma.aluno.findUnique({
+        where: { numero_matricula: numeroMatricula }
+      });
+      if (!alunoExiste) throw new Error("Aluno com esse número de matrícula não encontrado.");
+    }
+
+    const senhaHash = await hashSenha(senha);
+
+    const usuarioCriado = await prisma.usuario.create({
+      data: {
+        nome,
+        email: emailFormatado,
+        senha: senhaHash,
+        telefone,
+        perfil,
+        imagem: imagem || null,
+
+        // Campos condicionais
+        relacaoEducando: perfil === "ENCARREGADO" ? relacaoEducando : null,
+        codigoVerificacao: perfil === "PROFESSOR" ? codigoVerificacao : null,
+        turmasLeciona: perfil === "PROFESSOR" ? turmasLeciona : null,
+
+        // Disciplinas (many-to-many, só para professor)
+        disciplinas: disciplinas
+          ? { connect: disciplinas.map(id => ({ id })) }
+          : undefined
+      },
+      include: { disciplinas: true }
+    });
+
+    // Se for encarregado, ligar ao aluno
+    if (perfil === "ENCARREGADO") {
+      await prisma.aluno.update({
+        where: { numero_matricula: numeroMatricula },
+        data: { encarregadoId: usuarioCriado.id }
+      });
+    }
+
+    const { senha: _, ...usuarioSemSenha } = usuarioCriado;
+    return usuarioSemSenha;
+
+  } catch (error) {
+    throw new Error(`Erro ao criar usuário: ${error.message}`);
+  }
+}
+
+// LOGIN
+
+static async loginUsuario(email, senha) {
+  try {
+    if (!email?.trim() || !senha) {
+      throw new Error("Email e senha são obrigatórios.");
+    }
+
+    const emailFormatado = email.trim().toLowerCase();
+
+    const usuario = await prisma.usuario.findUnique({
+      where: { email: emailFormatado },
+      include: {
+        disciplinas: true,
+        turmas: true
+      }
+    });
+
+    if (!usuario) {
+      throw new Error("Email ou senha inválidos.");
+    }
+
+    // comparar senha
+    const senhaValida = await compareSenha(senha, usuario.senha);
+
+    if (!senhaValida) {
+      throw new Error("Email ou senha inválidos.");
+    }
+
+    // gerar token
+    const token = JWT.gerarToken({
+      id: usuario.id,
+      email: usuario.email,
+      perfil: usuario.perfil
+    });
+
+    const { senha: _, ...usuarioSemSenha } = usuario;
+
+    return {
+      usuario: usuarioSemSenha,
+      token
+    };
+
+  } catch (error) {
+    throw new Error(`Erro no login: ${error.message}`);
+  }
 }
 
 
@@ -107,7 +183,13 @@ export class ServiceUsuario {
     //ATUALIZAR USUÁRIO
     static async atualizarUsuario(id, dados) {
     try {
-        const { nome, email, senha, telefone, perfil, imagem, disciplinas } = dados;
+        const {
+            nome, email, senha, telefone, perfil, imagem, disciplinas,
+            // Encarregado
+            relacaoEducando, numeroMatricula,
+            // Professor
+            codigoVerificacao, turmasLeciona
+        } = dados;
 
         const usuarioExistente = await prisma.usuario.findUnique({
             where: { id: parseInt(id) }
@@ -115,6 +197,22 @@ export class ServiceUsuario {
 
         if (!usuarioExistente) {
             throw new Error("Usuário não encontrado.");
+        }
+
+        // Determinar o perfil final (pode estar a atualizar ou manter o atual)
+        const perfilFinal = perfil ?? usuarioExistente.perfil;
+
+        // Validações condicionais por perfil
+        if (perfilFinal === "ENCARREGADO") {
+            // Só valida se estiver a enviar número de matrícula novo
+            if (numeroMatricula) {
+                const alunoExiste = await prisma.aluno.findUnique({
+                    where: { numero_matricula: numeroMatricula }
+                });
+                if (!alunoExiste) {
+                    throw new Error("Aluno com esse número de matrícula não encontrado.");
+                }
+            }
         }
 
         let senhaHash = usuarioExistente.senha;
@@ -125,24 +223,43 @@ export class ServiceUsuario {
         const usuarioAtualizado = await prisma.usuario.update({
             where: { id: parseInt(id) },
             data: {
-                nome: nome ?? usuarioExistente.nome,
-                email: email ? email.trim().toLowerCase() : usuarioExistente.email,
-                senha: senhaHash,
+                nome:     nome     ?? usuarioExistente.nome,
+                email:    email    ? email.trim().toLowerCase() : usuarioExistente.email,
+                senha:    senhaHash,
                 telefone: telefone ?? usuarioExistente.telefone,
-                perfil: perfil ?? usuarioExistente.perfil,
-                imagem: imagem ?? usuarioExistente.imagem,
+                perfil:   perfilFinal,
+                imagem:   imagem   ?? usuarioExistente.imagem,
 
-                // MANY-TO-MANY UPDATE
+                // Campos do Encarregado
+                relacaoEducando: perfilFinal === "ENCARREGADO"
+                    ? (relacaoEducando ?? usuarioExistente.relacaoEducando)
+                    : null,
+
+                // Campos do Professor
+                codigoVerificacao: perfilFinal === "PROFESSOR"
+                    ? (codigoVerificacao ?? usuarioExistente.codigoVerificacao)
+                    : null,
+                turmasLeciona: perfilFinal === "PROFESSOR"
+                    ? (turmasLeciona ?? usuarioExistente.turmasLeciona)
+                    : null,
+
+                // Many-to-many (só professor)
                 disciplinas: disciplinas
-                    ? {
-                        set: disciplinas.map(id => ({ id }))
-                    }
+                    ? { set: disciplinas.map(id => ({ id })) }
                     : undefined
             },
             include: {
                 disciplinas: true
             }
         });
+
+        // Se for encarregado e enviou novo número de matrícula, atualizar ligação ao aluno
+        if (perfilFinal === "ENCARREGADO" && numeroMatricula) {
+            await prisma.aluno.update({
+                where: { numero_matricula: numeroMatricula },
+                data: { encarregadoId: usuarioAtualizado.id }
+            });
+        }
 
         const { senha: _, ...usuarioSemSenha } = usuarioAtualizado;
         return usuarioSemSenha;
@@ -151,7 +268,6 @@ export class ServiceUsuario {
         throw new Error(`Erro ao atualizar usuário: ${error.message}`);
     }
 }
-
 
 
     // DELETAR USUÁRIO
