@@ -183,6 +183,7 @@ model Reuniao {
 model Curso {
   id   Int    @id @default(autoincrement())
   nome String
+  descricao String
 
   criadoEm         DateTime @default(now())
   dataactualizacao DateTime @updatedAt

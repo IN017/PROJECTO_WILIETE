@@ -1,1119 +1,789 @@
 <!doctype html>
 <html lang="pt">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Painel do Encarregado</title>
-
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" href="../img/logo.png" type="image/png" />
-
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: "#15803D",
-              secondary: "#16A34A",
-              accent: "#FACC15",
-            },
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel do Encarregado - SchoolConnect</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="../img/logo.png" type="image/png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary:   "#15803D",
+            secondary: "#16A34A",
+            accent:    "#FACC15",
+            dark:      "#0F172A",
           },
         },
-      };
-    </script>
-  </head>
+      },
+    };
+  </script>
+  <style>
+    .fade-in { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)} }
+    .spinner { border:3px solid #e5e7eb; border-top:3px solid #15803D; border-radius:50%; width:24px; height:24px; animation:spin 0.8s linear infinite; display:inline-block; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .msg-own   { background:#15803D; color:white; border-radius:18px 18px 4px 18px; }
+    .msg-other { background:#f3f4f6; color:#1f2937; border-radius:18px 18px 18px 4px; }
+    .conversa-item:hover  { background:#f0fdf4; }
+    .conversa-item.active { background:#dcfce7; border-left:3px solid #15803D; }
+    #messagesArea { scroll-behavior:smooth; }
+    .online-dot { width:10px;height:10px;background:#22c55e;border-radius:50%;border:2px solid white; }
+    .nota-alta  { color:#16a34a; }
+    .nota-media { color:#2563eb; }
+    .nota-baixa { color:#dc2626; }
+    .progress-bar { height:6px; border-radius:3px; background:#e5e7eb; overflow:hidden; }
+    .progress-fill { height:100%; border-radius:3px; transition:width 1s ease; }
+  </style>
+</head>
 
-  <body class="bg-gray-100">
-    <div class="flex min-h-screen">
-      <!-- MENU -->
-      <aside
-        class="w-64 bg-primary text-white p-6 hidden md:block sticky top-0 h-screen overflow-y-auto"
-      >
-        <img src="../img/logo.png" class="h-14 mb-6 mx-auto" alt="Logo" />
-        <nav class="space-y-4">
-          <a
-            href="#"
-            onclick="showSection('desempehoSection')"
-            class="block hover:bg-secondary p-2 rounded"
-            >Desempenho</a
-          >
+<body class="bg-gray-100">
+<div class="flex min-h-screen">
 
-          <a
-            href="#"
-            onclick="showSection('mensagensSection')"
-            class="block hover:bg-secondary p-2 rounded"
-          >
-            Mensagens</a
-          >
-
-          <a
-            href="#"
-            onclick="showSection('reuniaoSection')"
-            class="block hover:bg-secondary p-2 rounded"
-            >Reuniões</a
-          >
-
-          <a href="index.html" class="block hover:bg-secondary p-2 rounded"
-            >Notícias</a
-          >
-
-          <button class="bg-accent px-4 py-2 rounded font-semibold text-black">
-            Terminar Sessão
-          </button>
-        </nav>
-      </aside>
-
-      <!-- CONTEÚDO -->
-      <main class="flex-1 p-6">
-        <!-- TOPO -->
-        <header class="flex justify-between items-center mb-6">
-          <h1 class="text-2xl font-bold text-gray-700">
-            Acompanhamento do Aluno
-          </h1>
-
-          <div class="relative" id="accountWrapper">
-            <button id="accountButton" aria-haspopup="true" aria-expanded="false" class="bg-white text-primary hover:bg-gray-100 px-3 py-1 rounded-lg font-semibold flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-accent transition">
-              <span class="h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center font-semibold">CM</span>
-              <span class="hidden md:inline">Carlos Mateus</span>
-              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </button>
-
-            <div id="accountMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow-lg ring-1 ring-black ring-opacity-5 z-50">
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Perfil</a>
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Configurações</a>
-              <button data-action="logout" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Terminar Sessão</button>
-            </div>
-          </div>
-        </header>
-
-        <!-- RESUMO DO ALUNO -->
-        <section id="desempehoSection">
-          <section class="grid md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-xl shadow">
-              <h3 class="text-gray-500">Aluno</h3>
-              <p class="text-xl font-bold text-primary">Carlos Mateus</p>
-            </div>
-
-            <div class="bg-white p-6 rounded-xl shadow">
-              <h3 class="text-gray-500">Curso</h3>
-              <p class="text-xl font-bold text-primary">Gestão Informática</p>
-            </div>
-
-            <div class="bg-white p-6 rounded-xl shadow">
-              <h3 class="text-gray-500">Turma</h3>
-              <p class="text-xl font-bold text-primary">12ª Classe - A</p>
-            </div>
-
-            <div class="bg-white p-6 rounded-xl shadow">
-              <h3 class="text-gray-500">Média Geral</h3>
-              <p class="text-3xl font-bold text-primary">14</p>
-            </div>
-          </section>
-
-          <!-- DESEMPENHO ACADÉMICO -->
-          <section class="bg-white p-6 rounded-xl shadow mb-8">
-            <h2 class="text-xl font-bold mb-4">Desempenho Académico</h2>
-
-            <table class="w-full text-left">
-              <thead>
-                <tr class="border-b">
-                  <th class="p-2">Disciplina</th>
-                  <th class="p-2">Nota</th>
-                  <th class="p-2">Comportamento</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="border-b">
-                  <td class="p-2">Matemática</td>
-                  <td class="p-2 font-bold text-green-600">15</td>
-                  <td class="p-2">Bom</td>
-                </tr>
-
-                <tr class="border-b">
-                  <td class="p-2">Português</td>
-                  <td class="p-2 font-bold text-green-600">13</td>
-                  <td class="p-2">Muito Bom</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-        </section>
-
-        <!-- MENSAGENS -->
-        <section id="mensagensSection" class="hidden">
-          <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <!-- SIDEBAR CONVERSAS -->
-            <div class="lg:col-span-1 bg-white rounded-xl shadow">
-              <div class="p-4 border-b border-gray-200">
-                <input
-                  type="text"
-                  id="searchChat"
-                  placeholder="Pesquisar..."
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-
-              <div class="p-4 border-b border-gray-200">
-                <button
-                  onclick="openNewChatModal()"
-                  class="w-full bg-primary text-white py-2 rounded-lg hover:bg-secondary transition"
-                >
-                  <i class="fas fa-plus mr-2"></i>Nova Conversa
-                </button>
-              </div>
-
-              <div id="conversasList" class="overflow-y-auto max-h-96">
-                <!-- Conversas dinâmicas aqui -->
-              </div>
-            </div>
-
-            <!-- ÁREA DO CHAT -->
-            <div
-              class="lg:col-span-3 bg-white rounded-xl shadow flex flex-col h-96 lg:h-auto"
-            >
-              <!-- CABEÇALHO -->
-              <div
-                id="chatHeader"
-                class="bg-gradient-to-r from-primary to-secondary text-white p-4 rounded-t-xl hidden"
-              >
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center space-x-3">
-                    <img
-                      id="chatAvatar"
-                      src=""
-                      alt="Avatar"
-                      class="h-10 w-10 rounded-full border-2 border-white"
-                    />
-                    <div>
-                      <h3 id="chatNome" class="font-semibold"></h3>
-                      <p id="chatStatus" class="text-sm opacity-80"></p>
-                    </div>
-                  </div>
-                  <div class="flex space-x-2">
-                    <button
-                      class="p-2 hover:bg-opacity-20 hover:bg-white rounded-lg transition"
-                    >
-                      <i class="fas fa-phone"></i>
-                    </button>
-                    <button
-                      class="p-2 hover:bg-opacity-20 hover:bg-white rounded-lg transition"
-                    >
-                      <i class="fas fa-video"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- MENSAGENS -->
-              <div
-                id="messagesArea"
-                class="flex-1 overflow-y-auto p-4 bg-gray-50"
-              >
-                <div
-                  id="emptyChat"
-                  class="h-full flex flex-col items-center justify-center text-center"
-                >
-                  <i class="fas fa-comments text-5xl text-gray-300 mb-3"></i>
-                  <h3 class="text-gray-600 font-semibold">
-                    Selecione uma conversa
-                  </h3>
-                  <p class="text-gray-400 text-sm">ou inicie uma nova</p>
-                </div>
-                <div id="messagesContainer" class="hidden space-y-3"></div>
-              </div>
-
-              <!-- INPUT -->
-              <div id="inputArea" class="border-t border-gray-200 p-4 hidden">
-                <div class="flex items-end space-x-2">
-                  <button
-                    class="p-2 text-gray-600 hover:text-primary hover:bg-gray-100 rounded-lg transition"
-                  >
-                    <i class="fas fa-paperclip text-lg"></i>
-                  </button>
-                  <textarea
-                    id="messageInput"
-                    rows="1"
-                    placeholder="Escrever mensagem..."
-                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none max-h-24"
-                  ></textarea>
-                  <button
-                    onclick="enviarMensagem()"
-                    class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition"
-                  >
-                    <i class="fas fa-paper-plane"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- MODAL NOVA CONVERSA -->
-          <div
-            id="newChatModal"
-            class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-          >
-            <div class="bg-white rounded-xl max-w-md w-full p-6">
-              <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-gray-900">Nova Conversa</h3>
-                <button
-                  onclick="fecharNewChatModal()"
-                  class="text-gray-400 hover:text-gray-600"
-                >
-                  <i class="fas fa-times text-xl"></i>
-                </button>
-              </div>
-
-              <div class="space-y-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2"
-                    >Destinatário</label
-                  >
-                  <select
-                    id="destinatarioSelect"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    <option value="">Selecionar...</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2"
-                    >Assunto</label
-                  >
-                  <input
-                    type="text"
-                    id="assuntoInput"
-                    placeholder="Assunto da conversa..."
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2"
-                    >Mensagem</label
-                  >
-                  <textarea
-                    id="firstMessageInput"
-                    rows="4"
-                    placeholder="Escrever primeira mensagem..."
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-                  ></textarea>
-                </div>
-
-                <div class="flex space-x-3">
-                  <button
-                    onclick="fecharNewChatModal()"
-                    class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onclick="criarNovaConversa()"
-                    class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition"
-                  >
-                    Iniciar
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-    <!-- REUNIÃO -->
-    <section id="reuniaoSection" class="hidden">
-      <div class="space-y-6">
-        <!-- HEADER -->
-        <div class="flex justify-between items-center">
-          <div>
-            <h2 class="text-2xl font-bold text-gray-800">Reuniões Agendadas</h2>
-            <p class="text-gray-600 text-sm mt-1">
-              Gerencie e acompanhe suas reuniões
-            </p>
-          </div>
-          <button
-            onclick="openAgendarReuniaoModal()"
-            class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-secondary transition font-semibold"
-          >
-            + Nova Reunião
-          </button>
-        </div>
-
-        <!-- STATS -->
-        <div class="grid grid-cols-3 gap-4">
-          <div class="bg-white p-4 rounded-xl shadow">
-            <p class="text-gray-600 text-sm">Total Agendadas</p>
-            <p class="text-3xl font-bold text-primary mt-2">3</p>
-          </div>
-          <div class="bg-white p-4 rounded-xl shadow">
-            <p class="text-gray-600 text-sm">Próximas</p>
-            <p class="text-3xl font-bold text-accent mt-2">1</p>
-          </div>
-          <div class="bg-white p-4 rounded-xl shadow">
-            <p class="text-gray-600 text-sm">Concluídas</p>
-            <p class="text-3xl font-bold text-green-600 mt-2">2</p>
-          </div>
-        </div>
-
-        <!-- FILTROS -->
-        <div class="flex gap-2 flex-wrap">
-          <button
-            class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium"
-          >
-            Todas
-          </button>
-          <button
-            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition"
-          >
-            Online
-          </button>
-          <button
-            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition"
-          >
-            Presencial
-          </button>
-          <button
-            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition"
-          >
-            Próximas
-          </button>
-        </div>
-
-        <!-- LISTA DE REUNIÕES -->
-        <div class="space-y-4">
-          <!-- REUNIÃO 1 - PRÓXIMA -->
-          <div
-            class="bg-white rounded-xl shadow-md p-6 border-l-4 border-accent hover:shadow-lg transition"
-          >
-            <div class="flex items-start justify-between mb-4">
-              <div class="flex items-center gap-3">
-                <div
-                  class="w-12 h-12 bg-accent rounded-lg flex items-center justify-center"
-                >
-                  <i class="fas fa-video text-white text-lg"></i>
-                </div>
-                <div>
-                  <h3 class="text-lg font-bold text-gray-800">
-                    Prof. Maria Silva
-                  </h3>
-                  <p class="text-sm text-gray-600">Matemática</p>
-                </div>
-              </div>
-              <span
-                class="bg-accent text-gray-900 px-3 py-1 rounded-full text-xs font-semibold"
-                >Online</span
-              >
-            </div>
-
-            <div class="space-y-2 mb-4">
-              <div class="flex items-center text-gray-700">
-                <i class="fas fa-calendar-alt text-primary mr-3 w-5"></i>
-                <span class="text-sm"
-                  >18 de Dezembro de 2025 • 10:00 - 10:30</span
-                >
-              </div>
-              <div class="flex items-center text-gray-700">
-                <i class="fas fa-clock text-primary mr-3 w-5"></i>
-                <span class="text-sm">Duração: 30 minutos</span>
-              </div>
-              <div class="flex items-center text-gray-700">
-                <i class="fas fa-lightbulb text-primary mr-3 w-5"></i>
-                <span class="text-sm"
-                  >Assunto: Discussão sobre desempenho académico</span
-                >
-              </div>
-            </div>
-
-            <div class="bg-gray-50 p-3 rounded-lg mb-4">
-              <p class="text-xs text-gray-600 font-semibold mb-2">
-                Áreas a discutir:
-              </p>
-              <p class="text-sm text-gray-700">
-                Melhorar notas em geometria, revisar conceitos de álgebra
-              </p>
-            </div>
-
-            <div class="flex gap-2">
-              <button
-                class="flex-1 bg-primary text-white py-2 rounded-lg hover:bg-secondary transition font-semibold text-sm"
-              >
-                <i class="fas fa-video mr-2"></i>Entrar na Reunião
-              </button>
-              <button
-                class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium"
-              >
-                <i class="fas fa-edit mr-2"></i>Editar
-              </button>
-              <button
-                class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition text-sm font-medium"
-              >
-                <i class="fas fa-trash mr-2"></i>Cancelar
-              </button>
-            </div>
-          </div>
-
-          <!-- REUNIÃO 2 -->
-          <div
-            class="bg-white rounded-xl shadow-md p-6 border-l-4 border-orange-400 hover:shadow-lg transition"
-          >
-            <div class="flex items-start justify-between mb-4">
-              <div class="flex items-center gap-3">
-                <div
-                  class="w-12 h-12 bg-orange-400 rounded-lg flex items-center justify-center"
-                >
-                  <i class="fas fa-building text-white text-lg"></i>
-                </div>
-                <div>
-                  <h3 class="text-lg font-bold text-gray-800">
-                    Prof. João Santos
-                  </h3>
-                  <p class="text-sm text-gray-600">Português</p>
-                </div>
-              </div>
-              <span
-                class="bg-orange-400 text-white px-3 py-1 rounded-full text-xs font-semibold"
-                >Presencial</span
-              >
-            </div>
-
-            <div class="space-y-2 mb-4">
-              <div class="flex items-center text-gray-700">
-                <i class="fas fa-calendar-alt text-primary mr-3 w-5"></i>
-                <span class="text-sm"
-                  >20 de Dezembro de 2025 • 14:00 - 14:45</span
-                >
-              </div>
-              <div class="flex items-center text-gray-700">
-                <i class="fas fa-clock text-primary mr-3 w-5"></i>
-                <span class="text-sm">Duração: 45 minutos</span>
-              </div>
-              <div class="flex items-center text-gray-700">
-                <i class="fas fa-map-marker-alt text-primary mr-3 w-5"></i>
-                <span class="text-sm">Sala: 12-A (Bloco B)</span>
-              </div>
-              <div class="flex items-center text-gray-700">
-                <i class="fas fa-lightbulb text-primary mr-3 w-5"></i>
-                <span class="text-sm">Assunto: Avaliação de redação</span>
-              </div>
-            </div>
-
-            <div class="bg-gray-50 p-3 rounded-lg mb-4">
-              <p class="text-xs text-gray-600 font-semibold mb-2">
-                Áreas a discutir:
-              </p>
-              <p class="text-sm text-gray-700">
-                Qualidade das redações, técnicas de escrita, leitura crítica
-              </p>
-            </div>
-
-            <div class="flex gap-2">
-              <button
-                class="flex-1 bg-primary text-white py-2 rounded-lg hover:bg-secondary transition font-semibold text-sm"
-              >
-                <i class="fas fa-directions mr-2"></i>Ver Localização
-              </button>
-              <button
-                class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium"
-              >
-                <i class="fas fa-edit mr-2"></i>Editar
-              </button>
-              <button
-                class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition text-sm font-medium"
-              >
-                <i class="fas fa-trash mr-2"></i>Cancelar
-              </button>
-            </div>
-          </div>
-
-          <!-- REUNIÃO 3 -->
-          <div
-            class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500 opacity-75 hover:shadow-lg transition"
-          >
-            <div class="flex items-start justify-between mb-4">
-              <div class="flex items-center gap-3">
-                <div
-                  class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center"
-                >
-                  <i class="fas fa-check text-white text-lg"></i>
-                </div>
-                <div>
-                  <h3 class="text-lg font-bold text-gray-800">
-                    Prof. Maria Costa
-                  </h3>
-                  <p class="text-sm text-gray-600">Ciências</p>
-                </div>
-              </div>
-              <span
-                class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold"
-                >Concluída</span
-              >
-            </div>
-
-            <div class="space-y-2 mb-4">
-              <div class="flex items-center text-gray-700">
-                <i class="fas fa-calendar-alt text-primary mr-3 w-5"></i>
-                <span class="text-sm"
-                  >15 de Dezembro de 2025 • 11:00 - 11:30</span
-                >
-              </div>
-              <div class="flex items-center text-gray-700">
-                <i class="fas fa-lightbulb text-primary mr-3 w-5"></i>
-                <span class="text-sm"
-                  >Assunto: Projeto de investigação científica</span
-                >
-              </div>
-            </div>
-
-            <div
-              class="bg-green-50 p-3 rounded-lg mb-4 border border-green-200"
-            >
-              <p class="text-xs text-green-700 font-semibold mb-2">
-                <i class="fas fa-star mr-2"></i>Feedback:
-              </p>
-              <p class="text-sm text-green-800">
-                Excelente desempenho! Projeto muito bem estruturado.
-              </p>
-            </div>
-
-            <div class="flex gap-2">
-              <button
-                class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition font-semibold text-sm"
-                disabled
-              >
-                <i class="fas fa-history mr-2"></i>Reunião Concluída
-              </button>
-              <button
-                class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium"
-              >
-                <i class="fas fa-eye mr-2"></i>Ver Detalhes
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- MODAL AGENDAR REUNIÃO -->
-      <div
-        id="agendarReuniaoModal"
-        class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-      >
-        <div
-          class="bg-white rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto"
-        >
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">
-              Agendar Nova Reunião
-            </h3>
-            <button
-              onclick="fecharAgendarReuniaoModal()"
-              class="text-gray-400 hover:text-gray-600"
-            >
-              <i class="fas fa-times text-2xl"></i>
-            </button>
-          </div>
-
-          <form id="agendarReuniaoForm" class="space-y-5">
-            <!-- Professor -->
-            <div>
-              <label class="block text-sm font-semibold text-gray-800 mb-2"
-                >Selecione o Professor *</label
-              >
-              <select
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                required
-              >
-                <option value="">Escolher...</option>
-                <option value="maria-silva">
-                  Prof. Maria Silva - Matemática
-                </option>
-                <option value="joao-santos">
-                  Prof. João Santos - Português
-                </option>
-                <option value="maria-costa">
-                  Prof. Maria Costa - Ciências
-                </option>
-              </select>
-            </div>
-
-            <!-- Tipo -->
-            <div>
-              <label class="block text-sm font-semibold text-gray-800 mb-2"
-                >Tipo de Reunião *</label
-              >
-              <div class="grid grid-cols-2 gap-3">
-                <label
-                  class="flex items-center p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-primary transition"
-                >
-                  <input
-                    type="radio"
-                    name="tipo"
-                    value="online"
-                    class="mr-3"
-                    checked
-                  />
-                  <div>
-                    <p class="font-semibold text-gray-800">Online</p>
-                    <p class="text-xs text-gray-600">Videoconferência</p>
-                  </div>
-                </label>
-                <label
-                  class="flex items-center p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-primary transition"
-                >
-                  <input
-                    type="radio"
-                    name="tipo"
-                    value="presencial"
-                    class="mr-3"
-                  />
-                  <div>
-                    <p class="font-semibold text-gray-800">Presencial</p>
-                    <p class="text-xs text-gray-600">Na escola</p>
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            <!-- Data e Hora -->
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-semibold text-gray-800 mb-2"
-                  >Data *</label
-                >
-                <input
-                  type="date"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  required
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-semibold text-gray-800 mb-2"
-                  >Hora *</label
-                >
-                <input
-                  type="time"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  required
-                />
-              </div>
-            </div>
-
-            <!-- Duração -->
-            <div>
-              <label class="block text-sm font-semibold text-gray-800 mb-2"
-                >Duração *</label
-              >
-              <select
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                required
-              >
-                <option value="15">15 minutos</option>
-                <option value="30" selected>30 minutos</option>
-                <option value="45">45 minutos</option>
-                <option value="60">1 hora</option>
-              </select>
-            </div>
-
-            <!-- Assunto -->
-            <div>
-              <label class="block text-sm font-semibold text-gray-800 mb-2"
-                >Assunto *</label
-              >
-              <input
-                type="text"
-                placeholder="Ex: Discussão sobre desempenho académico"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                required
-              />
-            </div>
-
-            <!-- Áreas a discutir -->
-            <div>
-              <label class="block text-sm font-semibold text-gray-800 mb-2"
-                >Áreas a Discutir</label
-              >
-              <textarea
-                rows="3"
-                placeholder="Escreva os tópicos específicos..."
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-              ></textarea>
-            </div>
-
-            <!-- Checkbox Lembrete -->
-            <label class="flex items-center cursor-pointer">
-              <input type="checkbox" class="w-4 h-4 text-primary" checked />
-              <span class="ml-2 text-sm text-gray-700"
-                >Enviar lembrete por e-mail 24h antes</span
-              >
-            </label>
-
-            <!-- Botões -->
-            <div class="flex gap-3 pt-4 border-t">
-              <button
-                type="button"
-                onclick="fecharAgendarReuniaoModal()"
-                class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-semibold"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition font-semibold"
-              >
-                Agendar Reunião
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-      </section>
-    </main>
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-primary text-white p-6 hidden md:flex flex-col sticky top-0 h-screen">
+    <div class="mb-8 text-center">
+      <img src="../img/logo.png" class="h-14 mb-3 mx-auto" alt="Logo" />
+      <h2 class="text-lg font-bold">Painel do Encarregado</h2>
+      <p id="sidebarNome" class="text-green-200 text-xs mt-1 truncate">A carregar...</p>
     </div>
 
-    <script>
-      function confirmar(btn) {
-        btn.textContent = "Confirmado ✓";
-        btn.classList.remove("bg-primary");
-        btn.classList.add("bg-green-600");
-      }
+    <nav class="space-y-1 flex-1">
+      <a href="#" onclick="showSection('desempenho'); return false;" id="nav-desempenho"
+         class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg bg-secondary font-semibold transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Desempenho
+      </a>
+      <a href="#" onclick="showSection('reunioes'); return false;" id="nav-reunioes"
+         class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        Reuniões
+        <span id="badgeReunioes" class="hidden ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">!</span>
+      </a>
+      <a href="#" onclick="showSection('mensagens'); return false;" id="nav-mensagens"
+         class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+        Mensagens
+        <span id="badgeMsgs" class="hidden ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+      </a>
+      <a href="index.html"
+         class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+        Notícias
+      </a>
+    </nav>
 
-      function showSection(section) {
-        const sections = [
-          "desempehoSection",
-          "mensagensSection",
-          "reuniaoSection",
-        ];
+    <button onclick="terminarSessao()"
+            class="w-full bg-accent text-black font-semibold px-4 py-2 rounded-lg hover:bg-yellow-400 transition text-sm mt-4">
+      Terminar Sessão
+    </button>
+  </aside>
 
-        sections.forEach((sec) => {
-          const el = document.getElementById(sec);
-          if (el) el.classList.add("hidden");
-        });
+  <!-- CONTEÚDO -->
+  <main class="flex-1 p-6 overflow-auto">
 
-        const target = document.getElementById(section);
-        if (target) target.classList.remove("hidden");
-      }
-    </script>
+    <!-- TOPO -->
+    <header class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-800" id="pageTitle">Desempenho</h1>
+        <p class="text-sm text-gray-500" id="pageSubtitle">Acompanhamento do seu educando</p>
+      </div>
 
-    <!-- Duplicate sections for mensagensSection and reuniaoSection removed to fix HTML errors -->
+      <div class="relative">
+        <button id="accountButton"
+                class="bg-white text-primary px-3 py-2 rounded-lg font-semibold flex items-center gap-3 shadow hover:shadow-md transition focus:outline-none">
+          <div class="relative">
+            <span id="avatarInicial" class="h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">?</span>
+            <span class="online-dot absolute -bottom-0.5 -right-0.5"></span>
+          </div>
+          <span id="headerNome" class="hidden md:inline text-gray-700 text-sm max-w-32 truncate">A carregar...</span>
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div id="accountMenu" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg ring-1 ring-black/5 z-50 overflow-hidden">
+          <div class="px-4 py-3 border-b bg-gray-50">
+            <p class="text-xs text-gray-500">Sessão activa · ENCARREGADO</p>
+            <p id="menuNome"  class="text-sm font-bold text-gray-800 truncate"></p>
+            <p id="menuEmail" class="text-xs text-gray-500 truncate"></p>
+          </div>
+          <button onclick="terminarSessao()" class="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 font-medium">
+            Terminar Sessão
+          </button>
+        </div>
+      </div>
+    </header>
 
-    <script>
-      // DADOS DO CHAT
-      const professores = [
-        {
-          id: 1,
-          nome: "Prof. Maria Silva",
-          materia: "Matemática",
-          avatar:
-            "https://ui-avatars.com/api/?name=Maria+Silva&background=15803D&color=fff",
-        },
-        {
-          id: 2,
-          nome: "Prof. João Santos",
-          materia: "Português",
-          avatar:
-            "https://ui-avatars.com/api/?name=João+Santos&background=16A34A&color=fff",
-        },
-        {
-          id: 3,
-          nome: "Diretor",
-          materia: "Direção",
-          avatar:
-            "https://ui-avatars.com/api/?name=Diretor&background=15803D&color=fff",
-        },
-      ];
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-6 right-6 z-50 hidden">
+      <div id="toastInner" class="flex items-center gap-3 px-5 py-3 rounded-xl shadow-xl text-white font-medium text-sm fade-in">
+        <span id="toastIcon"></span><span id="toastMsg"></span>
+      </div>
+    </div>
 
-      let conversas = [
-        {
-          id: 1,
-          nome: "Prof. Maria Silva",
-          materia: "Matemática",
-          avatar:
-            "https://ui-avatars.com/api/?name=Maria+Silva&background=15803D&color=fff",
-          mensagens: [
-            {
-              id: 1,
-              sender: "Prof. Maria Silva",
-              text: "Olá! Como está o seu filho nas aulas?",
-              own: false,
-              time: "10:30",
-            },
-            {
-              id: 2,
-              sender: "Eu",
-              text: "Olá professora! Está muito bem, gostando muito das aulas.",
-              own: true,
-              time: "10:35",
-            },
-            {
-              id: 3,
-              sender: "Prof. Maria Silva",
-              text: "Que ótimo! Ele está muito dedicado.",
-              own: false,
-              time: "10:40",
-            },
-          ],
-          unread: 0,
-          status: "Online",
-        },
-        {
-          id: 2,
-          nome: "Prof. João Santos",
-          materia: "Português",
-          avatar:
-            "https://ui-avatars.com/api/?name=João+Santos&background=16A34A&color=fff",
-          mensagens: [
-            {
-              id: 1,
-              sender: "Prof. João Santos",
-              text: "Preciso falar sobre a redação do seu filho.",
-              own: false,
-              time: "09:15",
-            },
-          ],
-          unread: 1,
-          status: "Offline",
-        },
-      ];
+    <!-- ===== DESEMPENHO ===== -->
+    <section id="desempenhoSection" class="fade-in space-y-6">
 
-      let conversaSelecionada = null;
+      <!-- Cards resumo -->
+      <div class="grid md:grid-cols-4 gap-5">
+        <div class="bg-white p-5 rounded-2xl shadow hover:shadow-md transition">
+          <p class="text-gray-400 text-xs font-semibold uppercase tracking-wide mb-1">Educando</p>
+          <p id="cardAluno" class="text-lg font-bold text-gray-800 truncate">-</p>
+        </div>
+        <div class="bg-white p-5 rounded-2xl shadow hover:shadow-md transition">
+          <p class="text-gray-400 text-xs font-semibold uppercase tracking-wide mb-1">Turma</p>
+          <p id="cardTurma" class="text-lg font-bold text-primary truncate">-</p>
+        </div>
+        <div class="bg-white p-5 rounded-2xl shadow hover:shadow-md transition">
+          <p class="text-gray-400 text-xs font-semibold uppercase tracking-wide mb-1">Classe</p>
+          <p id="cardClasse" class="text-lg font-bold text-gray-800 truncate">-</p>
+        </div>
+        <div class="bg-white p-5 rounded-2xl shadow hover:shadow-md transition">
+          <p class="text-gray-400 text-xs font-semibold uppercase tracking-wide mb-1">Média Geral</p>
+          <p id="cardMedia" class="text-3xl font-bold text-primary">-</p>
+        </div>
+      </div>
 
-      // Carregar conversas
-      function carregarConversas() {
-        const lista = document.getElementById("conversasList");
-        lista.innerHTML = conversas
-          .map(
-            (conv) => `
-          <div onclick="selecionarConversa(${conv.id})" class="p-3 border-b border-gray-200 hover:bg-gray-50 cursor-pointer transition ${conversaSelecionada?.id === conv.id ? "bg-yellow-50 border-l-4 border-primary" : ""}">
-            <div class="flex items-center space-x-3">
-              <img src="${conv.avatar}" alt="${conv.nome}" class="h-10 w-10 rounded-full">
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-800 truncate">${conv.nome}</p>
-                <p class="text-xs text-gray-500 truncate">${conv.materia}</p>
-                ${conv.unread > 0 ? `<span class="text-xs bg-primary text-white px-2 py-1 rounded-full">${conv.unread} novo${conv.unread > 1 ? "s" : ""}</span>` : ""}
-              </div>
+      <!-- Notas detalhadas -->
+      <div class="bg-white rounded-2xl shadow p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-gray-800">Desempenho Académico</h2>
+          <button onclick="carregarNotas()" class="text-sm text-primary font-semibold hover:underline">Actualizar</button>
+        </div>
+
+        <div id="notasLoading" class="flex justify-center py-8"><div class="spinner"></div></div>
+
+        <div id="notasContainer" class="hidden space-y-4"></div>
+
+        <div id="notasVazio" class="hidden text-center py-12">
+          <svg class="w-14 h-14 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          <p class="text-gray-400 font-medium">Nenhuma nota registada ainda</p>
+          <p class="text-gray-300 text-sm mt-1">As notas serão publicadas pelos professores</p>
+        </div>
+      </div>
+
+      <!-- Avisos da escola -->
+      <div class="bg-white rounded-2xl shadow p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Últimos Avisos da Escola</h2>
+        <div id="avisosContainer" class="space-y-3">
+          <div class="flex justify-center py-4"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== REUNIÕES ===== -->
+    <section id="reunioesSection" class="hidden fade-in space-y-6">
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="bg-white p-5 rounded-2xl shadow">
+          <p class="text-gray-500 text-sm">Total</p>
+          <p id="statTotalR" class="text-3xl font-bold text-primary mt-1">-</p>
+        </div>
+        <div class="bg-white p-5 rounded-2xl shadow">
+          <p class="text-gray-500 text-sm">Online</p>
+          <p id="statOnlineR" class="text-3xl font-bold text-blue-600 mt-1">-</p>
+        </div>
+        <div class="bg-white p-5 rounded-2xl shadow">
+          <p class="text-gray-500 text-sm">Presenciais</p>
+          <p id="statPresencialR" class="text-3xl font-bold text-yellow-600 mt-1">-</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold text-gray-800">Reuniões Agendadas</h2>
+          <button onclick="carregarReunioes()" class="text-sm text-primary font-semibold hover:underline">Actualizar</button>
+        </div>
+        <div id="listaReunioes" class="space-y-4">
+          <div class="flex justify-center py-8"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== MENSAGENS (CHAT WEBSOCKET) ===== -->
+    <section id="mensagensSection" class="hidden fade-in">
+      <div class="bg-white rounded-2xl shadow overflow-hidden" style="height:calc(100vh - 160px);display:flex;">
+
+        <!-- Sidebar conversas -->
+        <div class="w-72 border-r border-gray-100 flex flex-col shrink-0">
+          <div class="p-4 border-b border-gray-100">
+            <h2 class="font-bold text-gray-800 mb-3">Mensagens</h2>
+            <input type="text" id="searchConversas" placeholder="Pesquisar professor..."
+                   oninput="filtrarConversas()"
+                   class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+          </div>
+          <div class="p-3 border-b border-gray-100">
+            <button onclick="abrirModalNovaMsg()"
+                    class="w-full bg-primary text-white py-2 rounded-lg hover:bg-secondary transition text-sm font-semibold">
+              + Nova Mensagem
+            </button>
+          </div>
+          <div id="listaConversas" class="flex-1 overflow-y-auto">
+            <div class="flex justify-center py-8"><div class="spinner"></div></div>
+          </div>
+        </div>
+
+        <!-- Área do chat -->
+        <div class="flex-1 flex flex-col">
+          <!-- Header -->
+          <div id="chatHeader" class="hidden border-b border-gray-100 p-4 flex items-center gap-3 bg-white">
+            <div class="relative">
+              <div id="chatAvatar" class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-700 font-bold"></div>
+              <span class="online-dot absolute -bottom-0.5 -right-0.5"></span>
+            </div>
+            <div>
+              <p id="chatNome" class="font-bold text-gray-800"></p>
+              <p class="text-xs text-green-600 font-medium">Online</p>
             </div>
           </div>
-        `,
-          )
-          .join("");
-      }
 
-      // Selecionar conversa
-      function selecionarConversa(id) {
-        conversaSelecionada = conversas.find((c) => c.id === id);
-
-        document.getElementById("chatHeader").classList.remove("hidden");
-        document.getElementById("inputArea").classList.remove("hidden");
-        document.getElementById("emptyChat").classList.add("hidden");
-        document.getElementById("messagesContainer").classList.remove("hidden");
-
-        document.getElementById("chatAvatar").src = conversaSelecionada.avatar;
-        document.getElementById("chatNome").textContent =
-          conversaSelecionada.nome;
-        document.getElementById("chatStatus").textContent =
-          conversaSelecionada.status;
-
-        carregarMensagens();
-        carregarConversas();
-      }
-
-      // Carregar mensagens
-      function carregarMensagens() {
-        const container = document.getElementById("messagesContainer");
-        container.innerHTML = conversaSelecionada.mensagens
-          .map(
-            (msg) => `
-          <div class="flex ${msg.own ? "justify-end" : "justify-start"}">
-            <div class="max-w-xs">
-              ${!msg.own ? `<p class="text-xs text-gray-500 mb-1">${msg.sender}</p>` : ""}
-              <div class="${msg.own ? "bg-primary text-white" : "bg-gray-200 text-gray-800"} rounded-lg px-4 py-2">
-                <p class="text-sm">${msg.text}</p>
-              </div>
-              <p class="text-xs text-gray-500 mt-1">${msg.time}</p>
+          <!-- Empty -->
+          <div id="chatEmpty" class="flex-1 flex items-center justify-center text-center p-8 bg-gray-50">
+            <div>
+              <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+              </svg>
+              <p class="text-gray-500 font-semibold">Selecione uma conversa</p>
+              <p class="text-gray-400 text-sm mt-1">ou inicie uma nova mensagem com um professor</p>
             </div>
           </div>
-        `,
-          )
-          .join("");
 
-        document.getElementById("messagesArea").scrollTop =
-          document.getElementById("messagesArea").scrollHeight;
-      }
+          <!-- Mensagens -->
+          <div id="messagesArea" class="hidden flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50"></div>
 
-      // Enviar mensagem
-      function enviarMensagem() {
-        const input = document.getElementById("messageInput");
-        const text = input.value.trim();
+          <!-- Input -->
+          <div id="chatInput" class="hidden border-t border-gray-100 p-4 bg-white">
+            <div id="typingIndicator" class="hidden text-xs text-gray-400 mb-2 italic">A escrever...</div>
+            <div class="flex gap-2 items-end">
+              <textarea id="messageInput" rows="1" placeholder="Escreva uma mensagem..."
+                        class="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none max-h-28"
+                        onkeydown="handleMsgKeydown(event)"
+                        oninput="handleTyping()"></textarea>
+              <button onclick="enviarMensagem()"
+                      class="bg-primary text-white p-3 rounded-xl hover:bg-secondary transition shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        if (!text || !conversaSelecionada) return;
+      <!-- Modal nova mensagem -->
+      <div id="modalNovaMsg" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 mx-4 fade-in">
+          <h3 class="text-xl font-bold text-gray-800 mb-6">Nova Mensagem</h3>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Professor</label>
+              <select id="destinatarioProfessor" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary">
+                <option value="">Selecionar professor...</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Mensagem</label>
+              <textarea id="primeiraMensagem" rows="4" placeholder="Escreva a sua mensagem..."
+                        class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary resize-none"></textarea>
+            </div>
+          </div>
+          <div class="flex gap-3 mt-6">
+            <button onclick="fecharModalNovaMsg()"
+                    class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 font-semibold transition">
+              Cancelar
+            </button>
+            <button onclick="iniciarConversa()"
+                    class="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-secondary font-semibold transition">
+              Enviar
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        const hora = new Date().toLocaleTimeString("pt-PT", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
+  </main>
+</div>
 
-        conversaSelecionada.mensagens.push({
-          id: conversaSelecionada.mensagens.length + 1,
-          sender: "Eu",
-          text: text,
-          own: true,
-          time: hora,
-        });
+<script>
+  const API = "http://localhost:3000";
+  const WS  = "ws://localhost:3000";
 
-        input.value = "";
-        carregarMensagens();
-      }
+  /* ── AUTENTICAÇÃO E CONFIGURAÇÃO INICIAL ────────────────────────────
+  // AUTH 
+  const token      = localStorage.getItem("token");
+  const usuarioStr = localStorage.getItem("usuario");
+  if (!token || !usuarioStr) { window.location.href = "login.html"; }
+  const encarregado = JSON.parse(usuarioStr);
+  if (encarregado.perfil !== "ENCARREGADO") {
+    alert("Acesso negado."); window.location.href = "login.html";
+  }
+    */
 
-      // Modal nova conversa
-      function openNewChatModal() {
-        document.getElementById("newChatModal").classList.remove("hidden");
-        document.getElementById("destinatarioSelect").innerHTML =
-          '<option value="">Selecionar...</option>' +
-          professores
-            .map(
-              (p) =>
-                `<option value="${p.id}">${p.nome} (${p.materia})</option>`,
-            )
-            .join("");
-      }
+  // HELPERS 
+  async function apiFetch(url, opts={}) {
+    return fetch(API + url, { ...opts, headers:{ ...(opts.headers||{}), "Authorization":"Bearer "+token } });
+  }
 
-      function fecharNewChatModal() {
-        document.getElementById("newChatModal").classList.add("hidden");
-      }
+  function toast(msg, tipo="sucesso") {
+    const ti = document.getElementById("toastInner");
+    ti.className = "flex items-center gap-3 px-5 py-3 rounded-xl shadow-xl text-white font-medium text-sm fade-in " +
+      (tipo==="sucesso"?"bg-green-600":tipo==="erro"?"bg-red-600":"bg-blue-600");
+    document.getElementById("toastIcon").textContent = tipo==="sucesso"?"✓":tipo==="erro"?"✕":"ℹ";
+    document.getElementById("toastMsg").textContent  = msg;
+    const t = document.getElementById("toast");
+    t.classList.remove("hidden");
+    setTimeout(()=>t.classList.add("hidden"), 4000);
+  }
 
-      function criarNovaConversa() {
-        const id = document.getElementById("destinatarioSelect").value;
-        const assunto = document.getElementById("assuntoInput").value.trim();
-        const mensagem = document
-          .getElementById("firstMessageInput")
-          .value.trim();
+  //  WEBSOCKET 
+  let ws = null;
+  let professorAtual = null;
+  let professores    = [];
+  let typingTimer    = null;
 
-        if (!id || !assunto || !mensagem) {
-          alert("Preencha todos os campos");
-          return;
+  function conectarWS() {
+    ws = new WebSocket(WS + "?token=" + token);
+    ws.onopen  = () => console.log("WS conectado");
+    ws.onmessage = (ev) => {
+      const data = JSON.parse(ev.data);
+      if (data.tipo === "mensagem") {
+        if (professorAtual && (data.remetenteId === professorAtual.id || data.destinatarioId === professorAtual.id)) {
+          adicionarMensagem({ conteudo:data.conteudo, remetenteId:data.remetenteId, criadoEm:data.criadoEm||new Date().toISOString() });
         }
+        if (data.remetenteId !== encarregado.id) {
+          actualizarBadge(1);
+          actualizarPreviewConversa(data.remetenteId, data.conteudo);
+        }
+      }
+      if (data.tipo === "typing" && data.userId === professorAtual?.id) {
+        const ti = document.getElementById("typingIndicator");
+        ti.classList.remove("hidden");
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(()=>ti.classList.add("hidden"), 2000);
+      }
+    };
+    ws.onclose = () => setTimeout(conectarWS, 3000);
+  }
 
-        const prof = professores.find((p) => p.id === parseInt(id));
-        const hora = new Date().toLocaleTimeString("pt-PT", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
+  function enviarWS(payload) {
+    if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(payload));
+  }
 
-        conversas.unshift({
-          id: Date.now(),
-          nome: prof.nome,
-          materia: prof.materia,
-          avatar: prof.avatar,
-          mensagens: [
-            { id: 1, sender: "Eu", text: mensagem, own: true, time: hora },
-          ],
-          unread: 0,
-          status: "Offline",
-        });
+  //  NAVEGAÇÃO
+  const seccoes = ["desempenho","reunioes","mensagens"];
 
-        document.getElementById("assuntoInput").value = "";
-        document.getElementById("firstMessageInput").value = "";
-        fecharNewChatModal();
-        carregarConversas();
+  function showSection(sec) {
+    seccoes.forEach(s => {
+      document.getElementById(s+"Section").classList.add("hidden");
+      const nav = document.getElementById("nav-"+s);
+      if (nav) { nav.classList.remove("bg-secondary","font-semibold"); nav.classList.add("hover:bg-secondary"); }
+    });
+    document.getElementById(sec+"Section").classList.remove("hidden");
+    const an = document.getElementById("nav-"+sec);
+    if (an) { an.classList.add("bg-secondary","font-semibold"); an.classList.remove("hover:bg-secondary"); }
+
+    const t = {
+      desempenho: ["Desempenho","Acompanhamento académico do seu educando"],
+      reunioes:   ["Reuniões",  "Reuniões agendadas com os professores"],
+      mensagens:  ["Mensagens", "Comunicação com os professores"],
+    };
+    document.getElementById("pageTitle").textContent    = t[sec][0];
+    document.getElementById("pageSubtitle").textContent = t[sec][1];
+
+    if (sec === "reunioes")  carregarReunioes();
+    if (sec === "mensagens") { carregarConversas(); if (!ws) conectarWS(); }
+  }
+
+  //  PREENCHER PERFIL
+  function preencherPerfil() {
+    const nome    = encarregado.nome || "Encarregado";
+    const inicial = nome[0]?.toUpperCase() || "E";
+    document.getElementById("sidebarNome").textContent   = nome;
+    document.getElementById("headerNome").textContent    = nome;
+    document.getElementById("menuNome").textContent      = nome;
+    document.getElementById("menuEmail").textContent     = encarregado.email || "";
+    document.getElementById("avatarInicial").textContent = inicial;
+  }
+
+  //  DESEMPENHO 
+  async function carregarDesempenho() {
+    try {
+      // Carregar alunos associados ao encarregado
+      const res   = await apiFetch("/api/alunos");
+      const todos = await res.json();
+      const alunos = todos.filter(a => a.encarregadoId === encarregado.id);
+
+      if (!alunos.length) {
+        document.getElementById("notasLoading").classList.add("hidden");
+        document.getElementById("notasVazio").classList.remove("hidden");
+        return;
       }
 
-      // Buscar conversas e inicializar eventos
-      document.addEventListener("DOMContentLoaded", () => {
-        carregarConversas();
+      const aluno = alunos[0]; // primeiro educando
+      document.getElementById("cardAluno").textContent  = aluno.nome;
+      document.getElementById("cardTurma").textContent  = aluno.turma?.nome  || aluno.classe || "-";
+      document.getElementById("cardClasse").textContent = aluno.classe || "-";
 
-        document.getElementById("searchChat").addEventListener("input", (e) => {
-          const query = e.target.value.toLowerCase();
-          const items = document.querySelectorAll("#conversasList > div");
-          items.forEach((item) => {
-            const nome = item.textContent.toLowerCase();
-            item.style.display = nome.includes(query) ? "block" : "none";
-          });
-        });
+      // Carregar notas do aluno
+      await carregarNotas(aluno.id);
 
-        document
-          .getElementById("messageInput")
-          .addEventListener("keypress", (e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              enviarMensagem();
-            }
-          });
+    } catch {
+      document.getElementById("notasLoading").classList.add("hidden");
+      document.getElementById("notasVazio").classList.remove("hidden");
+    }
+  }
 
-        // Auto-resize textarea
-        const textarea = document.getElementById("messageInput");
-        if (textarea) {
-          textarea.addEventListener("input", function () {
-            this.style.height = "auto";
-            this.style.height = Math.min(this.scrollHeight, 96) + "px";
-          });
-        }
+  async function carregarNotas(alunoId) {
+    document.getElementById("notasLoading").classList.remove("hidden");
+    document.getElementById("notasContainer").classList.add("hidden");
+    document.getElementById("notasVazio").classList.add("hidden");
+
+    try {
+      const res   = await apiFetch("/api/notas");
+      const todas = await res.json();
+      const notas = Array.isArray(todas)
+        ? todas.filter(n => alunoId ? n.alunoId === alunoId : true)
+        : [];
+
+      document.getElementById("notasLoading").classList.add("hidden");
+
+      if (!notas.length) {
+        document.getElementById("notasVazio").classList.remove("hidden");
+        return;
+      }
+
+      // Calcular média
+      const media = notas.reduce((s,n)=>s+n.valor,0) / notas.length;
+      document.getElementById("cardMedia").textContent = media.toFixed(1);
+      const corMedia = media>=15?"text-green-600":media>=10?"text-blue-600":"text-red-600";
+      document.getElementById("cardMedia").className = "text-3xl font-bold " + corMedia;
+
+      // Agrupar por disciplina
+      const porDisc = {};
+      notas.forEach(n => {
+        const nome = n.disciplina?.nome || "Disciplina";
+        if (!porDisc[nome]) porDisc[nome] = [];
+        porDisc[nome].push(n.valor);
       });
 
-      function openAgendarReuniaoModal() {
-        document
-          .getElementById("agendarReuniaoModal")
-          .classList.remove("hidden");
+      const container = document.getElementById("notasContainer");
+      container.classList.remove("hidden");
+      container.innerHTML = Object.entries(porDisc).map(([disc, vals]) => {
+        const media = vals.reduce((s,v)=>s+v,0) / vals.length;
+        const pct   = (media / 20) * 100;
+        const cor   = media>=15?"#16a34a":media>=10?"#2563eb":"#dc2626";
+        const badge = media>=15?"bg-green-100 text-green-700":media>=10?"bg-blue-100 text-blue-700":"bg-red-100 text-red-700";
+        const label = media>=15?"Muito Bom":media>=10?"Satisfatório":"Insuficiente";
+        return `
+          <div class="border border-gray-100 rounded-xl p-5 hover:shadow-sm transition">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm"
+                     style="background:${cor}">${disc[0]}</div>
+                <div>
+                  <p class="font-bold text-gray-800">${disc}</p>
+                  <p class="text-xs text-gray-400">${vals.length} avaliação${vals.length>1?"ões":""}</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="text-2xl font-bold" style="color:${cor}">${media.toFixed(1)}</p>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${badge}">${label}</span>
+              </div>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:${pct}%;background:${cor}"></div>
+            </div>
+            <div class="flex justify-between mt-1">
+              <span class="text-xs text-gray-400">0</span>
+              <span class="text-xs text-gray-400">20</span>
+            </div>
+          </div>`;
+      }).join("");
+
+    } catch {
+      document.getElementById("notasLoading").classList.add("hidden");
+      document.getElementById("notasVazio").classList.remove("hidden");
+    }
+  }
+
+  // AVISOS
+  async function carregarAvisos() {
+    try {
+      const res   = await apiFetch("/api/avisos");
+      const data  = await res.json();
+      const avisos = Array.isArray(data) ? data.slice(0,3) : [];
+      const cont   = document.getElementById("avisosContainer");
+      if (!avisos.length) {
+        cont.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">Sem avisos publicados</p>';
+        return;
+      }
+      cont.innerHTML = avisos.map(a=>`
+        <div class="flex items-start gap-3 p-4 bg-green-50 border border-green-100 rounded-xl">
+          <div class="w-2 h-2 rounded-full bg-primary mt-2 shrink-0"></div>
+          <div>
+            <p class="font-semibold text-gray-800 text-sm">${a.titulo}</p>
+            <p class="text-gray-500 text-xs mt-0.5">${a.conteudo.substring(0,100)}${a.conteudo.length>100?"...":""}</p>
+            <p class="text-gray-300 text-xs mt-1">${new Date(a.criadoEm).toLocaleDateString("pt-PT")}</p>
+          </div>
+        </div>`).join("");
+    } catch {}
+  }
+
+  // REUNIÕES 
+  async function carregarReunioes() {
+    document.getElementById("listaReunioes").innerHTML='<div class="flex justify-center py-8"><div class="spinner"></div></div>';
+    try {
+      const res  = await apiFetch("/api/reunioes");
+      const data = await res.json();
+      document.getElementById("statTotalR").textContent     = data.length;
+      document.getElementById("statOnlineR").textContent    = data.filter(r=>r.linkMeeting).length;
+      document.getElementById("statPresencialR").textContent= data.filter(r=>!r.linkMeeting).length;
+
+      if (!data.length) {
+        document.getElementById("listaReunioes").innerHTML='<p class="text-gray-400 text-center py-8">Nenhuma reunião agendada</p>';
+        return;
       }
 
-      function fecharAgendarReuniaoModal() {
-        document.getElementById("agendarReuniaoModal").classList.add("hidden");
-        document.getElementById("agendarReuniaoForm").reset();
+      document.getElementById("listaReunioes").innerHTML = data.map(r=>`
+        <div class="border-l-4 ${r.linkMeeting?"border-blue-400":"border-yellow-400"} bg-gray-50 p-5 rounded-xl hover:shadow-md transition">
+          <div class="flex justify-between items-start mb-3">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold
+                          ${r.linkMeeting?"bg-blue-500":"bg-yellow-500"}">
+                ${r.linkMeeting?"🎥":"📍"}
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-800">${r.titulo}</h3>
+                <p class="text-sm text-gray-500">${r.local}</p>
+              </div>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold shrink-0
+                         ${r.linkMeeting?"bg-blue-100 text-blue-700":"bg-yellow-100 text-yellow-700"}">
+              ${r.linkMeeting?"Online":"Presencial"}
+            </span>
+          </div>
+          <p class="text-xs text-gray-400 mb-3">Agendada em: ${new Date(r.criadoEm).toLocaleDateString("pt-PT")}</p>
+          ${r.linkMeeting?`
+            <a href="${r.linkMeeting}" target="_blank"
+               class="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition shadow-sm">
+              🎥 Entrar na Reunião
+            </a>`:
+            `<div class="flex items-center gap-2 text-gray-600 text-sm">
+              📍 <span>${r.local}</span>
+            </div>`}
+        </div>`).join("");
+
+      // Badge se há reuniões
+      if (data.length > 0) document.getElementById("badgeReunioes").classList.remove("hidden");
+    } catch { toast("Erro ao carregar reuniões","erro"); }
+  }
+
+  // MENSAGENS 
+  async function carregarProfessores() {
+    try {
+      const res   = await apiFetch("/api/usuarios");
+      const users = await res.json();
+      professores = users.filter(u=>u.perfil==="PROFESSOR");
+      const sel   = document.getElementById("destinatarioProfessor");
+      sel.innerHTML = '<option value="">Selecionar professor...</option>';
+      professores.forEach(p=>sel.innerHTML+=`<option value="${p.id}">${p.nome}</option>`);
+    } catch {}
+  }
+
+  async function carregarConversas() {
+    document.getElementById("listaConversas").innerHTML='<div class="flex justify-center py-8"><div class="spinner"></div></div>';
+    await carregarProfessores();
+    try {
+      const res  = await apiFetch("/api/mensagens");
+      const msgs = await res.json();
+      const lista = Array.isArray(msgs) ? msgs : [];
+
+      // Agrupar por professor
+      const mapa = {};
+      lista.forEach(m=>{
+        const outroId = m.remetenteId===encarregado.id ? m.destinatarioId : m.remetenteId;
+        if (!mapa[outroId]||new Date(m.criadoEm)>new Date(mapa[outroId].criadoEm)) mapa[outroId]=m;
+      });
+
+      // Todos os professores (com ou sem conversa)
+      const idsComConversa = new Set(Object.keys(mapa).map(Number));
+      const todosIds = [...new Set([...idsComConversa,...professores.map(p=>p.id)])];
+
+      const cont = document.getElementById("listaConversas");
+      if (!todosIds.length) {
+        cont.innerHTML='<p class="text-gray-400 text-sm text-center py-8 px-4">Nenhum professor disponível</p>';
+        return;
       }
 
-      document
-        .getElementById("agendarReuniaoForm")
-        .addEventListener("submit", (e) => {
-          e.preventDefault();
-          alert(
-            "Reunião agendada com sucesso! Receberá uma confirmação por e-mail.",
-          );
-          fecharAgendarReuniaoModal();
-        });
+      cont.innerHTML = todosIds.map(id=>{
+        const prof = professores.find(p=>p.id===id);
+        if (!prof) return "";
+        const ultima = mapa[id];
+        const preview = ultima?(ultima.remetenteId===encarregado.id?"Você: ":"")+ultima.conteudo.substring(0,38)+"...":"Clique para iniciar";
+        return `
+          <div onclick="abrirConversa(${prof.id},'${prof.nome}')"
+               class="conversa-item cursor-pointer p-4 border-b border-gray-50 flex items-center gap-3 transition" id="conv-${prof.id}">
+            <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-700 font-bold text-sm shrink-0">
+              ${prof.nome[0].toUpperCase()}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-gray-800 text-sm truncate">${prof.nome}</p>
+              <p class="text-xs text-gray-400 truncate">${preview}</p>
+            </div>
+          </div>`;
+      }).join("");
+    } catch {
+      await carregarProfessores();
+      const cont = document.getElementById("listaConversas");
+      cont.innerHTML = professores.map(p=>`
+        <div onclick="abrirConversa(${p.id},'${p.nome}')"
+             class="conversa-item cursor-pointer p-4 border-b border-gray-50 flex items-center gap-3 transition" id="conv-${p.id}">
+          <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-700 font-bold text-sm shrink-0">
+            ${p.nome[0].toUpperCase()}
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-gray-800 text-sm truncate">${p.nome}</p>
+            <p class="text-xs text-gray-400">Clique para iniciar</p>
+          </div>
+        </div>`).join("") || '<p class="text-gray-400 text-sm text-center py-8">Sem professores</p>';
+    }
+  }
 
-      // Fechar modal ao clicar fora
-      document
-        .getElementById("agendarReuniaoModal")
-        .addEventListener("click", (e) => {
-          if (e.target.id === "agendarReuniaoModal") {
-            fecharAgendarReuniaoModal();
-          }
-        });
+  function filtrarConversas() {
+    const q = document.getElementById("searchConversas").value.toLowerCase();
+    document.querySelectorAll(".conversa-item").forEach(el=>{
+      el.style.display = el.textContent.toLowerCase().includes(q) ? "" : "none";
+    });
+  }
 
-      // Dropdown da conta (avatar + menu)
-      (function() {
-        const accountBtn = document.getElementById('accountButton');
-        const accountMenu = document.getElementById('accountMenu');
-        if (!accountBtn || !accountMenu) return;
+  async function abrirConversa(profId, profNome) {
+    professorAtual = { id:profId, nome:profNome };
+    document.querySelectorAll(".conversa-item").forEach(el=>el.classList.remove("active"));
+    document.getElementById("conv-"+profId)?.classList.add("active");
+    document.getElementById("chatHeader").classList.remove("hidden");
+    document.getElementById("chatAvatar").textContent = profNome[0].toUpperCase();
+    document.getElementById("chatNome").textContent   = profNome;
+    document.getElementById("chatEmpty").classList.add("hidden");
+    document.getElementById("messagesArea").classList.remove("hidden");
+    document.getElementById("chatInput").classList.remove("hidden");
+    await carregarMensagens(profId);
+    enviarWS({ tipo:"entrar_conversa", destinatarioId:profId });
+  }
 
-        accountBtn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          const expanded = this.getAttribute('aria-expanded') === 'true';
-          this.setAttribute('aria-expanded', String(!expanded));
-          accountMenu.classList.toggle('hidden');
-        });
+  async function carregarMensagens(profId) {
+    const area = document.getElementById("messagesArea");
+    area.innerHTML = '<div class="flex justify-center py-4"><div class="spinner"></div></div>';
+    try {
+      const res  = await apiFetch("/api/mensagens");
+      const msgs = await res.json();
+      const filtradas = Array.isArray(msgs)
+        ? msgs.filter(m=>(m.remetenteId===encarregado.id&&m.destinatarioId===profId)||(m.remetenteId===profId&&m.destinatarioId===encarregado.id))
+        : [];
+      area.innerHTML = filtradas.length ? "" : '<p class="text-gray-400 text-center text-sm py-4">Sem mensagens. Inicie a conversa!</p>';
+      filtradas.forEach(m=>adicionarMensagem(m,false));
+      area.scrollTop = area.scrollHeight;
+    } catch {
+      area.innerHTML = '<p class="text-gray-400 text-center text-sm py-4">Inicie a conversa!</p>';
+    }
+  }
 
-        // Fechar ao clicar fora
-        document.addEventListener('click', function() {
-          if (!accountMenu.classList.contains('hidden')) {
-            accountMenu.classList.add('hidden');
-            accountBtn.setAttribute('aria-expanded', 'false');
-          }
-        });
+  function adicionarMensagem(msg, scroll=true) {
+    const area  = document.getElementById("messagesArea");
+    const isOwn = msg.remetenteId === encarregado.id;
+    const hora  = new Date(msg.criadoEm).toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"});
+    const div   = document.createElement("div");
+    div.className = "flex "+(isOwn?"justify-end":"justify-start");
+    div.innerHTML = `
+      <div class="max-w-xs lg:max-w-md">
+        <div class="${isOwn?"msg-own":"msg-other"} px-4 py-2.5 text-sm shadow-sm">${msg.conteudo}</div>
+        <p class="text-xs text-gray-400 mt-1 ${isOwn?"text-right":"text-left"}">${hora}</p>
+      </div>`;
+    area.appendChild(div);
+    if (scroll) area.scrollTop = area.scrollHeight;
+  }
 
-        // Ação de terminar sessão (exemplo)
-        const logoutBtn = accountMenu.querySelector('button[data-action="logout"]');
-        if (logoutBtn) {
-          logoutBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('Sessão terminada');
-          });
-        }
-      })();
-    </script>
+  async function enviarMensagem() {
+    const input    = document.getElementById("messageInput");
+    const conteudo = input.value.trim();
+    if (!conteudo||!professorAtual) return;
+    const msg = { remetenteId:encarregado.id, destinatarioId:professorAtual.id, conteudo, criadoEm:new Date().toISOString() };
+    adicionarMensagem(msg);
+    input.value=""; input.style.height="auto";
+    enviarWS({ tipo:"mensagem",...msg });
+    try {
+      await apiFetch("/api/mensagens",{ method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({remetenteId:encarregado.id,destinatarioId:professorAtual.id,conteudo}) });
+      actualizarPreviewConversa(professorAtual.id,"Você: "+conteudo);
+    } catch { toast("Erro ao enviar","erro"); }
+  }
 
-    <!-- FONT AWESOME -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-  </body>
+  function handleMsgKeydown(e) { if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();enviarMensagem();} }
+  function handleTyping() {
+    const ta=document.getElementById("messageInput");
+    ta.style.height="auto"; ta.style.height=Math.min(ta.scrollHeight,112)+"px";
+    enviarWS({tipo:"typing",userId:encarregado.id,destinatarioId:professorAtual?.id});
+  }
+
+  function actualizarPreviewConversa(profId, preview) {
+    const el = document.getElementById("conv-"+profId);
+    if (el) { const p=el.querySelector("p:last-child"); if(p) p.textContent=preview.substring(0,42)+"..."; }
+  }
+
+  let badgeCount = 0;
+  function actualizarBadge(n) {
+    badgeCount+=n;
+    const b=document.getElementById("badgeMsgs");
+    if(badgeCount>0){b.classList.remove("hidden");b.textContent=badgeCount;}
+    else b.classList.add("hidden");
+  }
+
+  async function iniciarConversa() {
+    const profId   = document.getElementById("destinatarioProfessor").value;
+    const conteudo = document.getElementById("primeiraMensagem").value.trim();
+    if (!profId)   return toast("Selecione um professor","erro");
+    if (!conteudo) return toast("Escreva uma mensagem","erro");
+    try {
+      await apiFetch("/api/mensagens",{ method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({remetenteId:encarregado.id,destinatarioId:parseInt(profId),conteudo}) });
+      enviarWS({tipo:"mensagem",remetenteId:encarregado.id,destinatarioId:parseInt(profId),conteudo,criadoEm:new Date().toISOString()});
+      toast("Mensagem enviada!");
+      fecharModalNovaMsg();
+      document.getElementById("primeiraMensagem").value="";
+      const prof=professores.find(p=>p.id===parseInt(profId));
+      if(prof) setTimeout(()=>abrirConversa(prof.id,prof.nome),300);
+      carregarConversas();
+    } catch { toast("Erro ao enviar","erro"); }
+  }
+
+  function abrirModalNovaMsg() {
+    document.getElementById("modalNovaMsg").style.display="flex";
+    document.getElementById("modalNovaMsg").classList.remove("hidden");
+  }
+  function fecharModalNovaMsg() {
+    document.getElementById("modalNovaMsg").style.display="none";
+    document.getElementById("modalNovaMsg").classList.add("hidden");
+  }
+
+  // ── DROPDOWN 
+  document.getElementById("accountButton").addEventListener("click",function(e){
+    e.stopPropagation();
+    document.getElementById("accountMenu").classList.toggle("hidden");
+  });
+  document.addEventListener("click",()=>document.getElementById("accountMenu").classList.add("hidden"));
+
+  function terminarSessao() {
+    if(confirm("Tem a certeza que deseja terminar a sessão?")) {
+      if(ws) ws.close();
+      localStorage.removeItem("token"); localStorage.removeItem("usuario");
+      window.location.href="login.html";
+    }
+  }
+
+  // ── ARRANQUE 
+  preencherPerfil();
+  carregarDesempenho();
+  carregarAvisos();
+  showSection("desempenho");
+</script>
+</body>
 </html>

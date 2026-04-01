@@ -8,12 +8,8 @@
       content="SchoolConnect - Registo de nova conta para pais e professores"
     />
     <title>Registo - SchoolConnect</title>
-
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" href="../img/logo.png" type="image/png" />
-
-    <!-- Cores institucionais -->
     <script>
       tailwind.config = {
         theme: {
@@ -29,32 +25,58 @@
         },
       };
     </script>
+    <style>
+      @keyframes floatDot {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-7px);
+        }
+      }
+    </style>
   </head>
 
-  <!-- FUNDO -->
   <body
     class="min-h-screen bg-cover bg-center"
     style="background-image: url(&quot;../img/background.png&quot;)"
   >
-    <!-- OVERLAY -->
     <div class="absolute inset-0"></div>
 
-    <!-- CONTAINER -->
+    <!-- FORMULÁRIO PRINCIPAL -->
     <div
       class="relative min-h-screen flex items-center justify-center px-4 py-12"
     >
       <div
+        id="mainCard"
         class="relative bg-white/70 border border-white/30 shadow-2xl rounded-2xl w-[95%] max-w-3xl p-8 md:p-10"
       >
-        <!-- LOGO E CABEÇALHO -->
-        <div class="text-center mb-8">
-          <div
-            class="inline-flex items-center justify-center w-16 h-16 bg-accent/20 rounded-full mb-4"
-          >
-            <img src="../img/logo.png" class="h-16 mx-auto mb-3" />
+        <!-- CABEÇALHO -->
+        <div class="text-center mb-10">
+          <!-- LOGO -->
+          <div class="flex justify-center mb-4">
+            <div
+              class="w-20 h-20 bg-white shadow-lg rounded-2xl flex items-center justify-center"
+            >
+              <img
+                src="../img/logo.png"
+                class="h-12 object-contain"
+                alt="Logo Instituto"
+              />
+            </div>
           </div>
-          <h1 class="text-2xl font-bold text-principal">Criar Conta</h1>
-          <p class="text-gray-700">Junte-se à comunidade SchoolConnect</p>
+
+          <!-- TÍTULO -->
+          <h1 class="text-3xl font-bold text-principal tracking-wide">
+            Criar Conta
+          </h1>
+
+          <!-- SUBTÍTULO -->
+          <p class="text-gray-500 mt-2 text-sm">
+            Junte-se à comunidade
+            <span class="font-semibold text-primary">SchoolConnect</span>
+          </p>
         </div>
 
         <!-- PROGRESSO -->
@@ -79,22 +101,19 @@
         </div>
 
         <!-- FORMULÁRIO -->
-        <form id="registrationForm" class="space-y-6" novalidate>
+        <form id="registrationForm" class="space-y-6">
           <!-- PASSO 1: SELEÇÃO DE PERFIL -->
           <div id="step1" class="step-content">
             <h2 class="text-xl font-semibold text-primary mb-4">
               Selecione o seu perfil
             </h2>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <!-- Encarregado -->
               <label class="relative cursor-pointer">
                 <input
                   type="radio"
                   name="userRole"
                   value="parent"
                   class="peer sr-only"
-                  required
                 />
                 <div
                   class="p-6 bg-white rounded-xl shadow text-center peer-checked:border-2 peer-checked:border-foco peer-checked:bg-foco/5 hover:shadow-lg transition-all"
@@ -126,14 +145,12 @@
                 </div>
               </label>
 
-              <!-- Professor -->
               <label class="relative cursor-pointer">
                 <input
                   type="radio"
                   name="userRole"
                   value="teacher"
                   class="peer sr-only"
-                  required
                 />
                 <div
                   class="p-6 bg-white rounded-xl shadow text-center peer-checked:border-2 peer-checked:border-foco peer-checked:bg-foco/5 hover:shadow-lg transition-all"
@@ -165,7 +182,6 @@
                 </div>
               </label>
             </div>
-
             <p
               id="role-error"
               class="mt-2 text-sm text-red-600 hidden"
@@ -178,22 +194,17 @@
             <h2 class="text-xl font-semibold text-primary mb-4">
               Informações pessoais
             </h2>
-
             <div class="space-y-4">
-              <!-- Nome Completo -->
               <div>
-                <label for="fullName" class="block text-sm font-semibold mb-2">
-                  Nome completo <span class="text-red-600">*</span>
-                </label>
+                <label for="fullName" class="block text-sm font-semibold mb-2"
+                  >Nome completo <span class="text-red-600">*</span></label
+                >
                 <input
                   type="text"
                   id="fullName"
-                  name="fullName"
                   class="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
                   placeholder="Inocêncio Mateus"
-                  required
                   autocomplete="name"
-                  aria-describedby="fullName-error"
                 />
                 <p
                   id="fullName-error"
@@ -202,20 +213,16 @@
                 ></p>
               </div>
 
-              <!-- Email -->
               <div>
-                <label for="email" class="block text-sm font-semibold mb-2">
-                  Endereço de e-mail <span class="text-red-600">*</span>
-                </label>
+                <label for="email" class="block text-sm font-semibold mb-2"
+                  >Endereço de e-mail <span class="text-red-600">*</span></label
+                >
                 <input
                   type="email"
                   id="email"
-                  name="email"
                   class="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
                   placeholder="inocenciomateus@exemplo.com"
-                  required
                   autocomplete="email"
-                  aria-describedby="email-error"
                 />
                 <p
                   id="email-error"
@@ -224,20 +231,16 @@
                 ></p>
               </div>
 
-              <!-- Telefone -->
               <div>
-                <label for="phone" class="block text-sm font-semibold mb-2">
-                  Número de telefone <span class="text-red-600">*</span>
-                </label>
+                <label for="phone" class="block text-sm font-semibold mb-2"
+                  >Número de telefone <span class="text-red-600">*</span></label
+                >
                 <input
                   type="tel"
                   id="phone"
-                  name="phone"
                   class="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
                   placeholder="+244 948 211 806"
-                  required
                   autocomplete="tel"
-                  aria-describedby="phone-error"
                 />
                 <p
                   id="phone-error"
@@ -246,30 +249,25 @@
                 ></p>
               </div>
 
-              <!-- Palavra-passe -->
               <div>
-                <label for="password" class="block text-sm font-semibold mb-2">
-                  Palavra-passe <span class="text-red-600">*</span>
-                </label>
+                <label for="password" class="block text-sm font-semibold mb-2"
+                  >Palavra-passe <span class="text-red-600">*</span></label
+                >
                 <div class="relative">
                   <input
                     type="password"
                     id="password"
-                    name="password"
                     class="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
                     placeholder="••••••••"
-                    required
                     autocomplete="new-password"
-                    aria-describedby="password-error"
                   />
                   <button
                     type="button"
                     id="togglePassword"
-                    class="absolute right-3 top-3 text-gray-500 hover:text-gray-700 transition-colors"
+                    class="absolute right-3 top-3 text-gray-500 hover:text-gray-700"
                     aria-label="Mostrar palavra-passe"
                   >
                     <svg
-                      id="eyeIcon"
                       class="h-5 w-5"
                       fill="none"
                       stroke="currentColor"
@@ -295,9 +293,7 @@
                   class="mt-2 text-sm text-red-600 hidden"
                   role="alert"
                 ></p>
-
-                <!-- Indicador de Força -->
-                <div id="password-strength" class="mt-2">
+                <div class="mt-2">
                   <div class="flex items-center justify-between mb-1">
                     <span class="text-xs text-gray-600"
                       >Força da palavra-passe:</span
@@ -318,23 +314,19 @@
                 </div>
               </div>
 
-              <!-- Confirmar Palavra-passe -->
               <div>
                 <label
                   for="confirmPassword"
                   class="block text-sm font-semibold mb-2"
+                  >Confirmar palavra-passe
+                  <span class="text-red-600">*</span></label
                 >
-                  Confirmar palavra-passe <span class="text-red-600">*</span>
-                </label>
                 <input
                   type="password"
                   id="confirmPassword"
-                  name="confirmPassword"
                   class="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
                   placeholder="••••••••"
-                  required
                   autocomplete="new-password"
-                  aria-describedby="confirmPassword-error"
                 />
                 <p
                   id="confirmPassword-error"
@@ -347,188 +339,92 @@
 
           <!-- PASSO 3: INFORMAÇÕES ESPECÍFICAS -->
           <div id="step3" class="step-content hidden">
-            <!-- Campos para Encarregados -->
+            <!-- ENCARREGADO -->
             <div id="parentFields" class="hidden">
               <h2 class="text-xl font-semibold text-primary mb-4">
                 Informações do educando
               </h2>
-
               <div class="space-y-4">
-                <!-- Nome do Educando -->
                 <div>
                   <label
-                    for="studentName"
+                    for="numeroMatricula"
                     class="block text-sm font-semibold mb-2"
+                    >Número de matrícula do aluno
+                    <span class="text-red-600">*</span></label
                   >
-                    Nome do educando <span class="text-red-600">*</span>
-                  </label>
                   <input
                     type="text"
-                    id="studentName"
-                    name="studentName"
-                    class="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
-                    placeholder="Maria Silva"
-                    aria-describedby="studentName-error"
-                  />
-                  <p
-                    id="studentName-error"
-                    class="mt-2 text-sm text-red-600 hidden"
-                    role="alert"
-                  ></p>
-                </div>
-
-                <!-- Curso -->
-                <div>
-                  <label
-                    for="studentCourse"
-                    class="block text-sm font-semibold mb-2"
-                  >
-                    Curso <span class="text-red-600">*</span>
-                  </label>
-                  <select
-                    id="studentCourse"
-                    name="studentCourse"
-                    class="w-full p-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/30 cursor-pointer"
-                    aria-describedby="studentCourse-error"
-                  >
-                    <option value="">Selecione o curso</option>
-                    <option value="1º Ano">1º Ano</option>
-                    <option value="2º Ano">2º Ano</option>
-                    <option value="3º Ano">3º Ano</option>
-                    <option value="4º Ano">4º Ano</option>
-                    <option value="5º Ano">5º Ano</option>
-                  </select>
-                  <p
-                    id="studentCourse-error"
-                    class="mt-2 text-sm text-red-600 hidden"
-                    role="alert"
-                  ></p>
-                </div>
-
-                <!-- Turma -->
-                <div>
-                  <label
-                    for="studentClass"
-                    class="block text-sm font-semibold mb-2"
-                  >
-                    Turma <span class="text-red-600">*</span>
-                  </label>
-                  <select
-                    id="studentClass"
-                    name="studentClass"
-                    class="w-full p-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/30 cursor-pointer"
-                    aria-describedby="studentClass-error"
-                  >
-                    <option value="">Selecione a turma</option>
-                    <option value="1A">1º A</option>
-                    <option value="1B">1º B</option>
-                    <option value="2A">2º A</option>
-                    <option value="2B">2º B</option>
-                    <option value="3A">3º A</option>
-                    <option value="3B">3º B</option>
-                    <option value="4A">4º A</option>
-                    <option value="4B">4º B</option>
-                    <option value="5A">5º A</option>
-                    <option value="5B">5º B</option>
-                    <option value="6A">6º A</option>
-                    <option value="6B">6º B</option>
-                  </select>
-                  <p
-                    id="studentClass-error"
-                    class="mt-2 text-sm text-red-600 hidden"
-                    role="alert"
-                  ></p>
-                </div>
-
-                <!-- Número de Estudante -->
-                <div>
-                  <label
-                    for="studentId"
-                    class="block text-sm font-semibold mb-2"
-                  >
-                    Número de estudante <span class="text-red-600">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="studentId"
-                    name="studentId"
+                    id="numeroMatricula"
                     class="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
                     placeholder="2024-0001"
-                    aria-describedby="studentId-error"
                   />
+                  <p class="mt-1 text-xs text-gray-600">
+                    Número de matrícula atribuído pela escola ao seu educando
+                  </p>
                   <p
-                    id="studentId-error"
+                    id="numeroMatricula-error"
                     class="mt-2 text-sm text-red-600 hidden"
                     role="alert"
                   ></p>
                 </div>
 
-                <!-- Relação -->
                 <div>
                   <label
-                    for="relationship"
+                    for="relacaoEducando"
                     class="block text-sm font-semibold mb-2"
+                    >Relação com o educando
+                    <span class="text-red-600">*</span></label
                   >
-                    Relação com o educando <span class="text-red-600">*</span>
-                  </label>
                   <select
-                    id="relationship"
-                    name="relationship"
+                    id="relacaoEducando"
                     class="w-full p-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/30 cursor-pointer"
-                    aria-describedby="relationship-error"
                   >
                     <option value="">Selecione a relação</option>
-                    <option value="mother">Mãe</option>
-                    <option value="father">Pai</option>
-                    <option value="guardian">Tutor Legal</option>
-                    <option value="other">Outro</option>
+                    <option value="Mãe">Mãe</option>
+                    <option value="Pai">Pai</option>
+                    <option value="Tutor Legal">Tutor Legal</option>
+                    <option value="Outro">Outro</option>
                   </select>
                   <p
-                    id="relationship-error"
+                    id="relacaoEducando-error"
                     class="mt-2 text-sm text-red-600 hidden"
                     role="alert"
                   ></p>
                 </div>
 
-                <!-- Upload de Foto -->
                 <div>
                   <label
                     for="parentImage"
                     class="block text-sm font-semibold mb-2"
+                    >Foto de perfil <span class="text-red-600">*</span></label
                   >
-                    Foto de perfil <span class="text-red-600">*</span>
-                  </label>
-                  <div class="relative">
-                    <input
-                      type="file"
-                      id="parentImage"
-                      name="parentImage"
-                      class="hidden"
-                      accept=".jpg,.jpeg,.png"
-                      aria-describedby="parentImage-error"
-                    />
-                    <label
-                      for="parentImage"
-                      class="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-accent hover:bg-accent/5 transition-colors"
+                  <input
+                    type="file"
+                    id="parentImage"
+                    class="hidden"
+                    accept=".jpg,.jpeg,.png"
+                  />
+                  <label
+                    for="parentImage"
+                    class="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-accent hover:bg-accent/5 transition-colors"
+                  >
+                    <svg
+                      class="w-6 h-6 text-gray-400 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      <svg
-                        class="w-6 h-6 text-gray-400 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                        ></path>
-                      </svg>
-                      <span class="text-sm text-gray-600" id="fileLabel"
-                        >Carregar foto (JPG, JPEG, PNG)</span
-                      >
-                    </label>
-                  </div>
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                      ></path>
+                    </svg>
+                    <span class="text-sm text-gray-600" id="parentFileLabel"
+                      >Carregar foto (JPG, JPEG, PNG)</span
+                    >
+                  </label>
                   <p class="mt-1 text-xs text-gray-600">Tamanho máximo: 5MB</p>
                   <p
                     id="parentImage-error"
@@ -539,51 +435,43 @@
               </div>
             </div>
 
-            <!-- Campos para Professores -->
+            <!-- PROFESSOR -->
             <div id="teacherFields" class="hidden">
               <h2 class="text-xl font-semibold text-primary mb-4">
                 Informações profissionais
               </h2>
-
               <div class="space-y-4">
-                <!-- Código de Verificação -->
                 <div>
                   <label
-                    for="verificationCode"
+                    for="codigoVerificacao"
                     class="block text-sm font-semibold mb-2"
+                    >Código de verificação da escola
+                    <span class="text-red-600">*</span></label
                   >
-                    Código de verificação da escola
-                    <span class="text-red-600">*</span>
-                  </label>
                   <input
                     type="text"
-                    id="verificationCode"
-                    name="verificationCode"
+                    id="codigoVerificacao"
                     class="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
                     placeholder="SCH-2026-XXXX"
-                    aria-describedby="verificationCode-error"
                   />
                   <p class="mt-1 text-xs text-gray-600">
                     Contacte a administração da escola para obter o código
                   </p>
                   <p
-                    id="verificationCode-error"
+                    id="codigoVerificacao-error"
                     class="mt-2 text-sm text-red-600 hidden"
                     role="alert"
                   ></p>
                 </div>
 
-                <!-- Disciplina -->
                 <div>
-                  <label for="subject" class="block text-sm font-semibold mb-2">
-                    Disciplina(s) que leciona
-                    <span class="text-red-600">*</span>
-                  </label>
+                  <label for="subject" class="block text-sm font-semibold mb-2"
+                    >Disciplina(s) que leciona
+                    <span class="text-red-600">*</span></label
+                  >
                   <select
                     id="subject"
-                    name="subject"
                     class="w-full p-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/30 cursor-pointer"
-                    aria-describedby="subject-error"
                   >
                     <option value="">Selecione a disciplina</option>
                     <option value="mathematics">Matemática</option>
@@ -604,71 +492,62 @@
                   ></p>
                 </div>
 
-                <!-- Turmas que Leciona -->
                 <div>
                   <label
-                    for="teachingClasses"
+                    for="turmasLeciona"
                     class="block text-sm font-semibold mb-2"
+                    >Turmas que leciona
+                    <span class="text-red-600">*</span></label
                   >
-                    Turmas que leciona <span class="text-red-600">*</span>
-                  </label>
                   <input
                     type="text"
-                    id="teachingClasses"
-                    name="teachingClasses"
+                    id="turmasLeciona"
                     class="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
                     placeholder="10º A, 11º B, 12º A"
-                    aria-describedby="teachingClasses-error"
                   />
                   <p class="mt-1 text-xs text-gray-600">
                     Separe as turmas por vírgulas
                   </p>
                   <p
-                    id="teachingClasses-error"
+                    id="turmasLeciona-error"
                     class="mt-2 text-sm text-red-600 hidden"
                     role="alert"
                   ></p>
                 </div>
 
-                <!-- Upload de Foto -->
                 <div>
                   <label
                     for="teacherImage"
                     class="block text-sm font-semibold mb-2"
+                    >Foto de perfil <span class="text-red-600">*</span></label
                   >
-                    Foto de perfil <span class="text-red-600">*</span>
-                  </label>
-                  <div class="relative">
-                    <input
-                      type="file"
-                      id="teacherImage"
-                      name="teacherImage"
-                      class="hidden"
-                      accept=".jpg,.jpeg,.png"
-                      aria-describedby="teacherImage-error"
-                    />
-                    <label
-                      for="teacherImage"
-                      class="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-accent hover:bg-accent/5 transition-colors"
+                  <input
+                    type="file"
+                    id="teacherImage"
+                    class="hidden"
+                    accept=".jpg,.jpeg,.png"
+                  />
+                  <label
+                    for="teacherImage"
+                    class="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-accent hover:bg-accent/5 transition-colors"
+                  >
+                    <svg
+                      class="w-6 h-6 text-gray-400 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      <svg
-                        class="w-6 h-6 text-gray-400 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                        ></path>
-                      </svg>
-                      <span class="text-sm text-gray-600" id="fileLabel"
-                        >Carregar foto (JPG, JPEG, PNG)</span
-                      >
-                    </label>
-                  </div>
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                      ></path>
+                    </svg>
+                    <span class="text-sm text-gray-600" id="teacherFileLabel"
+                      >Carregar foto (JPG, JPEG, PNG)</span
+                    >
+                  </label>
                   <p class="mt-1 text-xs text-gray-600">Tamanho máximo: 5MB</p>
                   <p
                     id="teacherImage-error"
@@ -679,16 +558,14 @@
               </div>
             </div>
 
-            <!-- Termos e Condições -->
+            <!-- TERMOS -->
             <div class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
               <div class="flex items-start">
                 <input
                   id="terms"
-                  name="terms"
                   type="checkbox"
                   class="h-4 w-4 cursor-pointer mt-1"
                   style="accent-color: #f2b705"
-                  required
                 />
                 <label
                   for="terms"
@@ -717,7 +594,7 @@
             </div>
           </div>
 
-          <!-- BOTÕES DE NAVEGAÇÃO -->
+          <!-- BOTÕES -->
           <div
             class="flex items-center justify-between pt-6 border-t border-gray-200"
           >
@@ -741,11 +618,10 @@
               </svg>
               Anterior
             </button>
-
             <button
               type="button"
               id="nextButton"
-              class="px-6 py-2 rounded-lg font-semibold text-black hover:shadow-lg transition-shadow ml-auto"
+              class="px-6 py-2 rounded-lg font-semibold text-white hover:shadow-lg transition-shadow ml-auto"
               style="background-color: #15803d"
             >
               Seguinte
@@ -763,25 +639,25 @@
                 ></path>
               </svg>
             </button>
-
+            <!-- type="button" — NUNCA type="submit" para não recarregar a página -->
             <button
-              type="submit"
+              type="button"
               id="submitButton"
-              class="px-6 py-2 rounded-lg font-semibold text-black hover:shadow-lg transition-shadow ml-auto hidden"
+              class="px-6 py-2 rounded-lg font-semibold text-white hover:shadow-lg transition-shadow ml-auto hidden"
               style="background-color: #15803d"
             >
               <span id="submitText">Criar Conta</span>
             </button>
           </div>
 
-          <!-- Mensagem de Erro do Formulário -->
+          <!-- ERRO DO FORMULÁRIO -->
           <div
             id="formError"
             class="hidden p-4 bg-red-50 border border-red-200 rounded-lg"
           >
             <div class="flex">
               <svg
-                class="h-5 w-5 text-red-600 mr-2"
+                class="h-5 w-5 text-red-600 mr-2 shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -796,22 +672,274 @@
           </div>
         </form>
 
-        <!-- Link de Login -->
         <div class="mt-6 text-center">
           <p class="text-sm text-gray-700">
             Já tem uma conta?
             <a
               href="login.html"
               class="font-medium text-principal hover:underline transition-colors"
+              >Iniciar sessão</a
             >
-              Iniciar sessão
-            </a>
           </p>
         </div>
       </div>
     </div>
 
-    <!-- SCRIPT -->
+    <!-- MODAL DE SUCESSO -->
+    <div
+      id="successModal"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+      "
+    >
+      <div
+        id="modalCard"
+        style="
+          position: relative;
+          background: white;
+          border-radius: 1.5rem;
+          box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+          width: 100%;
+          max-width: 420px;
+          padding: 2.5rem;
+          text-align: center;
+          overflow: hidden;
+          transform: scale(0.8) translateY(30px);
+          opacity: 0;
+          transition:
+            transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+            opacity 0.4s ease;
+        "
+      >
+        <!-- Barra gradiente -->
+        <div
+          style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #15803d, #22c55e, #f2b705);
+          "
+        ></div>
+
+        <!-- Ícone -->
+        <div
+          style="
+            position: relative;
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 1.5rem;
+          "
+        >
+          <svg
+            viewBox="0 0 90 90"
+            style="width: 100%; height: 100%; transform: rotate(-90deg)"
+          >
+            <circle
+              cx="45"
+              cy="45"
+              r="38"
+              fill="none"
+              stroke="#e5e7eb"
+              stroke-width="5"
+            />
+            <circle
+              id="progressCircle"
+              cx="45"
+              cy="45"
+              r="38"
+              fill="none"
+              stroke="#15803D"
+              stroke-width="5"
+              stroke-linecap="round"
+              stroke-dasharray="239"
+              stroke-dashoffset="239"
+              style="transition: stroke-dashoffset 1s ease 0.2s"
+            />
+          </svg>
+          <div
+            style="
+              position: absolute;
+              inset: 0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            "
+          >
+            <svg
+              id="checkIcon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#15803D"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              style="
+                width: 38px;
+                height: 38px;
+                opacity: 0;
+                transform: scale(0.3);
+                transition:
+                  opacity 0.4s ease 1s,
+                  transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 1s;
+              "
+            >
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Texto -->
+        <div
+          id="modalText"
+          style="
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease 0.7s;
+          "
+        >
+          <h2
+            style="
+              font-size: 1.6rem;
+              font-weight: 700;
+              color: #0e2a47;
+              font-family: Georgia, serif;
+              margin-bottom: 0.25rem;
+            "
+          >
+            Conta criada!
+          </h2>
+          <p
+            style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.25rem"
+          >
+            Bem-vindo(a) à comunidade
+          </p>
+          <p
+            style="
+              color: #15803d;
+              font-size: 1.1rem;
+              font-weight: 600;
+              margin-bottom: 1.5rem;
+            "
+          >
+            SchoolConnect
+          </p>
+
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 0.75rem;
+              margin-bottom: 1.25rem;
+            "
+          >
+            <div style="flex: 1; height: 1px; background: #f3f4f6"></div>
+            <span
+              style="
+                font-size: 0.7rem;
+                color: #9ca3af;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+              "
+              >A redirecionar em</span
+            >
+            <div style="flex: 1; height: 1px; background: #f3f4f6"></div>
+          </div>
+
+          <div
+            style="
+              display: flex;
+              align-items: baseline;
+              justify-content: center;
+              gap: 0.25rem;
+              margin-bottom: 1.5rem;
+            "
+          >
+            <span
+              id="countdown"
+              style="
+                font-size: 3.5rem;
+                font-weight: 700;
+                color: #15803d;
+                font-family: Georgia, serif;
+                line-height: 1;
+              "
+              >5</span
+            >
+            <span style="color: #9ca3af; font-size: 0.875rem">seg</span>
+          </div>
+
+          <button
+            onclick="window.location.href = 'login.html'"
+            style="
+              width: 100%;
+              padding: 0.875rem;
+              border-radius: 0.75rem;
+              background: linear-gradient(135deg, #15803d, #16a34a);
+              color: white;
+              font-weight: 600;
+              font-size: 0.875rem;
+              letter-spacing: 0.03em;
+              border: none;
+              cursor: pointer;
+              box-shadow: 0 4px 15px rgba(21, 128, 61, 0.4);
+              transition:
+                transform 0.2s,
+                box-shadow 0.2s;
+            "
+            onmouseover="
+              this.style.transform = 'translateY(-2px)';
+              this.style.boxShadow = '0 8px 25px rgba(21,128,61,0.5)';
+            "
+            onmouseout="
+              this.style.transform = '';
+              this.style.boxShadow = '0 4px 15px rgba(21,128,61,0.4)';
+            "
+          >
+            Ir para o Login agora →
+          </button>
+        </div>
+
+        <!-- Pontos decorativos -->
+        <div
+          style="
+            position: absolute;
+            top: 16px;
+            right: 24px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #f2b705;
+            opacity: 0.6;
+            animation: floatDot 3s ease-in-out infinite;
+          "
+        ></div>
+        <div
+          style="
+            position: absolute;
+            bottom: 24px;
+            left: 20px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #15803d;
+            opacity: 0.5;
+            animation: floatDot 4s ease-in-out infinite 0.8s;
+          "
+        ></div>
+      </div>
+    </div>
+
+    <!-- ÚNICO SCRIPT — tudo aqui, sem divisões -->
     <script>
       const API_BASE_URL = "http://localhost:3000";
 
@@ -819,33 +947,135 @@
       const totalSteps = 3;
       let selectedRole = "";
 
-      const registrationForm = document.getElementById("registrationForm");
+      // Elementos
       const prevButton = document.getElementById("prevButton");
       const nextButton = document.getElementById("nextButton");
       const submitButton = document.getElementById("submitButton");
-
+      const submitText = document.getElementById("submitText");
       const progressBar = document.getElementById("progressBar");
       const stepIndicator = document.getElementById("stepIndicator");
       const progressPercentage = document.getElementById("progressPercentage");
-
       const formError = document.getElementById("formError");
       const formErrorMessage = document.getElementById("formErrorMessage");
-
       const step1 = document.getElementById("step1");
       const step2 = document.getElementById("step2");
       const step3 = document.getElementById("step3");
-
       const parentFields = document.getElementById("parentFields");
       const teacherFields = document.getElementById("teacherFields");
-
       const passwordInput = document.getElementById("password");
-      const togglePasswordBtn = document.getElementById("togglePassword");
       const strengthBar = document.getElementById("strengthBar");
       const strengthText = document.getElementById("strengthText");
+      const fullName = document.getElementById("fullName");
+      const email = document.getElementById("email");
+      const phone = document.getElementById("phone");
+      const confirmPassword = document.getElementById("confirmPassword");
+      const numeroMatricula = document.getElementById("numeroMatricula");
+      const relacaoEducando = document.getElementById("relacaoEducando");
+      const parentImage = document.getElementById("parentImage");
+      const codigoVerificacao = document.getElementById("codigoVerificacao");
+      const subject = document.getElementById("subject");
+      const turmasLeciona = document.getElementById("turmasLeciona");
+      const teacherImage = document.getElementById("teacherImage");
+      const terms = document.getElementById("terms");
+      const registrationForm = document.getElementById("registrationForm");
 
-      // ==========================
+      registrationForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        // força usar a mesma lógica do botão
+        submitButton.click();
+      });
+
+      registrationForm.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+        }
+      });
+
+      // PROTECÇÃO CONTRA RELOAD ACIDENTAL
+
+      let modalActivo = false;
+
+      // MODAL DE SUCESSO
+
+      function showSuccessModal() {
+        modalActivo = true;
+        // 1. Esconder o formulário
+        document.getElementById("mainCard").style.display = "none";
+
+        // 2. Mostrar o modal
+        const modal = document.getElementById("successModal");
+        const card = document.getElementById("modalCard");
+        const circle = document.getElementById("progressCircle");
+        const check = document.getElementById("checkIcon");
+        const text = document.getElementById("modalText");
+        const counter = document.getElementById("countdown");
+
+        modal.style.display = "flex";
+
+        // 3. Forçar reflow — necessário para as transições CSS dispararem
+        void card.offsetWidth;
+
+        // 4. Animar card
+        card.style.transform = "scale(1) translateY(0)";
+        card.style.opacity = "1";
+
+        // 5. Animar círculo, check e texto com delays
+        setTimeout(() => {
+          circle.style.strokeDashoffset = "0";
+        }, 200);
+        setTimeout(() => {
+          check.style.opacity = "1";
+          check.style.transform = "scale(1)";
+        }, 1000);
+        setTimeout(() => {
+          text.style.opacity = "1";
+          text.style.transform = "translateY(0)";
+        }, 700);
+
+        // 6. Contagem regressiva
+        let seconds = 5;
+        counter.textContent = seconds;
+        const timer = setInterval(() => {
+          seconds--;
+          counter.textContent = seconds;
+          if (seconds <= 0) {
+            clearInterval(timer);
+            window.location.href = "login.html";
+          }
+        }, 1000);
+      }
+
+      // LABEL DE FICHEIRO
+
+      parentImage.addEventListener("change", function () {
+        const label = document.getElementById("parentFileLabel");
+        if (this.files[0]) {
+          if (this.files[0].size > 5 * 1024 * 1024) {
+            showError("parentImage", "O ficheiro não pode exceder 5MB");
+            this.value = "";
+            label.textContent = "Carregar foto (JPG, JPEG, PNG)";
+            return;
+          }
+          label.textContent = this.files[0].name;
+        }
+      });
+
+      teacherImage.addEventListener("change", function () {
+        const label = document.getElementById("teacherFileLabel");
+        if (this.files[0]) {
+          if (this.files[0].size > 5 * 1024 * 1024) {
+            showError("teacherImage", "O ficheiro não pode exceder 5MB");
+            this.value = "";
+            label.textContent = "Carregar foto (JPG, JPEG, PNG)";
+            return;
+          }
+          label.textContent = this.files[0].name;
+        }
+      });
+
       // SELEÇÃO DE PERFIL
-      // ==========================
+
       document.querySelectorAll('input[name="userRole"]').forEach((input) => {
         input.addEventListener("change", function () {
           selectedRole = this.value;
@@ -853,51 +1083,39 @@
         });
       });
 
-      // ==========================
-      // PASSWORD TOGGLE
-      // ==========================
-      togglePasswordBtn.addEventListener("click", () => {
-        passwordInput.type =
-          passwordInput.type === "password" ? "text" : "password";
-      });
+      // PASSWORD
 
-      // ==========================
-      // FORÇA DA PASSWORD
-      // ==========================
+      document
+        .getElementById("togglePassword")
+        .addEventListener("click", () => {
+          passwordInput.type =
+            passwordInput.type === "password" ? "text" : "password";
+        });
+
       passwordInput.addEventListener("input", function () {
-        const password = this.value;
-        let strength = 0;
-
-        if (password.length >= 8) strength += 25;
-        if (/[a-z]/.test(password)) strength += 25;
-        if (/[A-Z]/.test(password)) strength += 25;
-        if (/[0-9]/.test(password)) strength += 15;
-        if (/[$@#&!]/.test(password)) strength += 10;
-
-        strengthBar.style.width = strength + "%";
-
-        if (strength < 40) {
-          strengthBar.className = "h-1.5 bg-red-500";
+        let s = 0;
+        if (this.value.length >= 8) s += 25;
+        if (/[a-z]/.test(this.value)) s += 25;
+        if (/[A-Z]/.test(this.value)) s += 25;
+        if (/[0-9]/.test(this.value)) s += 15;
+        if (/[$@#&!]/.test(this.value)) s += 10;
+        strengthBar.style.width = s + "%";
+        if (s < 40) {
+          strengthBar.className =
+            "h-1.5 rounded-full transition-all duration-300 bg-red-500";
           strengthText.textContent = "Fraca";
-        } else if (strength < 70) {
-          strengthBar.className = "h-1.5 bg-yellow-500";
+        } else if (s < 70) {
+          strengthBar.className =
+            "h-1.5 rounded-full transition-all duration-300 bg-yellow-500";
           strengthText.textContent = "Média";
         } else {
-          strengthBar.className = "h-1.5 bg-green-500";
+          strengthBar.className =
+            "h-1.5 rounded-full transition-all duration-300 bg-green-500";
           strengthText.textContent = "Forte";
         }
       });
 
-      // ==========================
-      // VALIDAÇÕES
-      // ==========================
-      function validateEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      }
-
-      function validatePhone(phone) {
-        return /^[\d\s+\-()]+$/.test(phone);
-      }
+      // VALIDAÇÃO
 
       function showError(id, msg) {
         const el = document.getElementById(id + "-error");
@@ -914,9 +1132,6 @@
         formError.classList.add("hidden");
       }
 
-      // ==========================
-      // VALIDAÇÃO POR PASSO
-      // ==========================
       function validateStep(step) {
         clearErrors();
         let valid = true;
@@ -929,45 +1144,63 @@
         }
 
         if (step === 2) {
-          const name = fullName.value.trim();
-          const email = document.getElementById("email").value.trim();
-          const phone = document.getElementById("phone").value.trim();
-          const pass = passwordInput.value;
-          const confirm = confirmPassword.value;
-
-          if (!name) {
+          if (!fullName.value.trim()) {
             showError("fullName", "Nome obrigatório");
             valid = false;
           }
-          if (!validateEmail(email)) {
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
             showError("email", "Email inválido");
             valid = false;
           }
-          if (!validatePhone(phone)) {
+          if (!/^[\d\s+\-()]+$/.test(phone.value.trim())) {
             showError("phone", "Telefone inválido");
             valid = false;
           }
-          if (pass.length < 8) {
+          if (passwordInput.value.length < 8) {
             showError("password", "Mínimo 8 caracteres");
             valid = false;
           }
-          if (pass !== confirm) {
-            showError("confirmPassword", "Senhas diferentes");
+          if (passwordInput.value !== confirmPassword.value) {
+            showError("confirmPassword", "Palavras-passe diferentes");
             valid = false;
           }
         }
 
         if (step === 3) {
           if (selectedRole === "parent") {
-            if (!studentName.value) valid = false;
+            if (!numeroMatricula.value.trim()) {
+              showError("numeroMatricula", "Número de matrícula obrigatório");
+              valid = false;
+            }
+            if (!relacaoEducando.value) {
+              showError("relacaoEducando", "Selecione a relação");
+              valid = false;
+            }
+            if (!parentImage.files || !parentImage.files[0]) {
+              showError("parentImage", "Foto de perfil obrigatória");
+              valid = false;
+            }
           }
-
           if (selectedRole === "teacher") {
-            if (!verificationCode.value) valid = false;
+            if (!codigoVerificacao.value.trim()) {
+              showError("codigoVerificacao", "Código obrigatório");
+              valid = false;
+            }
+            if (!subject.value) {
+              showError("subject", "Selecione a disciplina");
+              valid = false;
+            }
+            if (!turmasLeciona.value.trim()) {
+              showError("turmasLeciona", "Indique as turmas");
+              valid = false;
+            }
+            if (!teacherImage.files || !teacherImage.files[0]) {
+              showError("teacherImage", "Foto de perfil obrigatória");
+              valid = false;
+            }
           }
-
           if (!terms.checked) {
-            showError("terms", "Aceite os termos");
+            showError("terms", "Aceite os termos para continuar");
             valid = false;
           }
         }
@@ -975,36 +1208,24 @@
         return valid;
       }
 
-      // ==========================
       // NAVEGAÇÃO
-      // ==========================
-      function showStep(step) {
-        step1.classList.add("hidden");
-        step2.classList.add("hidden");
-        step3.classList.add("hidden");
 
+      function showStep(step) {
+        [step1, step2, step3].forEach((s) => s.classList.add("hidden"));
         if (step === 1) step1.classList.remove("hidden");
         if (step === 2) step2.classList.remove("hidden");
         if (step === 3) {
           step3.classList.remove("hidden");
-
-          if (selectedRole === "parent") {
-            parentFields.classList.remove("hidden");
-            teacherFields.classList.add("hidden");
-          } else {
-            teacherFields.classList.remove("hidden");
-            parentFields.classList.add("hidden");
-          }
+          parentFields.classList.toggle("hidden", selectedRole !== "parent");
+          teacherFields.classList.toggle("hidden", selectedRole !== "teacher");
         }
-
         prevButton.classList.toggle("hidden", step === 1);
         nextButton.classList.toggle("hidden", step === 3);
         submitButton.classList.toggle("hidden", step !== 3);
-
-        const progress = (step / totalSteps) * 100;
-        progressBar.style.width = progress + "%";
+        const p = (step / totalSteps) * 100;
+        progressBar.style.width = p + "%";
         stepIndicator.textContent = `Passo ${step} de ${totalSteps}`;
-        progressPercentage.textContent = Math.round(progress) + "%";
+        progressPercentage.textContent = Math.round(p) + "%";
       }
 
       nextButton.onclick = () => {
@@ -1013,54 +1234,93 @@
           showStep(currentStep);
         }
       };
-
       prevButton.onclick = () => {
         currentStep--;
         showStep(currentStep);
       };
 
-      // ==========================
-      // SUBMIT
-      // ==========================
-      registrationForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+      // SUBMIT — type="button", controlo total via JS
 
+      submitButton.addEventListener("click", async function () {
         if (!validateStep(currentStep)) return;
 
         submitButton.disabled = true;
+        submitText.textContent = "A criar conta...";
 
         try {
           const formData = new FormData();
 
-          formData.append("nome", fullName.value);
-          formData.append("email", email.value);
-          formData.append("senha", password.value);
-          formData.append("telefone", phone.value);
-          formData.append("perfil", selectedRole);
+          formData.append("nome", fullName.value.trim());
+          formData.append("email", email.value.trim());
+          formData.append("senha", passwordInput.value);
+          formData.append("telefone", phone.value.trim());
 
-          // se o input de imagem existir e tiver arquivo
-          const imagemInput = document.getElementById("imagem");
-          if (imagemInput?.files?.length > 0) {
-            formData.append("imagem", imagemInput.files[0]);
+          // IMPORTANTE: MAPEAR PARA ENUM DO PRISMA
+          if (selectedRole === "teacher") {
+            formData.append("perfil", "PROFESSOR");
+          } else if (selectedRole === "parent") {
+            formData.append("perfil", "ENCARREGADO");
           }
 
-          const res = await fetch("/api/usuarios", {
+          // ENCARREGADO
+
+          if (selectedRole === "parent") {
+            formData.append("numeroMatricula", numeroMatricula.value.trim());
+            formData.append("relacaoEducando", relacaoEducando.value);
+
+            if (parentImage.files[0]) {
+              formData.append("imagem", parentImage.files[0]);
+            }
+          }
+
+          // PROFESSOR
+
+          if (selectedRole === "teacher") {
+            formData.append(
+              "codigoVerificacao",
+              codigoVerificacao.value.trim(),
+            );
+            formData.append("turmasLeciona", turmasLeciona.value.trim());
+            formData.append("disciplinaNome", subject.value);
+
+            if (teacherImage.files[0]) {
+              formData.append("imagem", teacherImage.files[0]);
+            }
+          }
+
+          const res = await fetch(API_BASE_URL + "/api/usuarios", {
             method: "POST",
             body: formData,
           });
 
-          const data = await res.json();
+          let data = {};
+          try {
+            data = await res.json();
+          } catch {
+            // evita erro "Unexpected end of JSON"
+          }
 
-          if (!res.ok) throw new Error(data.error || "Erro ao criar usuário");
+          if (!res.ok) {
+            throw new Error(data.error || "Erro ao criar conta");
+          }
 
-          alert("Conta criada com sucesso!");
-          window.location.href = "login.html";
+          // AQUI GARANTE QUE O MODAL APARECE
+          if (res.ok) {
+            showSuccessModal();
+          }
         } catch (err) {
-          formErrorMessage.textContent = err.message;
-          formError.classList.remove("hidden");
-        }
+          let msg = err.message;
 
-        submitButton.disabled = false;
+          if (err instanceof TypeError) {
+            msg = "Servidor não está ligado em " + API_BASE_URL;
+          }
+
+          formErrorMessage.textContent = msg;
+          formError.classList.remove("hidden");
+
+          submitButton.disabled = false;
+          submitText.textContent = "Criar Conta";
+        }
       });
 
       showStep(currentStep);

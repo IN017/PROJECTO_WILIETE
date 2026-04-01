@@ -34,19 +34,20 @@ export class ServiceAviso {
             where: { id: parseInt(id) }
         });
     }
+static async atualizarAviso(id, dados) {
+  const { titulo, conteudo, imagem } = dados;
 
-    static async atualizarAviso(id, dados) {
-        const { titulo, conteudo, imagem } = dados;
+  const data = {};
 
-        return await prisma.aviso.update({
-            where: { id: parseInt(id) },
-            data: {
-                titulo,
-                conteudo,
-                imagem
-            }
-        });
-    }
+  if (titulo !== undefined) data.titulo = titulo;
+  if (conteudo !== undefined) data.conteudo = conteudo;
+  if (imagem !== undefined) data.imagem = imagem;
+
+  return await prisma.aviso.update({
+    where: { id: parseInt(id) },
+    data
+  });
+}
 
     static async deletarAviso(id) {
         return await prisma.aviso.delete({

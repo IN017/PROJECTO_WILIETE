@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - SchoolConnect</title>
+    <title>Acesso Administrativo - SchoolConnect</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" href="../img/logo.png" type="image/png" />
     <script>
@@ -40,46 +40,55 @@
     class="min-h-screen bg-cover bg-center flex items-center justify-center"
     style="background-image: url(&quot;../img/background.png&quot;)"
   >
-    <div class="absolute inset-0 bg-black/20"></div>
+    <div class="absolute inset-0 bg-black/40"></div>
 
     <div
-      class="relative bg-white/80 backdrop-blur border border-white/40 p-8 rounded-2xl shadow-2xl w-[90%] max-w-md fade-up"
+      class="relative bg-white/90 backdrop-blur border border-white/40 p-8 rounded-2xl shadow-2xl w-[90%] max-w-sm fade-up"
     >
       <div class="text-center mb-10">
         <!-- LOGO -->
         <div class="flex justify-center mb-4">
           <div
-            class="w-20 h-20 bg-white shadow-md rounded-2xl flex items-center justify-center"
+            class="w-20 h-20 bg-white shadow-lg rounded-2xl flex items-center justify-center border border-gray-100"
           >
-            <img src="../img/logo.png" class="h-12 object-contain" alt="Logo" />
+            <img
+              src="../img/logo.png"
+              class="h-12 object-contain"
+              alt="Logo Instituto"
+            />
           </div>
         </div>
 
+        <!-- BADGE -->
+        <div
+          class="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-semibold mb-3 shadow-sm"
+        >
+          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Área Restrita
+        </div>
+
         <!-- TÍTULO -->
-        <h2 class="text-3xl font-bold text-primary tracking-wide">
-          Bem-vindo 
+        <h2 class="text-2xl font-bold text-gray-800 tracking-wide">
+          Acesso Administrativo
         </h2>
 
-        <!-- SUBTÍTULO -->
-        <p class="text-gray-500 text-sm mt-2">Inicie sessão na sua conta</p>
+        <!-- DESCRIÇÃO -->
+        <p class="text-gray-500 text-sm mt-2">
+          Apenas para administradores do sistema
+        </p>
       </div>
 
       <!-- ERRO -->
       <div
         id="errorBox"
-        class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2"
+        class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-lg"
       >
-        <svg
-          class="w-5 h-5 text-red-500 shrink-0"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-            clip-rule="evenodd"
-          />
-        </svg>
         <p class="text-sm text-red-700" id="errorMsg"></p>
       </div>
 
@@ -87,14 +96,14 @@
       <div class="space-y-4">
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-1"
-            >Email</label
+            >Utilizador</label
           >
           <input
-            type="email"
-            id="loginEmail"
+            type="text"
+            id="adminUser"
             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-            placeholder="o.seu@email.com"
-            autocomplete="email"
+            placeholder="admin"
+            autocomplete="username"
           />
         </div>
 
@@ -105,7 +114,7 @@
           <div class="relative">
             <input
               type="password"
-              id="loginSenha"
+              id="adminSenha"
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
               placeholder="••••••••"
               autocomplete="current-password"
@@ -140,30 +149,19 @@
 
         <button
           type="button"
-          id="btnLogin"
-          class="w-full bg-primary text-white py-3 rounded-lg hover:bg-secondary font-semibold transition mt-2"
+          id="btnAdmin"
+          class="w-full bg-primary text-white py-3 rounded-lg hover:bg-secondary font-semibold transition"
         >
-          <span id="btnLoginText">Entrar</span>
+          <span id="btnAdminText">Entrar como Administrador</span>
         </button>
       </div>
 
-      <!-- LINK REGISTO -->
-      <p class="text-center text-sm mt-6 text-gray-600">
-        Não tem conta?
+      <div class="mt-6 text-center">
         <a
-          href="registro.html"
-          class="text-primary font-semibold hover:underline"
-          >Criar Conta</a
-        >
-      </p>
-
-      <!-- LINK ADMIN -->
-      <div class="mt-4 pt-4 border-t border-gray-200 text-center">
-        <a
-          href="login-admin.html"
+          href="login.html"
           class="text-xs text-gray-400 hover:text-gray-600 transition"
         >
-          Acesso Administrativo →
+          ← Voltar ao login normal
         </a>
       </div>
     </div>
@@ -171,86 +169,59 @@
     <script>
       const API = "http://localhost:3000";
 
-      // Toggle password
       document.getElementById("toggleSenha").addEventListener("click", () => {
-        const input = document.getElementById("loginSenha");
+        const input = document.getElementById("adminSenha");
         input.type = input.type === "password" ? "text" : "password";
       });
 
-      // Enter key
-      document.getElementById("loginSenha").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") fazerLogin();
+      document.getElementById("adminSenha").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") fazerLoginAdmin();
       });
-      document.getElementById("loginEmail").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") fazerLogin();
-      });
+
+      document
+        .getElementById("btnAdmin")
+        .addEventListener("click", fazerLoginAdmin);
 
       function mostrarErro(msg) {
         document.getElementById("errorMsg").textContent = msg;
         document.getElementById("errorBox").classList.remove("hidden");
       }
 
-      function esconderErro() {
-        document.getElementById("errorBox").classList.add("hidden");
-      }
+      async function fazerLoginAdmin() {
+        const utilizador = document.getElementById("adminUser").value.trim();
+        const senha = document.getElementById("adminSenha").value;
 
-      document.getElementById("btnLogin").addEventListener("click", fazerLogin);
-
-      async function fazerLogin() {
-        esconderErro();
-        const email = document.getElementById("loginEmail").value.trim();
-        const senha = document.getElementById("loginSenha").value;
-
-        if (!email || !senha) {
-          mostrarErro("Por favor preencha o email e a palavra-passe.");
+        if (!utilizador || !senha) {
+          mostrarErro("Preencha o utilizador e a palavra-passe.");
           return;
         }
 
-        const btn = document.getElementById("btnLogin");
-        const text = document.getElementById("btnLoginText");
+        const btn = document.getElementById("btnAdmin");
+        const text = document.getElementById("btnAdminText");
         btn.disabled = true;
-        text.textContent = "A entrar...";
+        text.textContent = "A verificar...";
 
         try {
-          const res = await fetch(API + "/api/login", {
+          const res = await fetch(API + "/api/admin/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, senha }),
+            body: JSON.stringify({ utilizador, senha }),
           });
 
-          const texto = await res.text();
-          console.log("Resposta raw:", texto);
-
-          let data;
-          try {
-            data = JSON.parse(texto);
-          } catch {
-            throw new Error(
-              "Servidor não respondeu com JSON. Verifique se o backend está a correr em " +
-                API +
-                " e se a rota POST /api/login existe.",
-            );
-          }
+          const data = await res.json();
 
           if (!res.ok) throw new Error(data.error || "Credenciais inválidas");
 
-          // Guardar token e dados do utilizador
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("usuario", JSON.stringify(data.usuario));
+          // Guardar token admin
+          localStorage.setItem("adminToken", data.token);
+          localStorage.setItem("adminLogado", "true");
 
-          // Redirecionar conforme o perfil
-          const perfil = data.usuario.perfil;
-          if (perfil === "PROFESSOR")
-            window.location.href = "dashboard-professor.html";
-          else if (perfil === "ENCARREGADO")
-            window.location.href = "dashboard-encarregado.html";
-          else if (perfil === "ADMIN") window.location.href = "admin.html";
-          else mostrarErro("Perfil desconhecido: " + perfil);
+          window.location.href = "admin.html";
         } catch (err) {
           mostrarErro(err.message);
         } finally {
           btn.disabled = false;
-          text.textContent = "Entrar";
+          text.textContent = "Entrar como Administrador";
         }
       }
     </script>

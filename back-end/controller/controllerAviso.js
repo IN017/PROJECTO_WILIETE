@@ -32,15 +32,23 @@ export class ControllerAviso {
     }
 
     static async atualizarAviso(req, res) {
-        try {
-            const { id } = req.params;
-            const { titulo, descricao, imagem } = req.body;
-            const avisoAtualizado = await ServiceAviso.atualizarAviso(id, titulo, descricao, imagem);
-            res.status(200).json(avisoAtualizado);
-        } catch (error) {
-            res.status(400).json({ error: error.message });
-        }
-    }
+  try {
+    const { id } = req.params;
+
+    const { titulo, conteudo, imagem } = req.body;
+
+    const avisoAtualizado = await ServiceAviso.atualizarAviso(id, {
+      titulo,
+      conteudo,
+      imagem
+    });
+
+    res.status(200).json(avisoAtualizado);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
 
     static async deletarAviso(req, res) {
         try {
