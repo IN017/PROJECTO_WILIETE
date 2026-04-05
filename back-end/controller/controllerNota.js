@@ -3,8 +3,8 @@ import { ServiceNota } from "../service/serviceNota.js";
 export class ControllerNota {
     static async criarNota(req, res) {
         try {
-            const { titulo, conteudo } = req.body;
-            const notaCriada = await ServiceNota.criarNota(titulo, conteudo);
+            const dados = req.body;
+            const notaCriada = await ServiceNota.criarNota(dados);
             res.status(201).json(notaCriada);
         } catch (error) {
             res.status(400).json({ error: error.message });
@@ -33,8 +33,8 @@ export class ControllerNota {
     static async atualizarNota(req, res) {
         try {
             const { id } = req.params;
-            const { titulo, conteudo } = req.body;
-            const notaAtualizada = await ServiceNota.atualizarNota(id, titulo, conteudo);
+            const dados = req.body;
+            const notaAtualizada = await ServiceNota.atualizarNota(id, dados);
             res.status(200).json(notaAtualizada);
         } catch (error) {
             res.status(400).json({ error: error.message });

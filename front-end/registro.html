@@ -380,10 +380,9 @@
                     class="w-full p-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/30 cursor-pointer"
                   >
                     <option value="">Selecione a relação</option>
-                    <option value="Mãe">Mãe</option>
-                    <option value="Pai">Pai</option>
-                    <option value="Tutor Legal">Tutor Legal</option>
-                    <option value="Outro">Outro</option>
+                    <option value="MAE">Mãe</option>
+                    <option value="PAI">Pai</option>
+                    <option value="TUTOR">Tutor Legal</option>
                   </select>
                   <p
                     id="relacaoEducando-error"
@@ -467,23 +466,13 @@
                 <div>
                   <label for="subject" class="block text-sm font-semibold mb-2"
                     >Disciplina(s) que leciona
-                    <span class="text-red-600">*</span></label
+                    <span class="text-gray-500 text-sm font-normal">(opcional)</span></label
                   >
                   <select
                     id="subject"
                     class="w-full p-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/30 cursor-pointer"
                   >
-                    <option value="">Selecione a disciplina</option>
-                    <option value="mathematics">Matemática</option>
-                    <option value="portuguese">Português</option>
-                    <option value="english">Inglês</option>
-                    <option value="science">Ciências</option>
-                    <option value="history">História</option>
-                    <option value="geography">Geografia</option>
-                    <option value="physical-education">Educação Física</option>
-                    <option value="arts">Educação Visual</option>
-                    <option value="music">Educação Musical</option>
-                    <option value="other">Outra</option>
+                    <option value="">Selecione a disciplina (opcional)</option>
                   </select>
                   <p
                     id="subject-error"
@@ -649,6 +638,7 @@
               <span id="submitText">Criar Conta</span>
             </button>
           </div>
+          
 
           <!-- ERRO DO FORMULÁRIO -->
           <div
@@ -941,7 +931,7 @@
 
     <!-- ÚNICO SCRIPT — tudo aqui, sem divisões -->
     <script>
-      const API_BASE_URL = "http://localhost:3000";
+      const API_BASE_URL = "http://localhost:3002";
 
       let currentStep = 1;
       const totalSteps = 3;
@@ -978,6 +968,26 @@
       const teacherImage = document.getElementById("teacherImage");
       const terms = document.getElementById("terms");
       const registrationForm = document.getElementById("registrationForm");
+
+      async function carregarDisciplinas() {
+        try {
+          const response = await fetch(API_BASE_URL + "/api/disciplinas");
+          if (!response.ok) throw new Error("Falha ao carregar disciplinas");
+
+          const disciplinas = await response.json();
+          subject.innerHTML = '<option value="">Selecione a disciplina (opcional)</option>';
+
+          disciplinas.forEach((disciplina) => {
+            const option = document.createElement("option");
+            option.value = disciplina.id;
+            option.textContent = disciplina.nome;
+            subject.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Erro ao carregar disciplinas:", error);
+          subject.innerHTML = '<option value="">Não foi possível carregar disciplinas</option>';
+        }
+      }
 
       registrationForm.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -1186,14 +1196,7 @@
               showError("codigoVerificacao", "Código obrigatório");
               valid = false;
             }
-            if (!subject.value) {
-              showError("subject", "Selecione a disciplina");
-              valid = false;
-            }
-            if (!turmasLeciona.value.trim()) {
-              showError("turmasLeciona", "Indique as turmas");
-              valid = false;
-            }
+            // Disciplina é opcional para professor
             if (!teacherImage.files || !teacherImage.files[0]) {
               showError("teacherImage", "Foto de perfil obrigatória");
               valid = false;
@@ -1281,7 +1284,9 @@
               codigoVerificacao.value.trim(),
             );
             formData.append("turmasLeciona", turmasLeciona.value.trim());
-            formData.append("disciplinaNome", subject.value);
+            if (subject.value) {
+              formData.append("disciplinas[]", subject.value);
+            }
 
             if (teacherImage.files[0]) {
               formData.append("imagem", teacherImage.files[0]);
@@ -1324,6 +1329,7 @@
       });
 
       showStep(currentStep);
+      carregarDisciplinas();
     </script>
   </body>
 </html>

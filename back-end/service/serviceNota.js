@@ -4,16 +4,17 @@ import { prisma } from "../prismaClient/prismaClient.js";
 export class ServiceNota {
     static async criarNota(dados) {
         try {
-            const {numero_matricula, disciplinaId, valor} = dados;
-            if (!numero_matricula || !disciplinaId || !valor) {
-                throw new Error("Todos os campos são obrigatórios.");
+            const { alunoId, disciplinaId, valor, tipo } = dados;
+            if (!alunoId || !disciplinaId || typeof valor !== 'number' || !tipo) {
+                throw new Error("O aluno, a disciplina, o tipo e o valor da nota são obrigatórios.");
             }
 
             const novaNota = await prisma.nota.create({
                 data: {
-                    numero_matricula,
+                    alunoId,
                     disciplinaId,
-                    valor
+                    valor,
+                    tipo
                 }
             });
             return novaNota;
@@ -24,7 +25,12 @@ export class ServiceNota {
 
     static async listarNotas() {
         try {
-            const notas = await prisma.nota.findMany();
+            const notas = await prisma.nota.findMany({
+                include: {
+                    aluno: true,
+                    disciplina: true
+                }
+            });
             return notas;
         } catch (error) {
             throw new Error(`Erro ao listar notas: ${error.message}`);
@@ -47,9 +53,9 @@ export class ServiceNota {
 
     static async atualizarNota(id, dados) {
         try {
-            const {numero_matricula, disciplinaId, valor} = dados;
-            if (!numero_matricula || !disciplinaId || !valor) {
-                throw new Error("O aluno, a disciplina e o valor da nota são obrigatórios.");
+            const { alunoId, disciplinaId, valor, tipo } = dados;
+            if (!alunoId || !disciplinaId || typeof valor !== 'number' || !tipo) {
+                throw new Error("O aluno, a disciplina, o tipo e o valor da nota são obrigatórios.");
             }
             const notaExistente = await prisma.nota.findUnique({
                 where: { id: parseInt(id) }
@@ -59,7 +65,7 @@ export class ServiceNota {
             }
             const notaAtualizada = await prisma.nota.update({
                 where: { id: parseInt(id) },
-                data: { numero_matricula, disciplinaId, valor }
+                data: { alunoId, disciplinaId, valor, tipo }
             });
             return notaAtualizada;
         } catch (error) {

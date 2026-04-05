@@ -12,7 +12,7 @@ static async criarUsuario(dados) {
       // Encarregado
       relacaoEducando, numeroMatricula,
       // Professor
-      codigoVerificacao, turmasLeciona, disciplinas
+      codigoVerificacao, disciplinas
     } = dados;
 
     if (!nome?.trim() || !email?.trim() || !senha || !telefone || !perfil) {
@@ -20,14 +20,25 @@ static async criarUsuario(dados) {
     }
 
     // Validações específicas por perfil
+    const relacaoMap = {
+      'Pai': 'PAI',
+      'Mãe': 'MAE',
+      'Mae': 'MAE',
+      'Tutor Legal': 'TUTOR',
+      'Tutor': 'TUTOR'
+    };
+
+    const relacaoConvertida = relacaoEducando ? relacaoMap[relacaoEducando] || relacaoEducando : null;
+
     if (perfil === "ENCARREGADO") {
       if (!numeroMatricula?.trim()) throw new Error("Número de matrícula do aluno obrigatório.");
-      if (!relacaoEducando?.trim()) throw new Error("Relação com o educando obrigatória.");
+      if (!relacaoConvertida?.trim()) throw new Error("Relação com o educando obrigatória.");
+      if (!["PAI", "MAE", "TUTOR"].includes(relacaoConvertida)) throw new Error("Relação com o educando inválida.");
     }
 
     if (perfil === "PROFESSOR") {
       if (!codigoVerificacao?.trim()) throw new Error("Código de verificação obrigatório.");
-      if (!turmasLeciona?.trim()) throw new Error("Turmas que leciona obrigatório.");
+      
     }
 
     const emailFormatado = email.trim().toLowerCase();
@@ -52,6 +63,12 @@ static async criarUsuario(dados) {
 
     const senhaHash = await hashSenha(senha);
 
+    const disciplinasArray = disciplinas
+      ? Array.isArray(disciplinas)
+        ? disciplinas
+        : [disciplinas]
+      : undefined;
+
     const usuarioCriado = await prisma.usuario.create({
       data: {
         nome,
@@ -62,13 +79,14 @@ static async criarUsuario(dados) {
         imagem: imagem || null,
 
         // Campos condicionais
-        relacaoEducando: perfil === "ENCARREGADO" ? relacaoEducando : null,
+        relacaoEducando: perfil === "ENCARREGADO" ? relacaoConvertida : null,
         codigoVerificacao: perfil === "PROFESSOR" ? codigoVerificacao : null,
-        turmasLeciona: perfil === "PROFESSOR" ? turmasLeciona : null,
+      
+
 
         // Disciplinas (many-to-many, só para professor)
-        disciplinas: disciplinas
-          ? { connect: disciplinas.map(id => ({ id })) }
+        disciplinas: disciplinasArray
+          ? { connect: disciplinasArray.map(id => ({ id: Number(id) })) }
           : undefined
       },
       include: { disciplinas: true }
@@ -220,6 +238,12 @@ static async loginUsuario(email, senha) {
             senhaHash = await hashSenha(senha);
         }
 
+        const disciplinasArray = disciplinas
+            ? Array.isArray(disciplinas)
+                ? disciplinas
+                : [disciplinas]
+            : undefined;
+
         const usuarioAtualizado = await prisma.usuario.update({
             where: { id: parseInt(id) },
             data: {
@@ -244,8 +268,8 @@ static async loginUsuario(email, senha) {
                     : null,
 
                 // Many-to-many (só professor)
-                disciplinas: disciplinas
-                    ? { set: disciplinas.map(id => ({ id })) }
+                disciplinas: disciplinasArray
+                    ? { set: disciplinasArray.map(id => ({ id: Number(id) })) }
                     : undefined
             },
             include: {

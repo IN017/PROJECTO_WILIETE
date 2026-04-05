@@ -1,9 +1,10 @@
 import {Router} from "express";
 import {ControllerReuniao} from "../controller/controllerReuniao.js";
+import { MiddlewareAutenticacao } from "../middlewares/autenticacao.js";
 
 export const routerReuniao = Router();
-routerReuniao.post("/reunioes", ControllerReuniao.criarReuniao);
+routerReuniao.post("/reunioes", MiddlewareAutenticacao.autenticar, ControllerReuniao.criarReuniao);
 routerReuniao.get("/reunioes", ControllerReuniao.listarReunioes);
 routerReuniao.get("/reunioes/:id", ControllerReuniao.obterReuniaoPorId);
-routerReuniao.put("/reunioes/:id", ControllerReuniao.atualizarReuniao);
-routerReuniao.delete("/reunioes/:id", ControllerReuniao.deletarReuniao);
+routerReuniao.put("/reunioes/:id", MiddlewareAutenticacao.autenticar, ControllerReuniao.atualizarReuniao);
+routerReuniao.delete("/reunioes/:id", MiddlewareAutenticacao.autenticar, ControllerReuniao.deletarReuniao);

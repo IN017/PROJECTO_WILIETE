@@ -4,7 +4,7 @@ export class ServiceEvento {
     static async criarEvento(dados) {
         try {
             const {titulo, descricao, imagem} = dados;
-            if (!titulo || !descricao || !imagem) {
+            if (!titulo || !descricao) {
                 throw new Error("Todos os campos são obrigatórios.");
             }   
 
@@ -12,7 +12,7 @@ export class ServiceEvento {
                 data: {
                     titulo,
                     descricao,
-                    imagem
+                   imagem: imagem || null
                 }
             });
             return novoEvento;
@@ -46,7 +46,7 @@ export class ServiceEvento {
 
     static async atualizarEvento(id, dados) {
         try {
-            const {titulo, descricao} = dados;  
+            const {titulo, descricao, imagem} = dados;  
             if (!titulo || !descricao) {
                 throw new Error("O título e a descrição do evento são obrigatórios.");
             }
@@ -57,8 +57,12 @@ export class ServiceEvento {
                 throw new Error("Evento não encontrado.");
             }
             const eventoAtualizado = await prisma.evento.update({
-                where: { id: parseInt(id) },
-                data: { titulo, descricao }
+                    where: { id: parseInt(id) },
+                    data: { 
+                        titulo, 
+                        descricao,
+                        imagem: imagem || null
+                    }
             });
             return eventoAtualizado;
         } catch (error) {

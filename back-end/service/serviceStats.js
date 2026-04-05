@@ -82,7 +82,8 @@ export class ServiceStats {
         avisos,
         eventos,
         reunioes,
-        turmas
+        turmas,
+        disciplinas
       ] = await Promise.all([
         prisma.usuario.findMany(),
         prisma.curso.findMany(),
@@ -90,7 +91,8 @@ export class ServiceStats {
         prisma.aviso.findMany(),
         prisma.evento.findMany(),
         prisma.reuniao.findMany(),
-        prisma.turma.findMany()
+        prisma.turma.findMany(),
+        prisma.disciplina.findMany()
       ]);
 
       const professores = usuarios.filter(u => u.perfil === "PROFESSOR").length;
@@ -105,7 +107,8 @@ export class ServiceStats {
         avisos: avisos.length,
         eventos: eventos.length,
         reunioes: reunioes.length,
-        turmas: turmas.length
+        turmas: turmas.length,
+        disciplinas: disciplinas.length
       };
 
     } catch (error) {

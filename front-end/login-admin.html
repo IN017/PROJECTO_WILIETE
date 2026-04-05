@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Acesso Administrativo - SchoolConnect</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="utils.js"></script>
     <link rel="icon" href="../img/logo.png" type="image/png" />
     <script>
       tailwind.config = {
@@ -167,7 +168,7 @@
     </div>
 
     <script>
-      const API = "http://localhost:3000";
+      const API = "http://localhost:3002";
 
       document.getElementById("toggleSenha").addEventListener("click", () => {
         const input = document.getElementById("adminSenha");
@@ -216,7 +217,8 @@
           localStorage.setItem("adminToken", data.token);
           localStorage.setItem("adminLogado", "true");
 
-          window.location.href = "admin.html";
+          toast("Login realizado com sucesso");
+          setTimeout(() => window.location.href = "admin.html", 1000);
         } catch (err) {
           mostrarErro(err.message);
         } finally {

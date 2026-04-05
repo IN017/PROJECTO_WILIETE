@@ -3,8 +3,9 @@ import { ServiceReuniao } from "../service/serviceReuniao.js";
 export class ControllerReuniao {
     static async criarReuniao(req, res) {
         try {
-            const { titulo, linkMeeting, local } = req.body;
-            const reuniaoCriada = await ServiceReuniao.criarReuniao(titulo, linkMeeting, local);
+            const { titulo, linkMeeting, local, participantesIds } = req.body;
+            const criadoPorId = req.user?.id || null;
+            const reuniaoCriada = await ServiceReuniao.criarReuniao(titulo, linkMeeting, local, participantesIds, criadoPorId);
             res.status(201).json(reuniaoCriada);
         } catch (error) {
             res.status(400).json({ error: error.message });
@@ -13,7 +14,8 @@ export class ControllerReuniao {
 
     static async listarReunioes(req, res) {
         try {
-            const reunioes = await ServiceReuniao.listarReunioes();
+            const { usuarioId } = req.query;
+            const reunioes = await ServiceReuniao.listarReunioes(usuarioId);
             res.status(200).json(reunioes);
         } catch (error) {
             res.status(400).json({ error: error.message });
@@ -33,9 +35,10 @@ export class ControllerReuniao {
     static async atualizarReuniao(req, res) {
         try {
             const { id } = req.params;
-            const { titulo, linkMeeting, local } = req.body;
-            const reuniaoAtualizada = await ServiceReuniao.atualizarReuniao(id, titulo, linkMeeting, local);
-            res.status(200).json(reuniaoAtualizada);
+            const { titulo, linkMeeting, local, participantesIds } = req.body;
+            const reuniaoAtualizada = await ServiceReuniao.atualizarReuniao(id, titulo, linkMeeting, local, participantesIds);
+            const reuniaoComDetalhes = await ServiceReuniao.obterReuniaoPorId(id);
+            res.status(200).json(reuniaoComDetalhes);
         } catch (error) {
             res.status(400).json({ error: error.message });
         }

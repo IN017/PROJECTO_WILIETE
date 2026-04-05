@@ -7,7 +7,7 @@ routerAdmin.post("/admin/login", (req, res) => {
   try {
     const { utilizador, senha } = req.body;
  
-    console.log("Body recebido:", req.body); // debug
+   // debug console.log("Body recebido:", req.body); 
  
     if (!utilizador || !senha) {
       return res.status(400).json({ error: "Utilizador e senha obrigatórios." });

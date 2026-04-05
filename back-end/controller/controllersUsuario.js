@@ -33,10 +33,9 @@ export class ControllerUsuarios {
                 if (dados.perfil === "PROFESSOR") {
                     if (!dados.codigoVerificacao?.trim()) {
                         return res.status(400).json({ error: "Código de verificação obrigatório." });
+                        
                     }
-                    if (!dados.turmasLeciona?.trim()) {
-                        return res.status(400).json({ error: "Turmas que leciona obrigatório." });
-                    }
+                   
                 }
 
                 dados.imagem = req.file ? req.file.filename : null;
@@ -117,9 +116,7 @@ export class ControllerUsuarios {
                     if (dados.codigoVerificacao !== undefined && !dados.codigoVerificacao?.trim()) {
                         return res.status(400).json({ error: "Código de verificação inválido." });
                     }
-                    if (dados.turmasLeciona !== undefined && !dados.turmasLeciona?.trim()) {
-                        return res.status(400).json({ error: "Turmas que leciona inválido." });
-                    }
+                   
                 }
 
                 if (req.file) {

@@ -43,6 +43,8 @@ model Usuario {
   disciplinas        Disciplina[] @relation("ProfessorDisciplinas")
   mensagensEnviadas  Mensagem[]   @relation("Remetente")
   mensagensRecebidas Mensagem[]   @relation("Destinatario")
+  reunioes           ReuniaoParticipante[]
+  reunioesAgendadas  Reuniao[]
 
   @@map("usuarios")
 }
@@ -56,15 +58,15 @@ model Aluno {
   classe           String
 
   turmaId       Int
-  encarregadoId Int
-   cursoId      Int
+  encarregadoId Int ?
+  cursoId      Int
 
   criadoEm         DateTime @default(now())
   dataactualizacao DateTime @updatedAt
 
   // RELAÇÕES
   turma       Turma   @relation(fields: [turmaId], references: [id])
-  encarregado Usuario @relation("EncarregadoAlunos", fields: [encarregadoId], references: [id])
+  encarregado Usuario? @relation("EncarregadoAlunos", fields: [encarregadoId], references: [id])
   curso        Curso   @relation(fields: [cursoId], references: [id])
   notas       Nota[]
 
@@ -106,6 +108,7 @@ model Disciplina {
 model Nota {
   id    Int   @id @default(autoincrement())
   valor Float
+  tipo  String
 
   alunoId      Int
   disciplinaId Int
@@ -129,6 +132,14 @@ model Mensagem {
 
   criadoEm         DateTime @default(now())
   dataactualizacao DateTime @updatedAt
+  editadoEm        DateTime?
+
+  deletadoParaRemetente    Boolean @default(false)
+  deletadoParaDestinatario Boolean @default(false)
+  arquivoUrl               String?
+  arquivoNome              String?
+  arquivoTipo              String?
+  arquivoTamanho           Int?
 
   // RELAÇÕES (DUAS com o mesmo model)
   remetente    Usuario @relation("Remetente", fields: [remetenteId], references: [id])
@@ -171,11 +182,15 @@ model Evento {
 
 model Reuniao {
   id               Int      @id @default(autoincrement())
-  linkMeeting      String
+  linkMeeting      String?
   local            String
   titulo           String
+  criadoPorId      Int?
   criadoEm         DateTime @default(now())
   dataactualizacao DateTime @updatedAt
+
+  criadoPor     Usuario? @relation(fields: [criadoPorId], references: [id])
+  participantes ReuniaoParticipante[]
 
   @@map("reunioes")
 }
@@ -193,4 +208,27 @@ model Curso {
   alunos      Aluno[] 
 
   @@map("cursos")
+}
+
+model ReuniaoParticipante {
+  id        Int     @id @default(autoincrement())
+  reuniaoId Int
+  usuarioId Int
+
+  reuniao Reuniao @relation(fields: [reuniaoId], references: [id])
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+
+  @@unique([reuniaoId, usuarioId])
+  @@map("reuniao_participantes")
+}
+
+model Feedback {
+  id       Int      @id @default(autoincrement())
+  nome     String
+  email    String
+  assunto  String
+  mensagem String
+  criadoEm DateTime @default(now())
+
+  @@map("feedbacks")
 }

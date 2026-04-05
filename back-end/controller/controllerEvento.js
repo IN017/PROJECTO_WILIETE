@@ -1,15 +1,14 @@
 import {ServiceEvento} from "../service/serviceEvento.js";
 
 export class ControllerEvento {
-    static async criarEvento(req, res) {
-        try {
-            const { titulo, descricao, imagem } = req.body;
-            const eventoCriado = await ServiceEvento.criarEvento(titulo, descricao, imagem);
-            res.status(201).json(eventoCriado);
-        } catch (error) {
-            res.status(400).json({ error: error.message });
-        }
+   static async criarEvento(req, res) {
+    try {
+        const eventoCriado = await ServiceEvento.criarEvento(req.body);
+        res.status(201).json(eventoCriado);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
+}
 
     static async listarEventos(req, res) {
         try {
@@ -31,15 +30,22 @@ export class ControllerEvento {
     }
 
     static async atualizarEvento(req, res) {
-        try {
-            const { id } = req.params;
-            const { titulo, descricao, imagem } = req.body;
-            const eventoAtualizado = await ServiceEvento.atualizarEvento(id, titulo, descricao, imagem);
-            res.status(200).json(eventoAtualizado);
-        } catch (error) {
-            res.status(400).json({ error: error.message });
-        }
+    try {
+        const { id } = req.params;
+        const { titulo, descricao, imagem } = req.body;
+
+        const eventoAtualizado = await ServiceEvento.atualizarEvento(id, {
+            titulo,
+            descricao,
+            imagem
+        });
+
+        res.status(200).json(eventoAtualizado);
+
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
+}
 
     static async deletarEvento(req, res) {
         try {

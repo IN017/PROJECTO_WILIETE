@@ -26,7 +26,12 @@ export class ServiceTurma {
 
     static async listarTurmas() {
         try {
-            return await prisma.turma.findMany();
+            return await prisma.turma.findMany({
+                include:
+                 {
+                    professor: true
+                 }
+            });
 
         } catch (error) {
             throw new Error(`Erro ao listar turmas: ${error.message}`);
