@@ -3388,18 +3388,18 @@ fileInputEvento.addEventListener("change", () => {
         const msgConteudo = tipo === "presencial"
           ? `📅 Reunião agendada
 
-Assunto: ${assunto}
-Data/Hora: ${dataHora}
-Local: ${local}
+        Assunto: ${assunto}
+        Data/Hora: ${dataHora}
+        Local: ${local}
 
-Por favor confirme a sua presença.`
-          : `📅 Reunião online agendada
+        Por favor confirme a sua presença.`
+                  : `📅 Reunião online agendada
 
-Assunto: ${assunto}
-Data/Hora: ${dataHora}
-Link: ${link}
+        Assunto: ${assunto}
+        Data/Hora: ${dataHora}
+        Link: ${link}
 
-Clique no link para entrar na reunião.`;
+        Clique no link para entrar na reunião.`;
 
         // Obter ID do admin (token)
         const adminId = null; // Admin não tem ID no sistema de utilizadores normais

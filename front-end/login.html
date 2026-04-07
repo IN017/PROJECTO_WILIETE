@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login - SchoolConnect</title>
+    <script defer src="utils.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" href="../img/logo.png" type="image/png" />
     <script>
@@ -239,6 +240,7 @@
           localStorage.setItem("usuario", JSON.stringify(data.usuario));
 
           // Redirecionar conforme o perfil
+          toast("Login realizado com sucesso");
           const perfil = data.usuario.perfil;
           if (perfil === "PROFESSOR")
             window.location.href = "dashboard-professor.html";
