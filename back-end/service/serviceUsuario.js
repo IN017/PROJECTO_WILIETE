@@ -12,7 +12,7 @@ static async criarUsuario(dados) {
       // Encarregado
       relacaoEducando, numeroMatricula,
       // Professor
-      codigoVerificacao, disciplinas
+      codigoVerificacao, disciplinas, cursos, turmas
     } = dados;
 
     if (!nome?.trim() || !email?.trim() || !senha || !telefone || !perfil) {
@@ -69,6 +69,18 @@ static async criarUsuario(dados) {
         : [disciplinas]
       : undefined;
 
+    const cursosArray = cursos
+      ? Array.isArray(cursos)
+        ? cursos
+        : [cursos]
+      : undefined;
+
+    const turmasArray = turmas
+      ? Array.isArray(turmas)
+        ? turmas
+        : [turmas]
+      : undefined;
+
     const usuarioCriado = await prisma.usuario.create({
       data: {
         nome,
@@ -87,10 +99,27 @@ static async criarUsuario(dados) {
         // Disciplinas (many-to-many, só para professor)
         disciplinas: disciplinasArray
           ? { connect: disciplinasArray.map(id => ({ id: Number(id) })) }
+          : undefined,
+
+        // Cursos (many-to-many, só para professor)
+        cursos: cursosArray
+          ? { connect: cursosArray.map(id => ({ id: Number(id) })) }
           : undefined
       },
-      include: { disciplinas: true }
+      include: { 
+        disciplinas: true,
+        turmas: true,
+        cursos: true
+      }
     });
+
+    // Se for professor, associar turmas
+    if (perfil === "PROFESSOR" && turmasArray && turmasArray.length > 0) {
+      await prisma.turma.updateMany({
+        where: { id: { in: turmasArray.map(id => Number(id)) } },
+        data: { usuarioId: usuarioCriado.id }
+      });
+    }
 
     // Se for encarregado, ligar ao aluno
     if (perfil === "ENCARREGADO") {
@@ -122,7 +151,8 @@ static async loginUsuario(email, senha) {
       where: { email: emailFormatado },
       include: {
         disciplinas: true,
-        turmas: true
+        turmas: true,
+        cursos: true
       }
     });
 
@@ -163,7 +193,8 @@ static async loginUsuario(email, senha) {
         const usuarios = await prisma.usuario.findMany({
             include: {
                 disciplinas: true,
-                turmas: true
+                turmas: true,
+                cursos: true
             }
         });
 
@@ -183,7 +214,8 @@ static async loginUsuario(email, senha) {
             where: { id: parseInt(id) },
             include: {
                 disciplinas: true,
-                turmas: true
+                turmas: true,
+                cursos: true
             }
         });
 
@@ -202,11 +234,11 @@ static async loginUsuario(email, senha) {
     static async atualizarUsuario(id, dados) {
     try {
         const {
-            nome, email, senha, telefone, perfil, imagem, disciplinas,
+            nome, email, senha, telefone, perfil, imagem, disciplinas, cursos,
             // Encarregado
             relacaoEducando, numeroMatricula,
             // Professor
-            codigoVerificacao, turmasLeciona
+            codigoVerificacao
         } = dados;
 
         const usuarioExistente = await prisma.usuario.findUnique({
@@ -244,6 +276,12 @@ static async loginUsuario(email, senha) {
                 : [disciplinas]
             : undefined;
 
+        const cursosArray = cursos
+            ? Array.isArray(cursos)
+                ? cursos
+                : [cursos]
+            : undefined;
+
         const usuarioAtualizado = await prisma.usuario.update({
             where: { id: parseInt(id) },
             data: {
@@ -263,17 +301,20 @@ static async loginUsuario(email, senha) {
                 codigoVerificacao: perfilFinal === "PROFESSOR"
                     ? (codigoVerificacao ?? usuarioExistente.codigoVerificacao)
                     : null,
-                turmasLeciona: perfilFinal === "PROFESSOR"
-                    ? (turmasLeciona ?? usuarioExistente.turmasLeciona)
-                    : null,
 
                 // Many-to-many (só professor)
                 disciplinas: disciplinasArray
                     ? { set: disciplinasArray.map(id => ({ id: Number(id) })) }
+                    : undefined,
+
+                cursos: cursosArray
+                    ? { set: cursosArray.map(id => ({ id: Number(id) })) }
                     : undefined
             },
             include: {
-                disciplinas: true
+                disciplinas: true,
+                turmas: true,
+                cursos: true
             }
         });
 

@@ -66,4 +66,3 @@ const wss = configurarWebSocket(server);
 server.listen(PORTA, () => {
     console.log(`Servidor rodando na porta http://localhost:${PORTA}`);
 });
-

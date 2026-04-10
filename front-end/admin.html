@@ -102,7 +102,7 @@
   <div class="flex min-h-screen">
 
     <!-- ── SIDEBAR ── -->
-    <aside class="w-64 bg-primary text-white p-5 hidden md:flex flex-col sticky top-0 h-screen overflow-y-auto">
+    <aside id="sidebar" class="fixed md:sticky top-0 left-0 w-64 bg-primary text-white p-5 flex flex-col h-screen overflow-y-auto transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-40 md:z-auto">
 
       <!-- LOGO / HEADER -->
       <div class="mb-8 text-center border-b border-white/20 pb-6">
@@ -249,14 +249,25 @@
       </button>
     </aside>
 
+    <!-- ── OVERLAY (Mobile) ── -->
+    <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 z-30 md:hidden"></div>
+
     <!-- ── MAIN ── -->
-    <main class="flex-1 p-6 overflow-auto">
+    <main class="flex-1 p-6 overflow-auto w-full">
 
       <!-- HEADER -->
       <header class="flex justify-between items-center mb-6">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-800" id="pageTitle">Início</h1>
-          <p class="text-sm text-gray-500" id="pageSubtitle">Visão geral do sistema</p>
+        <div class="flex items-center gap-4 flex-1">
+          <!-- Botão Hamburger (Mobile) -->
+          <button id="menuToggle" class="md:hidden text-primary hover:bg-gray-100 p-2 rounded-lg transition" aria-label="Menu">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-800" id="pageTitle">Início</h1>
+            <p class="text-sm text-gray-500" id="pageSubtitle">Visão geral do sistema</p>
+          </div>
         </div>
         <div class="relative">
           <button id="accountButton"
@@ -712,17 +723,29 @@
                     class="w-full border border-gray-300 rounded-lg p-3 font-mono focus:outline-none focus:ring-2 focus:ring-primary" />
                   <p class="text-xs text-gray-400 mt-1">Gere o código na secção "Códigos Professor"</p>
                 </div>
-                <div><label class="block text-sm font-semibold text-gray-700 mb-1">Turmas que Leciona</label>
-                  <input type="text" id="cadTurmasLeciona" placeholder="Ex: 10ª A, 11ª B"
-                    class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary" />
-                </div>
                 <div class="md:col-span-2"><label class="block text-sm font-semibold text-gray-700 mb-1">Disciplina(s)
                     que Leciona</label>
                   <select id="cadDisciplinasUser" multiple
                     class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary"
                     style="min-height:90px">
                   </select>
-                  <p class="text-xs text-gray-400 mt-1">Ctrl + clique para seleccionar várias</p>
+                  <p class="text-xs text-gray-400 mt-1">Ctrl + clique para seleccionar várias. As turmas são geridas na secção "Turmas"</p>
+                </div>
+                <div class="md:col-span-2"><label class="block text-sm font-semibold text-gray-700 mb-1">Curso(s)
+                    que Leciona</label>
+                  <select id="cadCursosUser" multiple
+                    class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary"
+                    style="min-height:90px">
+                  </select>
+                  <p class="text-xs text-gray-400 mt-1">Ctrl + clique para seleccionar vários cursos</p>
+                </div>
+                <div class="md:col-span-2"><label class="block text-sm font-semibold text-gray-700 mb-1">Turma(s)
+                    que Leciona</label>
+                  <select id="cadTurmasUser" multiple
+                    class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary"
+                    style="min-height:90px">
+                  </select>
+                  <p class="text-xs text-gray-400 mt-1">Ctrl + clique para seleccionar várias turmas</p>
                 </div>
               </div>
             </div>
@@ -2432,7 +2455,7 @@
     function abrirModalCadastrarUser() {
       // Limpar campos
       ["cadNomeUser", "cadEmailUser", "cadTelefoneUser", "cadSenhaUser", "cadConfirmarSenhaUser",
-        "cadMatriculaAluno", "cadCodigoVerificacao", "cadTurmasLeciona"].forEach(id => {
+        "cadMatriculaAluno", "cadCodigoVerificacao"].forEach(id => {
           const el = document.getElementById(id); if (el) el.value = "";
         });
       document.getElementById("cadPerfilUser").value = "";
@@ -2442,6 +2465,8 @@
       resetUpload("cadFotoUser", "cadLabelFotoUser", "cadPreviewFotoUser", "cadUploadZoneUser", "Carregar foto (JPG, JPEG, PNG)");
       // Carregar disciplinas no select
       carregarDisciplinasParaCadastro();
+      carregarCursosParaCadastro();
+      carregarTurmasParaCadastro();
       abrirModal("modalCadastrarUser");
     }
 
@@ -2450,6 +2475,22 @@
         const res = await apiFetch("/api/disciplinas"); const data = await res.json();
         const sel = document.getElementById("cadDisciplinasUser");
         if (sel) sel.innerHTML = Array.isArray(data) ? data.map(d => `<option value="${d.id}">${d.nome}</option>`).join("") : "";
+      } catch { }
+    }
+
+    async function carregarCursosParaCadastro() {
+      try {
+        const res = await apiFetch("/api/cursos"); const data = await res.json();
+        const sel = document.getElementById("cadCursosUser");
+        if (sel) sel.innerHTML = Array.isArray(data) ? data.map(c => `<option value="${c.id}">${c.nome}</option>`).join("") : "";
+      } catch { }
+    }
+
+    async function carregarTurmasParaCadastro() {
+      try {
+        const res = await apiFetch("/api/turmas"); const data = await res.json();
+        const sel = document.getElementById("cadTurmasUser");
+        if (sel) sel.innerHTML = Array.isArray(data) ? data.map(t => `<option value="${t.id}">${t.nome}</option>`).join("") : "";
       } catch { }
     }
 
@@ -2480,10 +2521,13 @@
 
       if (perfil === "PROFESSOR") {
         dados.codigoVerificacao = document.getElementById("cadCodigoVerificacao").value.trim();
-        dados.turmasLeciona = document.getElementById("cadTurmasLeciona").value.trim();
         if (!dados.codigoVerificacao) return toast("Código de verificação obrigatório", "erro");
         const sels = document.getElementById("cadDisciplinasUser");
         dados.disciplinas = sels ? [...sels.selectedOptions].map(o => parseInt(o.value)) : [];
+        const selsCursos = document.getElementById("cadCursosUser");
+        dados.cursos = selsCursos ? [...selsCursos.selectedOptions].map(o => parseInt(o.value)) : [];
+        const selsTurmas = document.getElementById("cadTurmasUser");
+        dados.turmas = selsTurmas ? [...selsTurmas.selectedOptions].map(o => parseInt(o.value)) : [];
       }
 
       // Foto
@@ -3630,6 +3674,28 @@ fileInputEvento.addEventListener("change", () => {
     setupUpload("imagemEventoFile", "labelEventoFile", "previewEvento", "uploadZoneEvento");
     setupUpload("fotoUser", "labelUserFile", "previewUser", "uploadZoneUser");
     setupUpload("editImagemAvisoFile", "editLabelAvisoFile", "editPreviewAviso", "editUploadZoneAviso");
+
+    // ── MENU RESPONSIVO ──────────────────────────────────────────
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const menuToggle = document.getElementById('menuToggle');
+    
+    function toggleSidebar() {
+      sidebar.classList.toggle('-translate-x-full');
+      sidebarOverlay.classList.toggle('hidden');
+    }
+    
+    menuToggle?.addEventListener('click', toggleSidebar);
+    sidebarOverlay?.addEventListener('click', toggleSidebar);
+    
+    // Fechar sidebar ao clicar em um link da nav
+    document.querySelectorAll('#sidebar a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 768) {
+          toggleSidebar();
+        }
+      });
+    });
   </script>
 </body>
 

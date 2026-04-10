@@ -486,19 +486,36 @@
                     for="turmasLeciona"
                     class="block text-sm font-semibold mb-2"
                     >Turmas que leciona
-                    <span class="text-red-600">*</span></label
+                    <span class="text-gray-500 text-sm font-normal">(opcional)</span></label
                   >
-                  <input
-                    type="text"
+                  <select
                     id="turmasLeciona"
-                    class="w-full p-3 rounded-lg border border-gray-300 focus:border-foco focus:ring-2 focus:ring-foco/30 outline-none"
-                    placeholder="10º A, 11º B, 12º A"
-                  />
-                  <p class="mt-1 text-xs text-gray-600">
-                    Separe as turmas por vírgulas
-                  </p>
+                    class="w-full p-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/30 cursor-pointer"
+                  >
+                    <option value="">Selecione a turma (opcional)</option>
+                  </select>
                   <p
                     id="turmasLeciona-error"
+                    class="mt-2 text-sm text-red-600 hidden"
+                    role="alert"
+                  ></p>
+                </div>
+
+                <div>
+                  <label
+                    for="cursosLeciona"
+                    class="block text-sm font-semibold mb-2"
+                    >Curso(s) que leciona
+                    <span class="text-gray-500 text-sm font-normal">(opcional)</span></label
+                  >
+                  <select
+                    id="cursosLeciona"
+                    class="w-full p-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/30 cursor-pointer"
+                  >
+                    <option value="">Selecione o curso (opcional)</option>
+                  </select>
+                  <p
+                    id="cursosLeciona-error"
                     class="mt-2 text-sm text-red-600 hidden"
                     role="alert"
                   ></p>
@@ -965,6 +982,7 @@
       const codigoVerificacao = document.getElementById("codigoVerificacao");
       const subject = document.getElementById("subject");
       const turmasLeciona = document.getElementById("turmasLeciona");
+      const cursosLeciona = document.getElementById("cursosLeciona");
       const teacherImage = document.getElementById("teacherImage");
       const terms = document.getElementById("terms");
       const registrationForm = document.getElementById("registrationForm");
@@ -986,6 +1004,46 @@
         } catch (error) {
           console.error("Erro ao carregar disciplinas:", error);
           subject.innerHTML = '<option value="">Não foi possível carregar disciplinas</option>';
+        }
+      }
+
+      async function carregarTurmas() {
+        try {
+          const response = await fetch(API_BASE_URL + "/api/turmas");
+          if (!response.ok) throw new Error("Falha ao carregar turmas");
+
+          const turmas = await response.json();
+          turmasLeciona.innerHTML = '<option value="">Selecione a turma (opcional)</option>';
+
+          turmas.forEach((turma) => {
+            const option = document.createElement("option");
+            option.value = turma.id;
+            option.textContent = turma.nome;
+            turmasLeciona.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Erro ao carregar turmas:", error);
+          turmasLeciona.innerHTML = '<option value="">Não foi possível carregar turmas</option>';
+        }
+      }
+
+      async function carregarCursos() {
+        try {
+          const response = await fetch(API_BASE_URL + "/api/cursos");
+          if (!response.ok) throw new Error("Falha ao carregar cursos");
+
+          const cursos = await response.json();
+          cursosLeciona.innerHTML = '<option value="">Selecione o curso (opcional)</option>';
+
+          cursos.forEach((curso) => {
+            const option = document.createElement("option");
+            option.value = curso.id;
+            option.textContent = curso.nome;
+            cursosLeciona.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Erro ao carregar cursos:", error);
+          cursosLeciona.innerHTML = '<option value="">Não foi possível carregar cursos</option>';
         }
       }
 
@@ -1283,9 +1341,14 @@
               "codigoVerificacao",
               codigoVerificacao.value.trim(),
             );
-            formData.append("turmasLeciona", turmasLeciona.value.trim());
             if (subject.value) {
               formData.append("disciplinas[]", subject.value);
+            }
+            if (turmasLeciona.value) {
+              formData.append("turmas[]", turmasLeciona.value);
+            }
+            if (cursosLeciona.value) {
+              formData.append("cursos[]", cursosLeciona.value);
             }
 
             if (teacherImage.files[0]) {
@@ -1330,6 +1393,8 @@
 
       showStep(currentStep);
       carregarDisciplinas();
+      carregarTurmas();
+      carregarCursos();
     </script>
   </body>
 </html>

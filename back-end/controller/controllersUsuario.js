@@ -38,6 +38,16 @@ export class ControllerUsuarios {
                    
                 }
 
+                // Parse arrays
+                if (dados['disciplinas[]']) {
+                    dados.disciplinas = Array.isArray(dados['disciplinas[]']) ? dados['disciplinas[]'] : [dados['disciplinas[]']];
+                    delete dados['disciplinas[]'];
+                }
+                if (dados['turmas[]']) {
+                    dados.turmas = Array.isArray(dados['turmas[]']) ? dados['turmas[]'] : [dados['turmas[]']];
+                    delete dados['turmas[]'];
+                }
+
                 dados.imagem = req.file ? req.file.filename : null;
 
                 const usuarioCriado = await ServiceUsuario.criarUsuario(dados);
@@ -70,7 +80,8 @@ export class ControllerUsuarios {
             return res.status(200).json(usuarios);
 
         } catch (error) {
-            return res.status(500).json({ error: "Erro interno ao listar usuários." });
+            console.error("Erro ao listar usuários:", error);
+            return res.status(500).json({ error: error.message });
         }
     }
 

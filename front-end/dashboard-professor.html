@@ -39,7 +39,7 @@
 <div class="flex min-h-screen">
 
   <!-- SIDEBAR -->
-  <aside class="w-64 bg-primary text-white p-6 hidden md:flex flex-col sticky top-0 h-screen">
+  <aside id="sidebar" class="fixed md:sticky top-0 left-0 w-64 bg-primary text-white p-6 flex flex-col h-screen transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-40 md:z-auto overflow-y-auto">
   
   <!-- HEADER -->
   <div class="mb-10 text-center border-b border-white/20 pb-6">
@@ -103,14 +103,25 @@
     </button>
   </aside>
 
+  <!-- OVERLAY (Mobile) -->
+  <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 z-30 md:hidden"></div>
+
   <!-- CONTEÚDO PRINCIPAL -->
-  <main class="flex-1 p-6 overflow-auto">
+  <main class="flex-1 p-6 overflow-auto w-full">
 
     <!-- TOPO -->
     <header class="flex justify-between items-center mb-6">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-800" id="pageTitle">Início</h1>
-        <p class="text-sm text-gray-500" id="pageSubtitle">Bem-vindo ao seu painel</p>
+      <div class="flex items-center gap-4 flex-1">
+        <!-- Botão Hamburger (Mobile) -->
+        <button id="menuToggle" class="md:hidden text-primary hover:bg-gray-100 p-2 rounded-lg transition" aria-label="Menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800" id="pageTitle">Início</h1>
+          <p class="text-sm text-gray-500" id="pageSubtitle">Bem-vindo ao seu painel</p>
+        </div>
       </div>
 
       <div class="relative">
@@ -664,7 +675,7 @@
     document.getElementById("menuEmail").textContent     = professor.email || "";
     document.getElementById("avatarInicial").textContent = inicial;
 
-    const turmasCount = professor.turmasLeciona ? professor.turmasLeciona.split(",").length : 0;
+    const turmasCount = professor.turmas?.length || 0;
     document.getElementById("statTurmas").textContent     = turmasCount;
     document.getElementById("statDisciplinas").textContent = professor.disciplinas?.length || 0;
 
@@ -682,7 +693,7 @@
       <div class="grid md:grid-cols-2 gap-4">
         <div class="bg-gray-50 rounded-xl p-4">
           <p class="text-xs text-gray-400 font-semibold mb-1 uppercase tracking-wide">Turmas que Leciona</p>
-          <p class="text-gray-800 font-semibold">${professor.turmasLeciona || "Não definido"}</p>
+          <p class="text-gray-800 font-semibold">${professor.turmas?.length ? professor.turmas.map(t => t.nome).join(", ") : "Não definido"}</p>
         </div>
         <div class="bg-gray-50 rounded-xl p-4">
           <p class="text-xs text-gray-400 font-semibold mb-1 uppercase tracking-wide">Telefone</p>
@@ -695,17 +706,11 @@
             ${professor.disciplinas.map(d=>`<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-semibold">${d.nome}</span>`).join("")}
           </div>
         </div>` : ""}
-        ${professor.disciplinas?.some(d=>d.curso) ? `
+        ${professor.cursos?.length ? `
         <div class="bg-gray-50 rounded-xl p-4 md:col-span-2">
           <p class="text-xs text-gray-400 font-semibold mb-2 uppercase tracking-wide">Cursos que Leciona</p>
           <div class="flex flex-wrap gap-2">
-            ${[...new Set(professor.disciplinas.filter(d=>d.curso).map(d=>d.curso.nome))].map(c=>`<span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold">${c}</span>`).join("")}
-          </div>
-        </div>` : professor.turmasLeciona ? `
-        <div class="bg-gray-50 rounded-xl p-4 md:col-span-2">
-          <p class="text-xs text-gray-400 font-semibold mb-2 uppercase tracking-wide">Cursos / Turmas que Leciona</p>
-          <div class="flex flex-wrap gap-2">
-            ${professor.turmasLeciona.split(",").map(t=>`<span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold">${t.trim()}</span>`).join("")}
+            ${professor.cursos.map(c=>`<span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold">${c.nome}</span>`).join("")}
           </div>
         </div>` : ""}
       </div>
@@ -1557,6 +1562,30 @@ Clique no link para entrar na reunião.`;
 </div>
 
 <script src="utils.js"></script>
+
+<script>
+  // ── MENU RESPONSIVO ──────────────────────────────────────────
+  const sidebar = document.getElementById('sidebar');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  const menuToggle = document.getElementById('menuToggle');
+  
+  function toggleSidebar() {
+    sidebar.classList.toggle('-translate-x-full');
+    sidebarOverlay.classList.toggle('hidden');
+  }
+  
+  menuToggle?.addEventListener('click', toggleSidebar);
+  sidebarOverlay?.addEventListener('click', toggleSidebar);
+  
+  // Fechar sidebar ao clicar em um link da nav
+  document.querySelectorAll('#sidebar a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth < 768) {
+        toggleSidebar();
+      }
+    });
+  });
+</script>
 
 </body>
 </html>

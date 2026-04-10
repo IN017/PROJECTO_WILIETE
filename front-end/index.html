@@ -679,7 +679,7 @@ function renderEventos() {
 
 
  // ── AUTH NAVBAR ──────────────────────────────────────
-    (function verificarSessao() {
+    function verificarSessao() {
       const adminToken = localStorage.getItem("adminToken");
       const token      = localStorage.getItem("token");
       const usuarioStr = localStorage.getItem("usuario");
@@ -693,13 +693,43 @@ function renderEventos() {
       } else if (token && usuarioStr) {
         try {
           const u = JSON.parse(usuarioStr);
-          nome    = u.nome || "Utilizador";
-          perfil  = u.perfil || "";
-          inicial = nome[0]?.toUpperCase() || "?";
-        } catch {}
+          if (u && u.perfil && u.nome) {
+            nome = u.nome;
+            perfil = u.perfil;
+            inicial = nome.charAt(0).toUpperCase();
+          } else {
+            // Dados do usuário incompletos, limpar sessão
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            area.innerHTML = `<a href="login.html"
+              class="bg-primary text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-secondary transition shadow-sm hover:shadow-md">
+              Entrar →
+            </a>`;
+            return;
+          }
+        } catch (e) {
+          console.error("Erro ao parsear dados do usuário:", e);
+          // Dados corrompidos, limpar sessão
+          localStorage.removeItem("token");
+          localStorage.removeItem("usuario");
+          area.innerHTML = `<a href="login.html"
+            class="bg-primary text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-secondary transition shadow-sm hover:shadow-md">
+            Entrar →
+          </a>`;
+          return;
+        }
       }
 
       if (!adminToken && !token) {
+        area.innerHTML = `<a href="login.html"
+          class="bg-primary text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-secondary transition shadow-sm hover:shadow-md">
+          Entrar →
+        </a>`;
+        return;
+      }
+
+      // Se não conseguiu determinar o perfil, mostrar como convidado
+      if (!perfil) {
         area.innerHTML = `<a href="login.html"
           class="bg-primary text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-secondary transition shadow-sm hover:shadow-md">
           Entrar →
@@ -744,9 +774,21 @@ function renderEventos() {
 
       const btn  = document.getElementById("navAccountBtn");
       const menu = document.getElementById("navAccountMenu");
-      btn.addEventListener("click", e => { e.stopPropagation(); menu.classList.toggle("hidden"); });
-      document.addEventListener("click", () => menu.classList.add("hidden"));
-    })();
+      if (btn && menu) {
+        btn.addEventListener("click", e => { e.stopPropagation(); menu.classList.toggle("hidden"); });
+        document.addEventListener("click", () => menu.classList.add("hidden"));
+      }
+    }
+
+    // Executar após o DOM carregar ou imediatamente se já carregado
+    function initSessao() {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', verificarSessao);
+      } else {
+        verificarSessao();
+      }
+    }
+    initSessao();
 
     function terminarSessao() {
       abrirModalConfirmacao("Terminar Sessão", "Tem a certeza que deseja terminar a sessão?", () => {

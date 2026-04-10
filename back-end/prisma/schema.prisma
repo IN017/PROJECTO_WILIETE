@@ -41,6 +41,7 @@ model Usuario {
   alunos             Aluno[]      @relation("EncarregadoAlunos")
   turmas             Turma[]
   disciplinas        Disciplina[] @relation("ProfessorDisciplinas")
+  cursos             Curso[]      @relation("ProfessorCursos")
   mensagensEnviadas  Mensagem[]   @relation("Remetente")
   mensagensRecebidas Mensagem[]   @relation("Destinatario")
   reunioes           ReuniaoParticipante[]
@@ -205,7 +206,8 @@ model Curso {
 
   // RELAÇÃO
   disciplinas Disciplina[]
-  alunos      Aluno[] 
+  alunos      Aluno[]
+  professores Usuario[]   @relation("ProfessorCursos")
 
   @@map("cursos")
 }
