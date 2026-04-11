@@ -1339,7 +1339,7 @@
           if (selectedRole === "teacher") {
             formData.append(
               "codigoVerificacao",
-              codigoVerificacao.value.trim(),
+              codigoVerificacao.value.trim().toUpperCase(),
             );
             if (subject.value) {
               formData.append("disciplinas[]", subject.value);

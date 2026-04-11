@@ -46,6 +46,7 @@ model Usuario {
   mensagensRecebidas Mensagem[]   @relation("Destinatario")
   reunioes           ReuniaoParticipante[]
   reunioesAgendadas  Reuniao[]
+  codigoProfessor    CodigoProfessor?
 
   @@map("usuarios")
 }
@@ -78,13 +79,13 @@ model Turma {
   id   Int    @id @default(autoincrement())
   nome String
 
-  usuarioId Int // professor
+  usuarioId Int? // professor
 
   criadoEm         DateTime @default(now())
   dataactualizacao DateTime @updatedAt
 
   // RELAÇÕES
-  professor Usuario @relation(fields: [usuarioId], references: [id])
+  professor Usuario? @relation(fields: [usuarioId], references: [id])
   alunos    Aluno[]
 
   @@map("turmas")
@@ -233,4 +234,18 @@ model Feedback {
   criadoEm DateTime @default(now())
 
   @@map("feedbacks")
+}
+
+model CodigoProfessor {
+  id               Int      @id @default(autoincrement())
+  codigo           String   @unique
+  usado            Boolean  @default(false)
+  criadoEm         DateTime @default(now())
+  dataactualizacao DateTime @updatedAt
+
+  // RELAÇÃO
+  professor Usuario? @relation(fields: [professorId], references: [id])
+  professorId Int?   @unique
+
+  @@map("codigos_professor")
 }

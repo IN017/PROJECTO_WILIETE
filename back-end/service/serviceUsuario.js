@@ -36,9 +36,11 @@ static async criarUsuario(dados) {
       if (!["PAI", "MAE", "TUTOR"].includes(relacaoConvertida)) throw new Error("Relação com o educando inválida.");
     }
 
+    let codigoProfessorFinal = null;
     if (perfil === "PROFESSOR") {
       if (!codigoVerificacao?.trim()) throw new Error("Código de verificação obrigatório.");
-      
+      codigoProfessorFinal = codigoVerificacao.trim().toUpperCase();
+      await this.validarCodigoProfessor(codigoProfessorFinal);
     }
 
     const emailFormatado = email.trim().toLowerCase();
@@ -81,36 +83,39 @@ static async criarUsuario(dados) {
         : [turmas]
       : undefined;
 
-    const usuarioCriado = await prisma.usuario.create({
-      data: {
-        nome,
-        email: emailFormatado,
-        senha: senhaHash,
-        telefone,
-        perfil,
-        imagem: imagem || null,
+    const usuarioCriado = await prisma.$transaction(async (tx) => {
+      const usuario = await tx.usuario.create({
+        data: {
+          nome,
+          email: emailFormatado,
+          senha: senhaHash,
+          telefone,
+          perfil,
+          imagem: imagem || null,
+          relacaoEducando: perfil === "ENCARREGADO" ? relacaoConvertida : null,
+          codigoVerificacao: perfil === "PROFESSOR" ? codigoProfessorFinal : null,
+          disciplinas: disciplinasArray
+            ? { connect: disciplinasArray.map(id => ({ id: Number(id) })) }
+            : undefined,
+          cursos: cursosArray
+            ? { connect: cursosArray.map(id => ({ id: Number(id) })) }
+            : undefined
+        },
+        include: {
+          disciplinas: true,
+          turmas: true,
+          cursos: true
+        }
+      });
 
-        // Campos condicionais
-        relacaoEducando: perfil === "ENCARREGADO" ? relacaoConvertida : null,
-        codigoVerificacao: perfil === "PROFESSOR" ? codigoVerificacao : null,
-      
-
-
-        // Disciplinas (many-to-many, só para professor)
-        disciplinas: disciplinasArray
-          ? { connect: disciplinasArray.map(id => ({ id: Number(id) })) }
-          : undefined,
-
-        // Cursos (many-to-many, só para professor)
-        cursos: cursosArray
-          ? { connect: cursosArray.map(id => ({ id: Number(id) })) }
-          : undefined
-      },
-      include: { 
-        disciplinas: true,
-        turmas: true,
-        cursos: true
+      if (perfil === "PROFESSOR") {
+        await tx.codigoProfessor.update({
+          where: { codigo: codigoProfessorFinal },
+          data: { usado: true, professorId: usuario.id }
+        });
       }
+
+      return usuario;
     });
 
     // Se for professor, associar turmas
@@ -135,6 +140,74 @@ static async criarUsuario(dados) {
   } catch (error) {
     throw new Error(`Erro ao criar usuário: ${error.message}`);
   }
+}
+
+static async validarCodigoProfessor(codigo) {
+  const codigoUpper = codigo?.trim().toUpperCase();
+  if (!codigoUpper) throw new Error("Código de verificação obrigatório.");
+
+  const registro = await prisma.codigoProfessor.findUnique({
+    where: { codigo: codigoUpper }
+  });
+
+  if (!registro) throw new Error("Código não existe.");
+  if (registro.usado) throw new Error("Código já associado a um professor.");
+
+  return registro;
+}
+
+static async criarCodigoProfessor(codigo) {
+  const codigoUpper = codigo?.trim().toUpperCase();
+  if (!codigoUpper) throw new Error("Código inválido.");
+
+  const codigoExistente = await prisma.codigoProfessor.findUnique({
+    where: { codigo: codigoUpper }
+  });
+
+  if (codigoExistente) throw new Error("Código já existe.");
+
+  return prisma.codigoProfessor.create({
+    data: { codigo: codigoUpper }
+  });
+}
+
+static async listarCodigosProfessor() {
+  return prisma.codigoProfessor.findMany({
+    include: {
+      professor: {
+        select: {
+          id: true,
+          nome: true,
+          email: true,
+          telefone: true,
+          perfil: true,
+          imagem: true,
+          codigoVerificacao: true
+        }
+      }
+    },
+    orderBy: { criadoEm: 'desc' }
+  });
+}
+
+static async associarCodigoProfessor(codigo, usuarioId) {
+  const codigoUpper = codigo?.trim().toUpperCase();
+  if (!codigoUpper) throw new Error("Código inválido.");
+
+  return prisma.codigoProfessor.update({
+    where: { codigo: codigoUpper },
+    data: { usado: true, professorId: usuarioId }
+  });
+}
+
+static async liberarCodigoProfessor(codigo) {
+  const codigoUpper = codigo?.trim().toUpperCase();
+  if (!codigoUpper) return;
+
+  await prisma.codigoProfessor.updateMany({
+    where: { codigo: codigoUpper },
+    data: { usado: false, professorId: null }
+  });
 }
 
 // LOGIN
@@ -254,7 +327,6 @@ static async loginUsuario(email, senha) {
 
         // Validações condicionais por perfil
         if (perfilFinal === "ENCARREGADO") {
-            // Só valida se estiver a enviar número de matrícula novo
             if (numeroMatricula) {
                 const alunoExiste = await prisma.aluno.findUnique({
                     where: { numero_matricula: numeroMatricula }
@@ -263,6 +335,32 @@ static async loginUsuario(email, senha) {
                     throw new Error("Aluno com esse número de matrícula não encontrado.");
                 }
             }
+        }
+
+        let codigoVerificacaoFinal = usuarioExistente.codigoVerificacao;
+        const codigoAntigo = usuarioExistente.codigoVerificacao;
+
+        if (perfilFinal === "PROFESSOR") {
+            if (codigoVerificacao !== undefined) {
+                if (!codigoVerificacao?.trim()) {
+                    throw new Error("Código de verificação inválido.");
+                }
+
+                const codigoUpper = codigoVerificacao.trim().toUpperCase();
+                if (codigoUpper !== codigoAntigo) {
+                    await this.validarCodigoProfessor(codigoUpper);
+                    await this.liberarCodigoProfessor(codigoAntigo);
+                    await this.associarCodigoProfessor(codigoUpper, usuarioExistente.id);
+                    codigoVerificacaoFinal = codigoUpper;
+                } else {
+                    codigoVerificacaoFinal = codigoUpper;
+                }
+            }
+        } else {
+            if (codigoAntigo) {
+                await this.liberarCodigoProfessor(codigoAntigo);
+            }
+            codigoVerificacaoFinal = null;
         }
 
         let senhaHash = usuarioExistente.senha;
@@ -299,7 +397,7 @@ static async loginUsuario(email, senha) {
 
                 // Campos do Professor
                 codigoVerificacao: perfilFinal === "PROFESSOR"
-                    ? (codigoVerificacao ?? usuarioExistente.codigoVerificacao)
+                    ? codigoVerificacaoFinal
                     : null,
 
                 // Many-to-many (só professor)

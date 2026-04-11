@@ -6,14 +6,14 @@ export class ServiceTurma {
         try {
             const { nome, usuarioId } = dados;
 
-            if (!nome || !usuarioId) {
-                throw new Error("Nome e usuário são obrigatórios.");
+            if (!nome) {
+                throw new Error("Nome é obrigatório.");
             }
 
             const novaTurma = await prisma.turma.create({
                 data: {
                     nome,
-                    usuarioId: Number(usuarioId)
+                    ...(usuarioId !== null && { usuarioId: Number(usuarioId) })
                 }
             });
 
@@ -43,7 +43,7 @@ export class ServiceTurma {
             const turma = await prisma.turma.findUnique({
                 where: { id: Number(id) },
                 include: {
-                    usuario: true
+                    professor: true
                 }
             });
 
@@ -74,7 +74,7 @@ export class ServiceTurma {
                 where: { id: Number(id) },
                 data: {
                     nome,
-                    usuarioId: usuarioId ? Number(usuarioId) : turmaExistente.usuarioId
+                    usuarioId: usuarioId !== undefined ? (usuarioId ? Number(usuarioId) : null) : undefined
                 }
             });
 

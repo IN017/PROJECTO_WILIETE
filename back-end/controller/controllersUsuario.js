@@ -59,6 +59,25 @@ export class ControllerUsuarios {
         }
     ];
 
+    static async criarCodigoProfessor(req, res) {
+        try {
+            const { codigo } = req.body;
+            const codigoCriado = await ServiceUsuario.criarCodigoProfessor(codigo);
+            return res.status(201).json(codigoCriado);
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        }
+    }
+
+    static async listarCodigosProfessor(req, res) {
+        try {
+            const codigos = await ServiceUsuario.listarCodigosProfessor();
+            return res.status(200).json(codigos);
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+
     // LOGIN
 
   static async login(req, res) {

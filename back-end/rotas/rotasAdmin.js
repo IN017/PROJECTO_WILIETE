@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { JWT } from "../bcrypt-jwt/jwt.js";
+import { ControllerUsuarios } from "../controller/controllersUsuario.js";
  
 export const routerAdmin = Router();
  
@@ -39,3 +40,6 @@ routerAdmin.post("/admin/login", (req, res) => {
     return res.status(500).json({ error: "Erro interno." });
   }
 });
+
+routerAdmin.post("/admin/codigos", ControllerUsuarios.criarCodigoProfessor);
+routerAdmin.get("/admin/codigos", ControllerUsuarios.listarCodigosProfessor);

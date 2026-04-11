@@ -39,7 +39,12 @@ export class ServiceReuniao {
     static async listarReunioes(usuarioId) {
         try {
             const where = usuarioId
-                ? { participantes: { some: { usuarioId: parseInt(usuarioId, 10) } } }
+                ? {
+                    OR: [
+                        { participantes: { some: { usuarioId: parseInt(usuarioId, 10) } } },
+                        { criadoPorId: parseInt(usuarioId, 10) }
+                    ]
+                }
                 : {};
 
             const reunioes = await prisma.reuniao.findMany({

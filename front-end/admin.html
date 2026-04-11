@@ -944,8 +944,7 @@
               </select>
             </div>
 
-            <div><label class="block text-sm font-semibold text-gray-700 mb-1">Professor <span
-                  class="text-red-500">*</span></label>
+            <div><label class="block text-sm font-semibold text-gray-700 mb-1">Professor</label>
               <select id="disProf"
                 class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary">
                 <option value="">Selecione...</option>
@@ -986,8 +985,7 @@
               <input type="text" id="turmaNome" placeholder="Ex: 10ª A"
                 class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary" />
             </div>
-            <div><label class="block text-sm font-semibold text-gray-700 mb-1">Professor Responsável <span
-                  class="text-red-500">*</span></label>
+            <div><label class="block text-sm font-semibold text-gray-700 mb-1">Professor Responsável</label>
               <select id="turmaProfessorId"
                 class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary">
                 <option value="">Selecione...</option>
@@ -1461,7 +1459,7 @@
           <!-- Professor -->
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-1">
-              Professor <span class="text-red-500">*</span>
+              Professor
             </label>
             <select id="editDisciplinaProfessor"
               class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary">
@@ -1521,7 +1519,7 @@
           <!-- Professor -->
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-1">
-              Professor <span class="text-red-500">*</span>
+              Professor
             </label>
             <select id="editTurmaProfessor"
               class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary">
@@ -1743,6 +1741,7 @@
 
       if (sec === "dashboard") carregarDashboard();
       if (sec === "users") carregarUtilizadores();
+      if (sec === "codigos") carregarCodigos();
       if (sec === "feedbacks") carregarFeedbacks();
       if (sec === "avisos") carregarAvisos();
       if (sec === "eventos") carregarEventos();
@@ -1867,8 +1866,8 @@
       const nome = document.getElementById("editTurmaNome").value.trim();
       const professorId = document.getElementById("editTurmaProfessor").value;
 
-      if (!nome || !professorId) {
-        return toast("Nome e professor são obrigatórios", "erro");
+      if (!nome) {
+        return toast("Nome é obrigatório", "erro");
       }
 
       try {
@@ -1879,7 +1878,7 @@
           },
           body: JSON.stringify({
             nome,
-            usuarioId: parseInt(professorId)
+            usuarioId: professorId ? parseInt(professorId) : null
           })
         });
 
@@ -1962,6 +1961,7 @@
       <th class="p-3 font-semibold text-gray-600">Utilizador</th>
       <th class="p-3 font-semibold text-gray-600">Perfil</th>
       <th class="p-3 font-semibold text-gray-600">Contacto</th>
+      <th class="p-3 font-semibold text-gray-600">Cod. Professor</th>
       <th class="p-3 font-semibold text-gray-600 text-right">Ações</th>
     </tr></thead>
     <tbody class="divide-y divide-gray-100">${lista.map(u => `<tr class="hover:bg-gray-50 transition">
@@ -1970,6 +1970,7 @@
         <div><p class="font-semibold text-gray-800">${u.nome}</p><p class="text-xs text-gray-500">${u.email}</p></div></div></td>
       <td class="p-3"><span class="px-2 py-1 rounded-full text-xs font-semibold ${u.perfil === "PROFESSOR" ? "bg-yellow-100 text-yellow-700" : u.perfil === "ENCARREGADO" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"}">${u.perfil}</span></td>
       <td class="p-3 text-gray-600">${u.telefone || "-"}</td>
+      <td class="p-3 text-gray-600">${u.perfil === "PROFESSOR" ? (u.codigoVerificacao || "-") : "-"}</td>
       <td class="p-3 text-right">
         <button onclick="abrirEditarUser(${u.id})" class="text-blue-600 hover:text-blue-800 font-semibold text-xs mr-3 transition">Editar</button>
         <button onclick="removerUtilizador(${u.id},'${u.nome}')" class="text-red-600 hover:text-red-800 font-semibold text-xs transition">Remover</button>
@@ -2052,16 +2053,34 @@
     }
 
     // ── CÓDIGOS PROFESSOR ─────────────────────────────────
-    function gerarCodigo() {
+    async function gerarCodigo() {
       const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
       const codigo = Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
       document.getElementById("codigoValor").textContent = codigo;
       document.getElementById("codigoGerado").classList.remove("hidden");
-      // Guardar código na lista
-      codigosGerados.unshift({ codigo, data: new Date().toLocaleString("pt-PT"), usado: false });
-      renderizarCodigos();
-      // Enviar para API (guardar no .env ou tabela de códigos)
-      apiFetch("/api/admin/codigos", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ codigo }) }).catch(() => { });
+
+      try {
+        const res = await apiFetch("/api/admin/codigos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ codigo })
+        });
+
+        const novoCodigo = await res.json();
+        if (!res.ok) {
+          throw new Error(novoCodigo.error || "Erro ao gerar código.");
+        }
+
+        codigosGerados.unshift({
+          codigo: novoCodigo.codigo,
+          data: new Date(novoCodigo.criadoEm).toLocaleString("pt-PT"),
+          usado: novoCodigo.usado,
+          associado: novoCodigo.professor?.nome || null
+        });
+        renderizarCodigos();
+      } catch (error) {
+        toast(error.message || "Erro ao gerar código.", "erro");
+      }
     }
 
     function copiarCodigo() {
@@ -2073,13 +2092,39 @@
       });
     }
 
+    async function carregarCodigos() {
+      const cont = document.getElementById("listaCodigos");
+      cont.innerHTML = '<div class="flex justify-center py-12"><div class="spinner"></div></div>';
+      try {
+        const res = await apiFetch("/api/admin/codigos");
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Erro ao carregar códigos.");
+        }
+
+        codigosGerados = data.map(c => ({
+          codigo: c.codigo,
+          data: new Date(c.criadoEm).toLocaleString("pt-PT"),
+          usado: c.usado,
+          associado: c.professor ? c.professor.nome : null
+        }));
+
+        renderizarCodigos();
+      } catch (error) {
+        cont.innerHTML = `<p class="text-red-500 text-sm text-center py-4">${error.message || "Falha ao carregar códigos."}</p>`;
+      }
+    }
+
     function renderizarCodigos() {
       const cont = document.getElementById("listaCodigos");
       if (!codigosGerados.length) { cont.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">Nenhum código gerado</p>'; return; }
       cont.innerHTML = codigosGerados.map(c => `
-    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
-      <span class="font-mono font-bold text-primary tracking-widest">${c.codigo}</span>
-      <div class="flex items-center gap-3">
+    <div class="flex flex-col gap-2 p-4 bg-gray-50 rounded-xl border border-gray-100">
+      <div class="flex items-center justify-between gap-3">
+        <span class="font-mono font-bold text-primary tracking-widest">${c.codigo}</span>
+        <span class="text-xs uppercase ${c.usado ? "text-red-600" : "text-green-600"}">${c.usado ? (c.associado ? `Associado a ${c.associado}` : "Usado") : "Livre"}</span>
+      </div>
+      <div class="flex items-center justify-between gap-3">
         <span class="text-xs text-gray-400">${c.data}</span>
         <button onclick="copiarCodigoItem('${c.codigo}')" class="text-xs bg-accent text-black px-3 py-1 rounded-lg font-semibold hover:bg-yellow-400 transition">Copiar</button>
       </div>
@@ -2742,8 +2787,8 @@
 
       console.log({ nome, cursoId, descricao }); // DEBUG
 
-      if (!nome || !cursoId || !professorId) {
-        return toast("Nome, curso e professor são obrigatórios", "erro");
+      if (!nome || !cursoId) {
+        return toast("Nome e curso são obrigatórios", "erro");
       }
 
       const btn = document.getElementById("btnCadDisc");
@@ -2795,8 +2840,8 @@
       const descricao = document.getElementById("editDisciplinaDescricao").value.trim();
 
       // Validação
-      if (!nome || !cursoId || !professorId) {
-        return toast("Nome, curso e professor são obrigatórios", "erro");
+      if (!nome || !cursoId) {
+        return toast("Nome e curso são obrigatórios", "erro");
       }
 
       try {
@@ -2933,11 +2978,11 @@
     async function cadastrarTurma() {
       const nome = document.getElementById("turmaNome").value.trim();
       const usuarioId = document.getElementById("turmaProfessorId").value;
-      if (!nome || !usuarioId) return toast("Nome e professor obrigatórios", "erro");
+      if (!nome) return toast("Nome obrigatório", "erro");
       const btn = document.getElementById("btnCadTurma");
       btn.disabled = true; btn.textContent = "A cadastrar...";
       try {
-        const res = await apiFetch("/api/turmas", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nome, usuarioId: parseInt(usuarioId) }) });
+        const res = await apiFetch("/api/turmas", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nome, usuarioId: usuarioId ? parseInt(usuarioId) : null }) });
         if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Erro"); }
         toast("Turma cadastrada!"); document.getElementById("turmaNome").value = ""; carregarTurmas(true);
       } catch (e) { toast("Erro: " + e.message, "erro"); }
@@ -3562,7 +3607,10 @@ fileInputEvento.addEventListener("change", () => {
 
     function terminarSessao() {
       abrirModalConfirmacao("Terminar Sessão", "Tem a certeza que deseja terminar a sessão?", () => {
-        localStorage.removeItem("adminToken"); localStorage.removeItem("adminLogado");
+        localStorage.removeItem("adminToken"); 
+        localStorage.removeItem("adminLogado");
+        localStorage.removeItem("token");
+        localStorage.removeItem("usuario");
         toast("Sessão terminada com sucesso");
         setTimeout(() => window.location.href = "login-admin.html", 1000);
       });

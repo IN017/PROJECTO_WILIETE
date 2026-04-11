@@ -84,11 +84,9 @@ export class ServiceDisciplina {
                 },
 
                 // PROFESSOR DEPENDE DO TEU MODEL
-                ...(professorId && {
-                    professores: {
-                        set: [{ id: parseInt(professorId) }]
-                    }
-                })
+                professores: professorId
+                    ? { set: [{ id: parseInt(professorId) }] }
+                    : { set: [] }
             }
         });
 

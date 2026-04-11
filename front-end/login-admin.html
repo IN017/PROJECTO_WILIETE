@@ -216,6 +216,10 @@
           // Guardar token admin
           localStorage.setItem("adminToken", data.token);
           localStorage.setItem("adminLogado", "true");
+          
+          // Limpar tokens de usuário regular para evitar conflitos
+          localStorage.removeItem("token");
+          localStorage.removeItem("usuario");
 
           toast("Login realizado com sucesso");
           setTimeout(() => window.location.href = "admin.html", 1000);

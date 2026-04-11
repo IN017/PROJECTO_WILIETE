@@ -545,6 +545,10 @@
   const API = "http://localhost:3002";
   const WS  = "ws://localhost:3002";
 
+  if (window.location.protocol === 'file:') {
+    console.warn('Página carregada via file://. Abra a aplicação por um servidor local, por exemplo http://localhost:3002/front-end/dashboard-professor.html, para evitar problemas de origem e fetch.');
+  }
+
   function getArquivoUrl(url) {
     if (!url) return undefined;
     if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("blob:")) return url;
@@ -665,7 +669,18 @@
   }
 
   // ── PERFIL ────────────────────────────────────────────
-  function preencherPerfil() {
+  async function carregarStatsReunioes() {
+    try {
+      const res = await apiFetch(`/api/reunioes?usuarioId=${professor.id}`);
+      const data = await res.json();
+      document.getElementById("statReunioes").textContent = data.length;
+    } catch (error) {
+      console.error("Erro ao carregar estatísticas de reuniões:", error);
+      document.getElementById("statReunioes").textContent = "0";
+    }
+  }
+
+  async function preencherPerfil() {
     const nome    = professor.nome || "Professor";
     const inicial = nome[0]?.toUpperCase() || "P";
 
@@ -679,6 +694,9 @@
     document.getElementById("statTurmas").textContent     = turmasCount;
     document.getElementById("statDisciplinas").textContent = professor.disciplinas?.length || 0;
 
+    // Carregar estatísticas de reuniões
+    await carregarStatsReunioes();
+
     document.getElementById("perfilProfessor").innerHTML = `
       <div class="flex items-center gap-5 p-5 bg-gradient-to-r from-green-50 to-white rounded-2xl border border-green-100 mb-4">
         <div class="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center text-white font-bold text-3xl shrink-0 shadow-lg">
@@ -687,6 +705,7 @@
         <div>
           <h3 class="text-xl font-bold text-gray-800">${nome}</h3>
           <p class="text-gray-500 text-sm mt-0.5">${professor.email}</p>
+          <p class="text-gray-500 text-sm mt-1">Código de Verificação: <span class="font-semibold text-gray-800">${professor.codigoVerificacao || "Não atribuído"}</span></p>
           <span class="inline-block mt-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold">PROFESSOR</span>
         </div>
       </div>
@@ -1280,7 +1299,9 @@ Clique no link para entrar na reunião.`;
     const mensagens = document.querySelectorAll("#messagesArea .flex");
     for (const index of mensagensSelecionadas) {
       const msgDiv = mensagens[index];
-      const msgId = msgDiv.onclick.toString().match(/mostrarMenuMensagem\((\d+)/)[1];
+      if (!msgDiv) continue;
+      const msgId = msgDiv.dataset.msgId;
+      if (!msgId) continue;
       try {
         const res = await apiFetch(`/api/mensagens/${msgId}`, { 
           method: 'DELETE',
@@ -1293,6 +1314,8 @@ Clique no link para entrar na reunião.`;
           } else {
             msgDiv.remove();
           }
+        } else {
+          console.error(`Falha ao eliminar mensagem ${msgId}`, await res.text());
         }
       } catch (error) {
         console.error("Erro ao eliminar mensagem", error);
@@ -1463,13 +1486,17 @@ Clique no link para entrar na reunião.`;
       if (ws) ws.close();
       localStorage.removeItem("token");
       localStorage.removeItem("usuario");
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("adminLogado");
       window.location.href = "login.html";
     });
   }
 
   // ── ARRANQUE ──────────────────────────────────────────
-  preencherPerfil();
-  showSection("inicio");
+  (async () => {
+    await preencherPerfil();
+    showSection("inicio");
+  })();
 </script>
 
 <!-- MODAL EDITAR MENSAGEM -->

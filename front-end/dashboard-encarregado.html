@@ -997,7 +997,10 @@
   function terminarSessao() {
     abrirModalConfirmacao("Terminar Sessão", "Tem a certeza que deseja terminar a sessão?", () => {
       if(ws) ws.close();
-      localStorage.removeItem("token"); localStorage.removeItem("usuario");
+      localStorage.removeItem("token"); 
+      localStorage.removeItem("usuario");
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("adminLogado");
       window.location.href="login.html";
     });
   }

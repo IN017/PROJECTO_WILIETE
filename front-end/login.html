@@ -238,6 +238,10 @@
           // Guardar token e dados do utilizador
           localStorage.setItem("token", data.token);
           localStorage.setItem("usuario", JSON.stringify(data.usuario));
+          
+          // Limpar adminToken para evitar conflitos
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminLogado");
 
           // Redirecionar conforme o perfil
           toast("Login realizado com sucesso");
