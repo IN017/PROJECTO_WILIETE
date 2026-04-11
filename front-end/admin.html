@@ -3599,7 +3599,7 @@ fileInputEvento.addEventListener("change", () => {
       toast("CSV exportado!");
     }
 
-    // ── DROPDOWN ──────────────────────────────────────────
+    // DROPDOWN 
     document.getElementById("accountButton").addEventListener("click", function (e) {
       e.stopPropagation(); document.getElementById("accountMenu").classList.toggle("hidden");
     });
@@ -3616,7 +3616,7 @@ fileInputEvento.addEventListener("change", () => {
       });
     }
 
-    // ── HELPERS DE UPLOAD ────────────────────────────────
+    //  HELPERS DE UPLOAD 
     function fileToBase64(file) {
       return new Promise((resolve, reject) => {
         if (file.size > 5 * 1024 * 1024) { reject(new Error("Imagem demasiado grande. Máximo 5MB.")); return; }
@@ -3661,7 +3661,7 @@ fileInputEvento.addEventListener("change", () => {
       });
     }
 
-    // ── FEEDBACKS ─────────────────────────────────────────
+    //  FEEDBACKS 
     async function carregarFeedbacks() {
       try {
         const res = await apiFetch("/api/feedbacks");
@@ -3715,7 +3715,7 @@ fileInputEvento.addEventListener("change", () => {
       });
     }
 
-    // ── ARRANQUE ──────────────────────────────────────────
+    //  ARRANQUE
     showSection("dashboard");
     // Configurar uploads
     setupUpload("imagemAvisoFile", "labelAvisoFile", "previewAviso", "uploadZoneAviso");
@@ -3723,7 +3723,7 @@ fileInputEvento.addEventListener("change", () => {
     setupUpload("fotoUser", "labelUserFile", "previewUser", "uploadZoneUser");
     setupUpload("editImagemAvisoFile", "editLabelAvisoFile", "editPreviewAviso", "editUploadZoneAviso");
 
-    // ── MENU RESPONSIVO ──────────────────────────────────────────
+    //  MENU RESPONSIVO 
     const sidebar = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
     const menuToggle = document.getElementById('menuToggle');
