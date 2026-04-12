@@ -4,7 +4,8 @@ export class ControllerReuniao {
     static async criarReuniao(req, res) {
         try {
             const { titulo, linkMeeting, local, participantesIds } = req.body;
-            const criadoPorId = req.user?.id || null;
+            // Admin não tem ID, então usa null ou um valor especial
+            const criadoPorId = req.user?.id || (req.user?.perfil === "ADMIN" ? null : null);
             const reuniaoCriada = await ServiceReuniao.criarReuniao(titulo, linkMeeting, local, participantesIds, criadoPorId);
             res.status(201).json(reuniaoCriada);
         } catch (error) {

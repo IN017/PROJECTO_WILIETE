@@ -20,21 +20,14 @@ routerAdmin.post("/admin/login", (req, res) => {
     if (utilizador !== adminUser || senha !== adminSenha) {
       return res.status(401).json({ error: "Credenciais inválidas." });
     }
- 
-    // Usar SECRET_KEY (igual ao resto do projecto) ou JWT_SECRET como fallback
-    const segredo = process.env.SECRET_KEY || process.env.JWT_SECRET || "segredo_jwt";
- 
-    const token = JWT.gerarToken(
-      { perfil: "ADMIN", utilizador },
-      segredo,
-      { expiresIn: process.env.EXPIRATION_TIME || "8h" }
-    );
- 
-    return res.status(200).json({
-      token,
-      admin: { utilizador, perfil: "ADMIN" }
+
+    const token = JWT.gerarToken({
+      id: 0, // ID especial para admin
+      perfil: "ADMIN",
+      utilizador
     });
- 
+
+    return res.json({ token });
   } catch (error) {
     console.error("Erro no login admin:", error);
     return res.status(500).json({ error: "Erro interno." });

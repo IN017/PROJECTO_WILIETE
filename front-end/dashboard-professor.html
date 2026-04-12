@@ -315,7 +315,7 @@
     </section>
 
     <!-- MODAL AGENDAR REUNIÃO -->
-    <div id="modalReuniao" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div id="modalReuniao" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black/50 backdrop-blur-sm">
       <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto fade-in">
         <div class="p-8">
           <div class="flex items-center justify-between mb-6">
@@ -508,7 +508,7 @@
       </div>
 
       <!-- Modal nova conversa -->
-      <div id="modalNovaConversa" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div id="modalNovaConversa" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black/50 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 mx-4 fade-in">
           <h3 class="text-xl font-bold text-gray-800 mb-6">Nova Mensagem</h3>
           <div class="space-y-4">
@@ -1164,10 +1164,11 @@ Clique no link para entrar na reunião.`;
     // Remover menus anteriores
     document.querySelectorAll('.menu-mensagem').forEach(m => m.remove());
 
+    const escapedContent = conteudo.replace(/'/g, "\\'").replace(/\n/g, '\\n').replace(/\r/g, '');
     const menu = document.createElement('div');
     menu.className = 'menu-mensagem absolute bg-white border border-gray-200 rounded-lg shadow-lg z-10';
     menu.innerHTML = `
-      <button onclick="editarMensagem(${msgId}, '${conteudo.replace(/'/g, "\\'")}')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-blue-600">Editar</button>
+      <button onclick="editarMensagem(${msgId}, '${escapedContent}')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-blue-600">Editar</button>
       <button onclick="deletarMensagem(${msgId})" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-600">Eliminar</button>
     `;
 
@@ -1500,7 +1501,7 @@ Clique no link para entrar na reunião.`;
 </script>
 
 <!-- MODAL EDITAR MENSAGEM -->
-<div id="modalEditarMensagem" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+<div id="modalEditarMensagem" class="fixed inset-0 bg-black bg-opacity-50 flex hidden items-center justify-center z-50">
   <div class="bg-white rounded-lg p-6 w-96 max-w-full mx-4">
     <h3 class="text-lg font-semibold mb-4">Editar Mensagem</h3>
     <textarea id="editMessageInput" class="w-full p-3 border border-gray-300 rounded-lg resize-none" rows="3" placeholder="Digite a nova mensagem..."></textarea>
@@ -1512,7 +1513,7 @@ Clique no link para entrar na reunião.`;
 </div>
 
 <!-- MODAL CONFIRMAR DELEÇÃO -->
-<div id="modalDeletarMensagem" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+<div id="modalDeletarMensagem" class="fixed inset-0 bg-black bg-opacity-50 flex hidden items-center justify-center z-50">
   <div class="bg-white rounded-lg p-6 w-96 max-w-full mx-4">
     <h3 class="text-lg font-semibold mb-4">Eliminar Mensagem</h3>
     <p class="text-gray-600 mb-4">Escolha como deseja eliminar a mensagem:</p>
@@ -1527,7 +1528,7 @@ Clique no link para entrar na reunião.`;
 </div>
 
 <!-- MODAL ELIMINAR SELECIONADAS -->
-<div id="modalEliminarSelecionadas" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+<div id="modalEliminarSelecionadas" class="fixed inset-0 bg-black bg-opacity-50 flex hidden items-center justify-center z-50">
   <div class="bg-white rounded-lg p-6 w-96 max-w-full mx-4">
     <h3 class="text-lg font-semibold mb-4">Eliminar Mensagens Selecionadas</h3>
     <p class="text-gray-600 mb-4">Escolha como deseja eliminar as mensagens selecionadas:</p>
@@ -1540,7 +1541,7 @@ Clique no link para entrar na reunião.`;
     </div>
   </div>
 </div>
-<div id="modalConfirmar" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+<div id="modalConfirmar" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black/50 backdrop-blur-sm">
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 mx-4 fade-in">
 
     <h2 id="modalTitulo" class="text-xl font-bold text-gray-800 mb-4">
@@ -1567,7 +1568,7 @@ Clique no link para entrar na reunião.`;
 </div>
 
 <!-- MODAL DE NOTIFICAÇÃO -->
-<div id="modalNotificacao" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+<div id="modalNotificacao" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black/50 backdrop-blur-sm">
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 mx-4 fade-in">
 
     <h2 id="modalNotificacaoTitulo" class="text-xl font-bold text-gray-800 mb-4">
