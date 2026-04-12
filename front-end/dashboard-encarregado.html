@@ -61,7 +61,7 @@
          class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary transition">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
         Reuniões
-        <span id="badgeReunioes" class="hidden ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">!</span>
+        <span id="badgeReunioes" class="hidden ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
       </a>
       <a href="#" onclick="showSection('mensagens'); return false;" id="nav-mensagens"
          class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary transition">
@@ -436,6 +436,7 @@
   const seccoes = ["desempenho","reunioes","mensagens"];
 
   function showSection(sec) {
+    activeSection = sec;
     seccoes.forEach(s => {
       document.getElementById(s+"Section").classList.add("hidden");
       const nav = document.getElementById("nav-"+s);
@@ -453,8 +454,12 @@
     document.getElementById("pageTitle").textContent    = t[sec][0];
     document.getElementById("pageSubtitle").textContent = t[sec][1];
 
-    if (sec === "reunioes")  carregarReunioes();
-    if (sec === "mensagens") { carregarConversas(); if (!ws) conectarWS(); }
+    if (sec === "reunioes") { const badgeReunioes = document.getElementById("badgeReunioes"); badgeReunioes.classList.add("hidden"); carregarReunioes(); }
+    if (sec === "mensagens") {
+      document.getElementById("badgeMsgs").classList.add("hidden");
+      carregarConversas();
+      if (!ws) conectarWS();
+    }
   }
 
   //  PREENCHER PERFIL
@@ -601,6 +606,9 @@
       document.getElementById("statTotalR").textContent     = data.length;
       document.getElementById("statOnlineR").textContent    = data.filter(r=>r.linkMeeting).length;
       document.getElementById("statPresencialR").textContent= data.filter(r=>!r.linkMeeting).length;
+      const badgeReunioes = document.getElementById("badgeReunioes");
+      badgeReunioes.textContent = data.length;
+      if (data.length > 0) badgeReunioes.classList.remove("hidden"); else badgeReunioes.classList.add("hidden");
 
       if (!data.length) {
         document.getElementById("listaReunioes").innerHTML='<p class="text-gray-400 text-center py-8">Nenhuma reunião agendada</p>';
@@ -668,6 +676,8 @@
       const res  = await apiFetch("/api/mensagens");
       const msgs = await res.json();
       const lista = Array.isArray(msgs) ? msgs : [];
+      const unreadCount = lista.filter(m => m.destinatarioId === encarregado.id && !m.deletadoParaDestinatario && m.remetenteId !== encarregado.id).length;
+      actualizarBadge(unreadCount, true);
 
       // Agrupar por professor
       const mapa = {};
@@ -955,11 +965,29 @@
   }
 
   let badgeCount = 0;
-  function actualizarBadge(n) {
-    badgeCount+=n;
-    const b=document.getElementById("badgeMsgs");
-    if(badgeCount>0){b.classList.remove("hidden");b.textContent=badgeCount;}
-    else b.classList.add("hidden");
+  let activeSection = "desempenho";
+
+  function actualizarBadge(n, absolute = false) {
+    badgeCount = absolute ? n : badgeCount + n;
+    const b = document.getElementById("badgeMsgs");
+    if (badgeCount > 0 && activeSection !== "mensagens") {
+      b.classList.remove("hidden");
+      b.textContent = badgeCount;
+    } else {
+      b.classList.add("hidden");
+    }
+  }
+
+  async function carregarBadgeMensagens() {
+    try {
+      const res = await apiFetch("/api/mensagens");
+      const msgs = await res.json();
+      const lista = Array.isArray(msgs) ? msgs : [];
+      const unreadCount = lista.filter(m => m.destinatarioId === encarregado.id && !m.deletadoParaDestinatario && m.remetenteId !== encarregado.id).length;
+      actualizarBadge(unreadCount, true);
+    } catch {
+      actualizarBadge(0, true);
+    }
   }
 
   async function iniciarConversa() {
@@ -1096,10 +1124,13 @@
   }
 
   // ── ARRANQUE 
-  preencherPerfil();
-  carregarDesempenho();
-  carregarAvisos();
-  showSection("desempenho");
+  (async () => {
+    preencherPerfil();
+    await carregarBadgeMensagens();
+    carregarDesempenho();
+    carregarAvisos();
+    showSection("desempenho");
+  })();
 </script>
 
 <!-- MODAL EDITAR MENSAGEM -->

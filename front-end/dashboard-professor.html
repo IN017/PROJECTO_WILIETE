@@ -83,6 +83,7 @@
          class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary transition">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
         Reuniões
+        <span id="badgeReunioes" class="hidden ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
       </a>
       <a href="#" onclick="showSection('mensagens'); return false;" id="nav-mensagens"
          class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary transition">
@@ -650,6 +651,8 @@
   const seccoes = ["inicio","notas","reunioes","mensagens"];
 
   function showSection(sec) {
+    activeSection = sec;
+
     seccoes.forEach(s => {
       document.getElementById(s + "Section").classList.add("hidden");
       const nav = document.getElementById("nav-" + s);
@@ -664,8 +667,12 @@
     document.getElementById("pageSubtitle").textContent = t[sec][1];
 
     if (sec === "notas") carregarNotasProfessor();
-    if (sec === "reunioes")  carregarReunioes();
-    if (sec === "mensagens") { carregarConversas(); if (!ws) conectarWS(); }
+    if (sec === "reunioes") { const badgeReunioes = document.getElementById("badgeReunioes"); badgeReunioes.classList.add("hidden"); carregarReunioes(); }
+    if (sec === "mensagens") {
+      document.getElementById("badgeMsgs").classList.add("hidden");
+      carregarConversas();
+      if (!ws) conectarWS();
+    }
   }
 
   // ── PERFIL ────────────────────────────────────────────
@@ -992,16 +999,20 @@ Clique no link para entrar na reunião.`;
       document.getElementById("statOnlineReunioes").textContent    = data.filter(r=>r.linkMeeting).length;
       document.getElementById("statPresencialReunioes").textContent = data.filter(r=>!r.linkMeeting).length;
       document.getElementById("statReunioes").textContent          = data.length;
+      const badgeReunioes = document.getElementById("badgeReunioes");
+      badgeReunioes.textContent = data.length;
+      if (data.length > 0) badgeReunioes.classList.remove("hidden"); else badgeReunioes.classList.add("hidden");
       if (!data.length) { document.getElementById("listaReunioes").innerHTML='<p class="text-gray-400 text-center py-8">Nenhuma reunião agendada</p>'; return; }
       document.getElementById("listaReunioes").innerHTML = data.map(r=>{
         const criadoPor = r.criadoPor ? r.criadoPor.nome : "Administrador";
         const participantsStr = r.participantes && r.participantes.length > 0 
           ? r.participantes.map(p => p.usuario.nome).join(", ")
           : "—";
+        const isOwner = r.criadoPor && r.criadoPor.id === professor.id;
         return `
         <div class="border-l-4 ${r.linkMeeting?"border-blue-400":"border-yellow-400"} bg-gray-50 p-5 rounded-xl hover:shadow-md transition">
           <div class="flex justify-between items-start">
-            <div>
+            <div class="flex-1">
               <h3 class="font-bold text-gray-800 text-lg">${r.titulo}</h3>
               <p class="text-sm text-gray-600 mt-1">📍 ${r.local}</p>
               <p class="text-xs text-gray-500 mt-2">👤 <strong>Agendada por:</strong> ${criadoPor}</p>
@@ -1009,9 +1020,17 @@ Clique no link para entrar na reunião.`;
               ${r.linkMeeting?`<a href="${r.linkMeeting}" target="_blank" class="inline-flex items-center gap-1 mt-2 text-blue-600 text-sm font-semibold hover:underline">🎥 Entrar na reunião</a>`:""}
               <p class="text-xs text-gray-400 mt-2">${new Date(r.criadoEm).toLocaleDateString("pt-PT")}</p>
             </div>
-            <span class="px-3 py-1 rounded-full text-xs font-semibold ${r.linkMeeting?"bg-blue-100 text-blue-700":"bg-yellow-100 text-yellow-700"}">
-              ${r.linkMeeting?"Online":"Presencial"}
-            </span>
+            <div class="flex flex-col items-end gap-2 shrink-0">
+              <span class="px-3 py-1 rounded-full text-xs font-semibold ${r.linkMeeting?"bg-blue-100 text-blue-700":"bg-yellow-100 text-yellow-700"}">
+                ${r.linkMeeting?"Online":"Presencial"}
+              </span>
+              ${isOwner ? `
+              <div class="flex gap-2">
+                <button onclick="abrirEditarReuniao(${r.id})" class="text-blue-600 hover:text-blue-800 font-semibold text-xs transition">Editar</button>
+                <button onclick="removerReuniao(${r.id})" class="text-red-500 hover:text-red-700 font-semibold text-xs transition">Remover</button>
+              </div>
+              ` : ""}
+            </div>
           </div>
         </div>`;
       }).join("");
@@ -1035,7 +1054,10 @@ Clique no link para entrar na reunião.`;
     try {
       // Carregar mensagens enviadas e recebidas
       const res  = await apiFetch("/api/mensagens");
-      const msgs = Array.isArray(await res.json()) ? await (await apiFetch("/api/mensagens")).json() : [];
+      const json = await res.json();
+      const msgs = Array.isArray(json) ? json : [];
+      const unreadCount = msgs.filter(m => m.destinatarioId === professor.id && !m.deletadoParaDestinatario && m.remetenteId !== professor.id).length;
+      actualizarBadge(unreadCount, true);
 
       // Agrupar por interlocutor
       const mapa = {};
@@ -1439,11 +1461,29 @@ Clique no link para entrar na reunião.`;
   }
 
   let badgeCount = 0;
-  function actualizarBadge(n) {
-    badgeCount += n;
+  let activeSection = "inicio";
+
+  function actualizarBadge(n, absolute = false) {
+    badgeCount = absolute ? n : badgeCount + n;
     const badge = document.getElementById("badgeMsgs");
-    if (badgeCount > 0) { badge.classList.remove("hidden"); badge.textContent = badgeCount; }
-    else badge.classList.add("hidden");
+    if (badgeCount > 0 && activeSection !== "mensagens") {
+      badge.classList.remove("hidden");
+      badge.textContent = badgeCount;
+    } else {
+      badge.classList.add("hidden");
+    }
+  }
+
+  async function carregarBadgeMensagens() {
+    try {
+      const res = await apiFetch("/api/mensagens");
+      const json = await res.json();
+      const msgs = Array.isArray(json) ? json : [];
+      const unreadCount = msgs.filter(m => m.destinatarioId === professor.id && !m.deletadoParaDestinatario && m.remetenteId !== professor.id).length;
+      actualizarBadge(unreadCount, true);
+    } catch {
+      actualizarBadge(0, true);
+    }
   }
 
   async function iniciarConversa() {
@@ -1493,9 +1533,10 @@ Clique no link para entrar na reunião.`;
     });
   }
 
-  // ── ARRANQUE ──────────────────────────────────────────
+  // ARRANQUE 
   (async () => {
     await preencherPerfil();
+    await carregarBadgeMensagens();
     showSection("inicio");
   })();
 </script>
@@ -1613,7 +1654,159 @@ Clique no link para entrar na reunião.`;
       }
     });
   });
+
+  // ── EDITAR E REMOVER REUNIÃO ──────────────────────────────────
+  async function abrirEditarReuniao(id) {
+    try {
+      const res = await apiFetch("/api/reunioes/" + id);
+      if (!res.ok) throw new Error();
+      const reuniao = await res.json();
+
+      document.getElementById("editReuniaoId").value     = reuniao.id;
+      document.getElementById("editReuniaoTitulo").value = reuniao.titulo || "";
+      document.getElementById("editReuniaoLocal").value  = reuniao.local || "";
+      document.getElementById("editReuniaoLink").value   = reuniao.linkMeeting || "";
+
+      const tipo = reuniao.linkMeeting ? "online" : "presencial";
+      alternarTipoReuniaoEditar(tipo);
+
+      const participantesIds = reuniao.participantes?.map(p => p.usuarioId) || [];
+      await carregarDestinatarios("checkboxDestinatariosEditar", participantesIds);
+      abrirModal("modalEditarReuniao");
+    } catch {
+      toast("Erro ao carregar reunião", "erro");
+    }
+  }
+
+  async function guardarEdicaoReuniao() {
+    const id     = document.getElementById("editReuniaoId").value;
+    const titulo = document.getElementById("editReuniaoTitulo").value.trim();
+    const tipo   = document.querySelector("input[name='editTipoReuniao']:checked").value;
+    const local  = tipo === "presencial" ? document.getElementById("editReuniaoLocal").value.trim() : "";
+    const link   = tipo === "online" ? document.getElementById("editReuniaoLink").value.trim() : "";
+    const participantesIds = [...document.querySelectorAll(".checkbox-dest-edit:checked")].map(cb => parseInt(cb.value, 10));
+    if (!titulo) return toast("Título obrigatório", "erro");
+    if (tipo === "presencial" && !local) return toast("Preencha o local", "erro");
+    if (tipo === "online" && !link) return toast("Preencha o link da videoconferência", "erro");
+    if (!participantesIds.length) return toast("Seleccione pelo menos um destinatário", "erro");
+    try {
+      const res = await apiFetch("/api/reunioes/" + id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ titulo, local, linkMeeting: link || null, participantesIds })
+      });
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
+      fecharModal("modalEditarReuniao");
+      toast("Reunião actualizada!");
+      carregarReunioes();
+    } catch (e) { toast("Erro: " + e.message, "erro"); }
+  }
+
+  async function removerReuniao(id) {
+    abrirModalConfirmacao("Remover Reunião", "Esta acção não pode ser desfeita.", async () => {
+      try {
+        const res = await apiFetch("/api/reunioes/" + id, { method: "DELETE" });
+        if (!res.ok) throw new Error();
+        toast("Reunião removida");
+        carregarReunioes();
+      } catch { toast("Erro ao remover", "erro"); }
+    });
+  }
+
+  function alternarTipoReuniaoEditar(tipo) {
+    const campoLocal = document.getElementById("editCampoLocal");
+    const campoLink = document.getElementById("editCampoLink");
+    if (tipo === "online") {
+      campoLocal.classList.add("hidden");
+      campoLink.classList.remove("hidden");
+    } else {
+      campoLocal.classList.remove("hidden");
+      campoLink.classList.add("hidden");
+    }
+  }
+
+  async function carregarDestinatarios(containerId = "checkboxDestinatarios", selectedIds = []) {
+    const cont = document.getElementById(containerId);
+    if (!cont) return;
+    cont.innerHTML = '<div class="flex justify-center py-4 col-span-2"><div class="spinner"></div></div>';
+    try {
+      const res   = await apiFetch("/api/usuarios");
+      const users = await res.json();
+      const lista = users.filter(u => u.perfil === "PROFESSOR" || u.perfil === "ENCARREGADO");
+      renderizarCheckboxes(lista, containerId, selectedIds);
+    } catch {
+      cont.innerHTML = '<p class="text-gray-400 text-xs text-center col-span-2 py-2">Erro ao carregar utilizadores</p>';
+    }
+  }
+
+  function renderizarCheckboxes(lista, containerId = "checkboxDestinatarios", selectedIds = []) {
+    const cont = document.getElementById(containerId);
+    if (!cont) return;
+    if (!lista.length) {
+      cont.innerHTML = '<p class="text-gray-400 text-xs text-center col-span-2 py-2">Nenhum utilizador</p>';
+      return;
+    }
+    const checkboxClass = containerId === "checkboxDestinatarios" ? "checkbox-dest" : "checkbox-dest-edit";
+    cont.innerHTML = lista.map(u => `
+      <label class="flex items-center gap-2 p-2 rounded-lg hover:bg-white cursor-pointer transition">
+        <input type="checkbox" value="${u.id}" data-nome="${u.nome}" data-email="${u.email||''}"
+               class="${checkboxClass} accent-primary w-4 h-4" ${selectedIds.includes(u.id) ? "checked" : ""}/>
+        <div>
+          <p class="text-sm font-semibold text-gray-800">${u.nome}</p>
+          <p class="text-xs text-gray-400">${u.perfil === "PROFESSOR" ? "👨‍🏫 Professor" : "👨‍👩‍👧 Encarregado"}</p>
+        </div>
+      </label>`).join("");
+  }
 </script>
+
+<!-- MODAL EDITAR REUNIÃO -->
+<div id="modalEditarReuniao" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 fade-in">
+    <div class="p-8">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-bold text-gray-800">Editar Reunião</h3>
+        <button onclick="fecharModal('modalEditarReuniao')" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+      </div>
+      <input type="hidden" id="editReuniaoId"/>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Título</label>
+          <input type="text" id="editReuniaoTitulo" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary"/>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Tipo de Reunião</label>
+          <div class="flex items-center gap-4">
+            <label class="inline-flex items-center gap-2">
+              <input type="radio" name="editTipoReuniao" value="presencial" checked onchange="alternarTipoReuniaoEditar('presencial')" class="accent-primary" />
+              <span class="text-sm text-gray-700">Presencial</span>
+            </label>
+            <label class="inline-flex items-center gap-2">
+              <input type="radio" name="editTipoReuniao" value="online" onchange="alternarTipoReuniaoEditar('online')" class="accent-primary" />
+              <span class="text-sm text-gray-700">Online</span>
+            </label>
+          </div>
+        </div>
+        <div id="editCampoLocal">
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Local</label>
+          <input type="text" id="editReuniaoLocal" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary"/>
+        </div>
+        <div id="editCampoLink" class="hidden">
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Link de Meeting</label>
+          <input type="url" id="editReuniaoLink" placeholder="https://meet.google.com/..." class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary"/>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Destinatários</label>
+          <div id="checkboxDestinatariosEditar" class="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto border border-gray-200 rounded-xl p-3 bg-gray-50"></div>
+          <p class="text-xs text-gray-400 mt-2">Marque os utilizadores que devem receber esta reunião.</p>
+        </div>
+      </div>
+      <div class="flex gap-3 mt-6">
+        <button onclick="fecharModal('modalEditarReuniao')" class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 font-semibold transition">Cancelar</button>
+        <button onclick="guardarEdicaoReuniao()" class="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-secondary font-semibold transition">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

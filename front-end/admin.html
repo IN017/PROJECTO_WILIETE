@@ -222,6 +222,7 @@
               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
           Reuniões
+          <span id="badgeReunioes" class="hidden ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
         </a>
         <a href="#" onclick="showSection('relatorios');return false;" id="nav-relatorios"
           class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-secondary transition text-sm">
@@ -1744,7 +1745,7 @@
       if (sec === "feedbacks") carregarFeedbacks();
       if (sec === "avisos") carregarAvisos();
       if (sec === "eventos") carregarEventos();
-      if (sec === "reunioes") carregarReunioes();
+      if (sec === "reunioes") { const badgeReunioes = document.getElementById("badgeReunioes"); badgeReunioes.classList.add("hidden"); carregarReunioes(); }
       if (sec === "relatorios") gerarRelatorio();
       if (sec === "cad-aluno") iniciarCadAluno();
       if (sec === "cad-curso") carregarCursos(true);
@@ -3303,6 +3304,14 @@ fileInputEvento.addEventListener("change", () => {
         document.getElementById("statTotalReunioes").textContent = data.length;
         document.getElementById("statOnline").textContent        = data.filter(r => r.linkMeeting).length;
         document.getElementById("statPresencial").textContent    = data.filter(r => !r.linkMeeting).length;
+
+        const badgeReunioes = document.getElementById("badgeReunioes");
+        if (data.length > 0) {
+          badgeReunioes.textContent = data.length;
+          badgeReunioes.classList.remove("hidden");
+        } else {
+          badgeReunioes.classList.add("hidden");
+        }
 
         if (!data.length) {
           document.getElementById("listaReunioes").innerHTML = '<p class="text-gray-400 text-center py-8">Nenhuma reunião agendada</p>';
